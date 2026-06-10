@@ -1,5 +1,5 @@
 // --- CONFIGURATION ---
-const APP_PASSWORD = "mywatalappan123"; // ඔබට අවශ්‍ය Password එක මෙතනට දාන්න.
+const APP_PASSWORD = "1234"; // ඔබට අවශ්‍ය Password එක මෙතනට දාන්න.
 
 // --- STATE MANAGEMENT (Local Storage used to save shops and data) ---
 let shops = JSON.parse(localStorage.getItem('watalappan_shops')) || ["Main Shop", "Town Bakery"];
