@@ -1,74 +1,136 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="si">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Watalappan Business Manager</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watalappan Business Sales Tracker</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="loginScreen" class="center">
-  <div class="card login-card">
-    <h1>Watalappan Business Manager</h1>
-    <input id="username" placeholder="Username">
-    <input id="password" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <p>Default: admin / 1234</p>
-  </div>
-</div>
 
-<div id="app" class="hidden">
-<header>
-<h1>Dashboard</h1>
-<button onclick="logout()">Logout</button>
-</header>
+    <div id="login-container" class="card fade-in">
+        <h2>🔒 ඇතුළු වන්න (Login)</h2>
+        <p style="color: #666; margin-bottom: 20px;">ව්‍යාපාරික දත්ත බැලීමට කරුණාකර මුරපදය ඇතුළත් කරන්න.</p>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="password">මුරපදය (Password):</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn">Login</button>
+            <p id="login-error" class="error-msg"></p>
+        </form>
+    </div>
 
-<section class="stats">
-<div class="card"><h3>Today's Sales</h3><span id="sales">0</span></div>
-<div class="card"><h3>Profit</h3><span id="profit">0</span></div>
-<div class="card"><h3>Total Qty</h3><span id="qty">0</span></div>
-<div class="card"><h3>Best Item</h3><span id="best">-</span></div>
-</section>
+    <div id="app-container" class="hidden animate-slide-up">
+        
+        <header class="app-header">
+            <h1>🍮 වටලප්පන් සහ අතුරුපස විකුණුම් කළමනාකරණය</h1>
+            <button id="logout-btn" class="btn btn-danger">Log Out</button>
+        </header>
 
-<section class="card">
-<h2>Sales Entry</h2>
-<input type="date" id="date">
-<select id="product">
-<option>යෝගට්</option>
-<option>වටලප්පන්</option>
-<option>ජෙලි යෝගට්</option>
-<option>කැරමල් පුඩිං</option>
-</select>
-<input id="shop" placeholder="Shop Name">
-<input id="quantity" type="number" placeholder="Quantity">
-<input id="price" type="number" placeholder="Unit Price">
-<button onclick="addSale()">Add Sale</button>
-</section>
+        <div class="grid-container">
+            
+            <div class="sidebar">
+                <div class="card">
+                    <h3>💰 මිල ගණන් වෙනස් කිරීම (Unit Prices)</h3>
+                    <div class="form-group">
+                        <label>වටලප්පන් (රු.):</label>
+                        <input type="number" id="price-watalappan" value="150" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>යෝගට් (රු.):</label>
+                        <input type="number" id="price-yogurt" value="70" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>ජෙලි යෝගට් (රු.):</label>
+                        <input type="number" id="price-jelly" value="90" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>කැරමල් පුඩිං (රු.):</label>
+                        <input type="number" id="price-caramel" value="180" min="0">
+                    </div>
+                </div>
 
-<section class="card">
-<h2>Customer Orders</h2>
-<p>Customer management section</p>
-</section>
+                <div class="card">
+                    <h3>🏪 කඩවල් එකතු කිරීම (Shops)</h3>
+                    <div class="form-group row-group">
+                        <input type="text" id="new-shop-name" placeholder="කඩේ නම ඇතුළත් කරන්න">
+                        <button id="add-shop-btn" class="btn btn-secondary">එකතු කරන්න</button>
+                    </div>
+                    <ul id="shop-list">
+                        </ul>
+                </div>
+            </div>
 
-<section class="card">
-<h2>Stock Management</h2>
-<p>Stock In / Sold / Balance</p>
-</section>
+            <div class="main-content">
+                <div class="card">
+                    <h3>📝 දිනපතා අලෙවිය ඇතුළත් කිරීම</h3>
+                    <form id="sales-form">
+                        <div class="form-group">
+                            <label for="sales-date">දිනය (Date):</label>
+                            <input type="date" id="sales-date" required readonly>
+                        </div>
 
-<section class="card">
-<h2>Reports</h2>
-<button onclick="window.print()">Print Report</button>
-</section>
+                        <div class="form-group">
+                            <label for="item-type">වර්ගය (Item Type):</label>
+                            <select id="item-type" required>
+                                <option value="වටලප්පන්">වටලප්පන්</option>
+                                <option value="යෝගට්">යෝගට්</option>
+                                <option value="ජෙලි යෝගට්">ජෙලි යෝගට්</option>
+                                <option value="කැරමල් පුඩිං">කැරමල් පුඩිං</option>
+                            </select>
+                        </div>
 
-<section class="card">
-<h2>Sales Records</h2>
-<table id="salesTable">
-<thead><tr><th>Date</th><th>Item</th><th>Shop</th><th>Qty</th><th>Total</th></tr></thead>
-<tbody></tbody>
-</table>
-</section>
-</div>
+                        <div class="form-group">
+                            <label for="shop-select">කඩය (Shop Name):</label>
+                            <select id="shop-select" required>
+                                </select>
+                        </div>
 
-<script src="app.js"></script>
+                        <div class="form-group">
+                            <label for="quantity">ප්‍රමාණය (Quantity):</label>
+                            <input type="number" id="quantity" min="1" value="1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>මුළු මුදල (Total Price):</label>
+                            <div id="total-price-display" class="total-highlight">රු. 150.00</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">දත්ත ඇතුළත් කරන්න (Add to Sheet)</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="table-header">
+                        <h3>📊 අද දින ඇතුළත් කළ දත්ත</h3>
+                        <button id="export-btn" class="btn btn-export">📥 Excel (CSV) බාගත කරගන්න</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="sales-table">
+                            <thead>
+                                <tr>
+                                    <th>දිනය</th>
+                                    <th>කඩේ නම</th>
+                                    <th>වර්ගය</th>
+                                    <th>ප්‍රමාණය</th>
+                                    <th>ඒකක මිල (රු.)</th>
+                                    <th>මුළු මුදල (රු.)</th>
+                                    <th>මකන්න</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sales-table-body">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
