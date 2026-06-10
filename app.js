@@ -1,7 +1,17 @@
 
 document.getElementById('date').value=new Date().toISOString().split('T')[0];
 
-function login(){
+function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    if (username === "admin" && password === "1234") {
+        document.getElementById("loginScreen").classList.add("hidden");
+        document.getElementById("app").classList.remove("hidden");
+    } else {
+        alert("Invalid Login");
+    }
+}function login(){
  if(username.value==='admin' && password.value==='1234'){
    loginScreen.classList.add('hidden');
    app.classList.remove('hidden');
