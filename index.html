@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Watalappan Business Manager</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="loginScreen" class="center">
+  <div class="card login-card">
+    <h1>Watalappan Business Manager</h1>
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p>Default: admin / 1234</p>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+<header>
+<h1>Dashboard</h1>
+<button onclick="logout()">Logout</button>
+</header>
+
+<section class="stats">
+<div class="card"><h3>Today's Sales</h3><span id="sales">0</span></div>
+<div class="card"><h3>Profit</h3><span id="profit">0</span></div>
+<div class="card"><h3>Total Qty</h3><span id="qty">0</span></div>
+<div class="card"><h3>Best Item</h3><span id="best">-</span></div>
+</section>
+
+<section class="card">
+<h2>Sales Entry</h2>
+<input type="date" id="date">
+<select id="product">
+<option>යෝගට්</option>
+<option>වටලප්පන්</option>
+<option>ජෙලි යෝගට්</option>
+<option>කැරමල් පුඩිං</option>
+</select>
+<input id="shop" placeholder="Shop Name">
+<input id="quantity" type="number" placeholder="Quantity">
+<input id="price" type="number" placeholder="Unit Price">
+<button onclick="addSale()">Add Sale</button>
+</section>
+
+<section class="card">
+<h2>Customer Orders</h2>
+<p>Customer management section</p>
+</section>
+
+<section class="card">
+<h2>Stock Management</h2>
+<p>Stock In / Sold / Balance</p>
+</section>
+
+<section class="card">
+<h2>Reports</h2>
+<button onclick="window.print()">Print Report</button>
+</section>
+
+<section class="card">
+<h2>Sales Records</h2>
+<table id="salesTable">
+<thead><tr><th>Date</th><th>Item</th><th>Shop</th><th>Qty</th><th>Total</th></tr></thead>
+<tbody></tbody>
+</table>
+</section>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
