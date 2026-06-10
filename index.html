@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watalappan Business Sales Tracker</title>
+    <title>Watalappan Business Sales & Summary</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -24,15 +24,41 @@
     <div id="app-container" class="hidden animate-slide-up">
         
         <header class="app-header">
-            <h1>🍮 වටලප්පන් සහ අතුරුපස විකුණුම් කළමනාකරණය</h1>
+            <h1>🍮 වටලප්පන් සහ අතුරුපස විකුණුම් පද්ධතිය</h1>
             <button id="logout-btn" class="btn btn-danger">Log Out</button>
         </header>
+
+        <div class="card summary-dashboard">
+            <h3>📈 ව්‍යාපාරික වාර්තා සාරාංශය (Sales Summary)</h3>
+            <div class="summary-grid">
+                <div class="summary-box daily">
+                    <h4>අද දින (Daily)</h4>
+                    <p id="sum-daily-income">රු. 0.00</p>
+                    <small id="sum-daily-qty">විකුණුම්: 0 | Return: 0</small>
+                </div>
+                <div class="summary-box weekly">
+                    <h4>මේ සතියේ (Weekly)</h4>
+                    <p id="sum-weekly-income">රු. 0.00</p>
+                    <small id="sum-weekly-qty">විකුණුම්: 0 | Return: 0</small>
+                </div>
+                <div class="summary-box monthly">
+                    <h4>මේ මාසයේ (Monthly)</h4>
+                    <p id="sum-monthly-income">රු. 0.00</p>
+                    <small id="sum-monthly-qty">විකුණුම්: 0 | Return: 0</small>
+                </div>
+                <div class="summary-box yearly">
+                    <h4>මේ වසරේ (Yearly)</h4>
+                    <p id="sum-yearly-income">රු. 0.00</p>
+                    <small id="sum-yearly-qty">විකුණුම්: 0 | Return: 0</small>
+                </div>
+            </div>
+        </div>
 
         <div class="grid-container">
             
             <div class="sidebar">
                 <div class="card">
-                    <h3>💰 මිල ගණන් වෙනස් කිරීම (Unit Prices)</h3>
+                    <h3>💰 මිල ගණන් (Unit Prices)</h3>
                     <div class="form-group">
                         <label>වටලප්පන් (රු.):</label>
                         <input type="number" id="price-watalappan" value="150" min="0">
@@ -52,23 +78,22 @@
                 </div>
 
                 <div class="card">
-                    <h3>🏪 කඩවල් එකතු කිරීම (Shops)</h3>
+                    <h3>🏪 කඩවල් (Shops)</h3>
                     <div class="form-group row-group">
-                        <input type="text" id="new-shop-name" placeholder="කඩේ නම ඇතුළත් කරන්න">
-                        <button id="add-shop-btn" class="btn btn-secondary">එකතු කරන්න</button>
+                        <input type="text" id="new-shop-name" placeholder="කඩේ නම">
+                        <button id="add-shop-btn" class="btn btn-secondary">Add</button>
                     </div>
-                    <ul id="shop-list">
-                        </ul>
+                    <ul id="shop-list"></ul>
                 </div>
             </div>
 
             <div class="main-content">
                 <div class="card">
-                    <h3>📝 දිනපතා අලෙවිය ඇතුළත් කිරීම</h3>
+                    <h3>📝 අලෙවිය සහ රිටන් ඇතුළත් කිරීම</h3>
                     <form id="sales-form">
                         <div class="form-group">
                             <label for="sales-date">දිනය (Date):</label>
-                            <input type="date" id="sales-date" required readonly>
+                            <input type="date" id="sales-date" required>
                         </div>
 
                         <div class="form-group">
@@ -83,28 +108,33 @@
 
                         <div class="form-group">
                             <label for="shop-select">කඩය (Shop Name):</label>
-                            <select id="shop-select" required>
-                                </select>
+                            <select id="shop-select" required></select>
+                        </div>
+
+                        <div class="form-group-row">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="quantity">දැමූ ප්‍රමාණය (Qty):</label>
+                                <input type="number" id="quantity" min="1" value="1" required>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="return-quantity">Return ප්‍රමාණය:</label>
+                                <input type="number" id="return-quantity" min="0" value="0" required>
+                            </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="quantity">ප්‍රමාණය (Quantity):</label>
-                            <input type="number" id="quantity" min="1" value="1" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>මුළු මුදල (Total Price):</label>
+                            <label>ශුද්ධ මුළු මුදල (Net Total):</label>
                             <div id="total-price-display" class="total-highlight">රු. 150.00</div>
                         </div>
 
-                        <button type="submit" class="btn btn-success">දත්ත ඇතුළත් කරන්න (Add to Sheet)</button>
+                        <button type="submit" class="btn btn-success">දත්ත ඇතුළත් කරන්න (Save)</button>
                     </form>
                 </div>
 
                 <div class="card">
                     <div class="table-header">
-                        <h3>📊 අද දින ඇතුළත් කළ දත්ත</h3>
-                        <button id="export-btn" class="btn btn-export">📥 Excel (CSV) බාගත කරගන්න</button>
+                        <h3>📊 ඇතුළත් කළ දත්ත සටහන</h3>
+                        <button id="export-btn" class="btn btn-export">📥 Excel (XLSX) බාගත කරගන්න</button>
                     </div>
                     <div class="table-responsive">
                         <table id="sales-table">
@@ -113,21 +143,20 @@
                                     <th>දිනය</th>
                                     <th>කඩේ නම</th>
                                     <th>වර්ගය</th>
-                                    <th>ප්‍රමාණය</th>
-                                    <th>ඒකක මිල (රු.)</th>
+                                    <th>Qty</th>
+                                    <th>Return</th>
+                                    <th>ඇත්තටම විකුණුම්</th>
                                     <th>මුළු මුදල (රු.)</th>
                                     <th>මකන්න</th>
                                 </tr>
                             </thead>
-                            <tbody id="sales-table-body">
-                                </tbody>
+                            <tbody id="sales-table-body"></tbody>
                         </table>
                     </div>
                 </div>
 
             </div>
         </div>
-
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
