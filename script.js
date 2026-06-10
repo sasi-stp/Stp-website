@@ -1,5 +1,5 @@
 // --- CONFIGURATION ---
-const APP_PASSWORD = "1234"; // දැන් මුරපදය "1234" ලෙස සකසා ඇත.
+const APP_PASSWORD = "12345"; // දැන් මුරපදය "1234" ලෙස සකසා ඇත.
 
 // --- STATE MANAGEMENT ---
 let shops = JSON.parse(localStorage.getItem('watalappan_shops')) || ["Main Shop", "Town Bakery"];
