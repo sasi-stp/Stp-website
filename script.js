@@ -284,6 +284,196 @@ exportBtn.addEventListener('click', () => {
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Advanced Sales Log");
     XLSX.writeFile(workbook, `Business_Advanced_Report.xlsx`);
+});    // Analytics එකට "සියලුම කඩවල්" (All Shops) කියන option එකත් දාමු
+    let allOption = document.createElement('option');
+    allOption.value = "ALL";
+    allOption.textContent = "== සියලුම කඩවල් (All) ==";
+    filterShopSelect.appendChild(allOption);
+
+    shops.forEach((shop, index) => {
+        // Form Select
+        let option = document.createElement('option');
+        option.value = shop; option.textContent = shop;
+        shopSelect.appendChild(option);
+
+        // Filter Dashboard Select
+        let filterOption = option.cloneNode(true);
+        filterShopSelect.appendChild(filterOption);
+
+        // Sidebar List
+        let li = document.createElement('li');
+        li.innerHTML = `<span>${shop}</span> <span class="delete-btn" onclick="deleteShop(${index})">❌</span>`;
+        shopListUI.appendChild(li);
+    });
+}
+
+addShopBtn.addEventListener('click', () => {
+    const shopName = newShopInput.value.trim();
+    if(shopName && !shops.includes(shopName)) {
+        shops.push(shopName);
+        localStorage.setItem('watalappan_shops', JSON.stringify(shops));
+        renderShops();
+        updateFilteredAnalytics();
+        newShopInput.value = '';
+    }
+});
+
+window.deleteShop = function(index) {
+    shops.splice(index, 1);
+    localStorage.setItem('watalappan_shops', JSON.stringify(shops));
+    renderShops();
+    updateFilteredAnalytics();
+};
+
+// --- DATA SAVE ---
+salesForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const item = itemTypeSelect.value;
+    const qty = parseInt(quantityInput.value);
+    const retQty = parseInt(returnQuantityInput.value) || 0;
+    const unitPrice = getUnitPrice(item);
+    const netQty = Math.max(0, qty - retQty);
+    
+    // Dot (Radio Button) එකෙන් Cash ද Credit ද කියලා ගන්නවා
+    const payMode = document.querySelector('input[name="payment-method"]:checked').value;
+
+    const record = {
+        id: Date.now(),
+        date: salesDateInput.value,
+        shop: shopSelect.value,
+        item: item,
+        qty: qty,
+        retQty: retQty,
+        netQty: netQty,
+        unitPrice: unitPrice,
+        payMode: payMode, // Cash / Credit
+        returnLoss: retQty * unitPrice, // Return එක නිසා සිදු වූ අලාභය
+        total: netQty * unitPrice
+    };
+
+    if(!record.shop) {
+        alert("කරුණාකර කඩයක් ඇතුළත් කරන්න!");
+        return;
+    }
+
+    salesData.push(record);
+    localStorage.setItem('watalappan_sales', JSON.stringify(salesData));
+    
+    renderSalesTable();
+    updateFilteredAnalytics();
+    
+    quantityInput.value = 1;
+    returnQuantityInput.value = 0;
+    updateLiveTotal();
+});
+
+function renderSalesTable() {
+    salesTableBody.innerHTML = '';
+    salesData.forEach(row => {
+        let tr = document.createElement('tr');
+        // ණය ගනුදෙනු රතු පාටින් පෙන්වීමට
+        const modeBadge = row.payMode === 'Credit' ? `<span style="color:orange; font-weight:bold;">ණය (Credit)</span>` : `මුදල් (Cash)`;
+        
+        tr.innerHTML = `
+            <td>${row.date}</td>
+            <td>${row.shop}</td>
+            <td>${row.item}</td>
+            <td>${row.qty}</td>
+            <td style="color:red; font-weight:bold;">${row.retQty}</td>
+            <td>${row.netQty}</td>
+            <td>${modeBadge}</td>
+            <td>${row.unitPrice.toFixed(2)}</td>
+            <td><b>${row.total.toFixed(2)}</b></td>
+            <td><span class="delete-btn" onclick="deleteRecord(${row.id})">🗑️</span></td>
+        `;
+        salesTableBody.appendChild(tr);
+    });
+}
+
+window.deleteRecord = function(id) {
+    salesData = salesData.filter(item => item.id !== id);
+    localStorage.setItem('watalappan_sales', JSON.stringify(salesData));
+    renderSalesTable();
+    updateFilteredAnalytics();
+};
+
+// --- DYNAMIC ADVANCED ANALYTICS FILTER ---
+function updateFilteredAnalytics() {
+    const targetShop = filterShopSelect.value;
+    const timePeriod = filterTimeSelect.value;
+    
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const oneWeekAgo = new Date(); oneWeekAgo.setDate(now.getDate() - 7);
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    let soldQty = 0;
+    let totalIncome = 0;
+    let returnQty = 0;
+    let returnLoss = 0;
+
+    salesData.forEach(item => {
+        const itemDate = new Date(item.date);
+        const itemDateStr = item.date;
+
+        // 1. Check Shop Filter
+        if (targetShop !== "ALL" && item.shop !== targetShop) {
+            return; // Skip if shop doesn't match
+        }
+
+        // 2. Check Time Filter
+        let timeMatch = false;
+        if (timePeriod === "daily" && itemDateStr === todayStr) timeMatch = true;
+        else if (timePeriod === "weekly" && itemDate >= oneWeekAgo && itemDate <= now) timeMatch = true;
+        else if (timePeriod === "monthly" && itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear) timeMatch = true;
+        else if (timePeriod === "yearly" && itemDate.getFullYear() === currentYear) timeMatch = true;
+
+        if (!timeMatch) return; // Skip if date doesn't match
+
+        // 3. Aggregate Data
+        soldQty += item.netQty; // ඇත්තටම විකුණුම් ප්‍රමාණය
+        totalIncome += item.total; // ශුද්ධ ආදායම
+        returnQty += item.retQty; // රිටන් ප්‍රමාණය
+        returnLoss += item.returnLoss; // රිටන් අලාභය
+    });
+
+    // Update Dashboard UI
+    document.getElementById('f-sold-qty').textContent = soldQty;
+    document.getElementById('f-total-income').textContent = `රු. ${totalIncome.toFixed(2)}`;
+    document.getElementById('f-return-qty').textContent = returnQty;
+    document.getElementById('f-return-loss').textContent = `රු. ${returnLoss.toFixed(2)}`;
+}
+
+// Event Listeners for Dashboard Dropdowns
+filterShopSelect.addEventListener('change', updateFilteredAnalytics);
+filterTimeSelect.addEventListener('change', updateFilteredAnalytics);
+
+// --- EXCEL EXPORT (With Payment Method & Return Loss) ---
+exportBtn.addEventListener('click', () => {
+    if(salesData.length === 0) {
+        alert("බාගත කිරීමට දත්ත නැත!");
+        return;
+    }
+
+    const excelRows = salesData.map(item => ({
+        "දිනය (Date)": item.date,
+        "කඩේ නම (Shop)": item.shop,
+        "වර්ගය (Item)": item.item,
+        "දැමූ ප්‍රමාණය (Qty)": item.qty,
+        "Return ප්‍රමාණය": item.retQty,
+        "විකිණුම් ප්‍රමාණය (Net Qty)": item.netQty,
+        "ගනුදෙනු වර්ගය (Mode)": item.payMode,
+        "ඒකක මිල (Unit Price)": item.unitPrice,
+        "Return අලාභය (Loss)": item.returnLoss,
+        "මුළු ශුද්ධ ආදායම (Total)": item.total
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelRows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Advanced Sales Log");
+    XLSX.writeFile(workbook, `Business_Advanced_Report.xlsx`);
 });    });
 }
 
