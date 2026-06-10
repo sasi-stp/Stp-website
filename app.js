@@ -11,15 +11,6 @@ function login() {
     } else {
         alert("Invalid Login");
     }
-}function login(){
- if(username.value==='admin' && password.value==='1234'){
-   loginScreen.classList.add('hidden');
-   app.classList.remove('hidden');
- }
- else alert('Invalid Login');
-}
-
-function logout(){location.reload();}
 
 function addSale(){
  let qty=Number(quantity.value||0);
