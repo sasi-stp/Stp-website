@@ -1,12 +1,10 @@
 // --- CONFIGURATION ---
 const APP_PASSWORD = "1234"; 
-// ⚠️ මෙතනට ඔයාගේ Google Apps Script Web App URL එක දාන්න (Cloud Backup ක්‍රියාත්මක වීමට)
 const GOOGLE_SHEETS_WEBAPP_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
 
 // --- DYNAMIC STATE MANAGEMENT ---
 let shops = JSON.parse(localStorage.getItem('watalappan_shops')) || ["Main Shop", "Town Bakery"];
 
-// Dynamic product system loading
 let productsMap = JSON.parse(localStorage.getItem('watalappan_products_map')) || {
     "වටලප්පන්": 150, "යෝගට්": 70, "ජෙලි යෝගට්": 90, "කැරමල් පුඩිං": 180
 };
@@ -133,21 +131,29 @@ function getUnitPrice(type) {
     return parseFloat(productsMap[type]) || 0;
 }
 
-// --- DYNAMIC PRODUCT MANAGER (ADD/REMOVE) ---
-document.getElementById('add-product-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = document.getElementById('new-prod-name').value.trim();
-    const price = parseFloat(document.getElementById('new-prod-price').value);
+// --- FIX: FIXED DYNAMIC PRODUCT REFRESH BUG WITH EXPLICIT CLICK LISTENER ---
+document.getElementById('submit-product-btn').addEventListener('click', () => {
+    const nameInput = document.getElementById('new-prod-name');
+    const priceInput = document.getElementById('new-prod-price');
     
-    if(name) {
-        productsMap[name] = price;
-        localStorage.setItem('watalappan_products_map', JSON.stringify(productsMap));
-        populateDropdowns();
-        renderProductsSettings();
-        renderStockOverview();
-        updateLiveTotal();
-        document.getElementById('add-product-form').reset();
+    const name = nameInput.value.trim();
+    const price = parseFloat(priceInput.value);
+    
+    if(!name || isNaN(price)) {
+        alert("⚠️ කරුණාකර වලංගු නමක් සහ මිලක් ඇතුළත් කරන්න!");
+        return;
     }
+    
+    productsMap[name] = price;
+    localStorage.setItem('watalappan_products_map', JSON.stringify(productsMap));
+    
+    populateDropdowns();
+    renderProductsSettings();
+    renderStockOverview();
+    updateLiveTotal();
+    
+    nameInput.value = '';
+    priceInput.value = '';
 });
 
 function renderProductsSettings() {
@@ -202,7 +208,7 @@ salesForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const item = itemTypeSelect.value;
     if(!item) return alert("කරුණාකර නිෂ්පාදනයක් තෝරන්න!");
-    const qty = parseInt(quantityInput.value);
+    const qty = parseInt(quantityInput.value) || 0;
     const retQty = parseInt(returnQuantityInput.value) || 0;
     const price = getUnitPrice(item);
     const payMode = document.querySelector('input[name="payment-method"]:checked').value;
@@ -225,7 +231,7 @@ salesForm.addEventListener('submit', (e) => {
     renderSalesTable(); renderStockOverview(); renderCreditTable(); renderMonthlyPnL(); updateFilteredAnalytics();
     showInvoicePreview(rec);
 
-    quantityInput.value = 1; returnQuantityInput.value = 0; updateLiveTotal();
+    quantityInput.value = 0; returnQuantityInput.value = 0; updateLiveTotal();
 });
 
 function showInvoicePreview(rec) {
@@ -234,11 +240,11 @@ function showInvoicePreview(rec) {
     document.getElementById('inv-table-body').innerHTML = `
         <tr><td>${rec.item}</td><td>${rec.qty}</td><td>${rec.retQty}</td><td>රු.${rec.total}</td></tr>
     `;
-    document.getElementById('inv-total').textContent = `මුළු මුදල: රු. ${rec.total.toFixed(2)}`;
+    document.getElementById('inv-total').textContent = `මුළු මුදල: ਰੁ. ${rec.total.toFixed(2)}`;
     document.getElementById('inv-paymode').textContent = `ගනුදෙනු ක්‍රමය: ${rec.payMode === 'Credit' ? 'ණය (Credit Book)' : 'මුදල් (Cash)'}`;
 
     document.getElementById('whatsapp-share-btn').onclick = () => {
-        const txt = `*🍮 WATALAPPAN INVOICE*\n-------------------------\n*කඩය:* ${rec.shop}\n*දිනය:* ${rec.date}\n*වර්ගය:* ${rec.item}\n*බෙදාහැරීම:* ${rec.qty}\n*රිටන්:* ${rec.retQty}\n*විකුණුම්:* ${rec.netQty}\n-------------------------\n*මුළු ශුද්ධ මුදල: රු.${rec.total}*\n*ක්‍රමය:* ${rec.payMode === 'Credit' ? 'ණයට' : 'මුදල් ලැබුණා'}\n\nස්තූතියි!`;
+        const txt = `*🍮 WATALAPPAN INVOICE*\n-------------------------\n*කඩය:* ${rec.shop}\n*දිනය:* ${rec.date}\n*වර්ගය:* ${rec.item}\n*බෙදාහැරීම:* ${rec.qty}\n*රිටන්:* ${rec.retQty}\n*විකුණුම්:* ${rec.netQty}\n-------------------------\n*මුළු ශුද්ධ මුදල: රු.${rec.total}*\n*ක්‍රමය:* ${rec.payMode === 'Credit' ? 'ණයට' : 'මුදල් ලැබුණා'}\n\nස්תූතියි!`;
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(txt)}`, '_blank');
     };
 }
@@ -371,7 +377,7 @@ function renderMonthlyPnL() {
     let monthlyData = {};
 
     salesData.forEach(s => {
-        let m = s.date.substring(0, 7); // "YYYY-MM"
+        let m = s.date.substring(0, 7);
         if(!monthlyData[m]) monthlyData[m] = { income: 0, loss: 0, exp: 0 };
         monthlyData[m].income += s.total;
         monthlyData[m].loss += s.returnLoss;
@@ -409,14 +415,12 @@ function updateFilteredAnalytics() {
     let productPerformance = {};
 
     salesData.forEach(item => {
-        // Analytics Top Metrics Tracking
         if(!shopPerformance[item.shop]) shopPerformance[item.shop] = 0;
         shopPerformance[item.shop] += item.total;
 
         if(!productPerformance[item.item]) productPerformance[item.item] = 0;
         productPerformance[item.item] += item.netQty;
 
-        // Apply filters for dashboard UI
         if (targetShop !== "ALL" && item.shop !== targetShop) return;
         if (timePeriod === "daily" && item.date !== todayStr) return;
 
@@ -428,17 +432,8 @@ function updateFilteredAnalytics() {
         totalExp += ex.amount;
     });
 
-    // 1. Core Analytics Displays
     let grandTotalOutstanding = 0;
     shops.forEach(s => { grandTotalOutstanding += calculateShopCredit(s); });
-
-    const creditAlertBox = document.getElementById('shop-credit-alert');
-    if (targetShop === "ALL") {
-        creditAlertBox.innerHTML = `සියලුම කඩවල් වලින් එකතුව ලැබීමට ඇති මුළු ණය: <b>රු. ${grandTotalOutstanding.toFixed(2)}</b>`;
-    } else {
-        let specificDebt = calculateShopCredit(targetShop);
-        creditAlertBox.innerHTML = `🏪 <b>${targetShop}</b> කඩෙන් පමණක් ලැබීමට ඇති හිඟ ණය: <b style="font-size:1.3rem;">රු. ${specificDebt.toFixed(2)}</b>`;
-    }
 
     const netProfit = totalIncome - totalExp;
     document.getElementById('f-sold-qty').textContent = soldQty;
@@ -449,13 +444,11 @@ function updateFilteredAnalytics() {
     document.getElementById('f-net-profit').textContent = `රු. ${netProfit.toFixed(2)}`;
     document.getElementById('f-net-profit').parentElement.style.background = netProfit >= 0 ? 'linear-gradient(135deg, #2e7d32, #1b5e20)' : 'linear-gradient(135deg, #d32f2f, #c62828)';
 
-    // 2. Render Smart Insights
     let topShop = Object.keys(shopPerformance).reduce((a, b) => shopPerformance[a] > shopPerformance[b] ? a : b, "--");
     let topProd = Object.keys(productPerformance).reduce((a, b) => productPerformance[a] > productPerformance[b] ? a : b, "--");
     document.getElementById('insight-top-shop').textContent = topShop !== "--" ? `${topShop} (රු.${shopPerformance[topShop].toFixed(0)})` : "--";
     document.getElementById('insight-top-product').textContent = topProd !== "--" ? `${topProd} (${productPerformance[topProd]} Qty)` : "--";
 
-    // 3. Smart Warning Alerts Trigger Engine
     triggerSmartAlerts();
 }
 
@@ -465,7 +458,6 @@ function triggerSmartAlerts() {
 
     const stock = calculateCurrentStock();
     
-    // Alert A: Low Stock Trigger
     Object.keys(productsMap).forEach(k => {
         let currentLevel = stock.remainingStock[k] || 0;
         if(currentLevel <= 10) {
@@ -474,7 +466,6 @@ function triggerSmartAlerts() {
         }
     });
 
-    // Alert B: High Return Shop Trigger (>30%)
     let shopDeliveries = {}, shopReturns = {};
     salesData.forEach(s => {
         if(!shopDeliveries[s.shop]) { shopDeliveries[s.shop] = 0; shopReturns[s.shop] = 0; }
@@ -493,7 +484,7 @@ function triggerSmartAlerts() {
     });
 }
 
-// --- CLOUD SERVER DATA SYNC (GOOGLE SHEETS) ---
+// --- CLOUD SERVER DATA SYNC ---
 document.getElementById('cloud-backup-btn').addEventListener('click', async () => {
     const status = document.getElementById('cloud-status');
     if(GOOGLE_SHEETS_WEBAPP_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") {
@@ -510,7 +501,7 @@ document.getElementById('cloud-backup-btn').addEventListener('click', async () =
     try {
         const response = await fetch(GOOGLE_SHEETS_WEBAPP_URL, {
             method: 'POST',
-            mode: 'no-cors', // Standard cross-origin rule bypass
+            mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
@@ -522,7 +513,7 @@ document.getElementById('cloud-backup-btn').addEventListener('click', async () =
     }
 });
 
-// --- EXCEL DOWNLAOD MASTER ---
+// --- EXCEL DOWNLOAD MASTER ---
 document.getElementById('export-btn').addEventListener('click', () => {
     if(salesData.length === 0) return alert("දත්ත නැත!");
     const ws = XLSX.utils.json_to_sheet(salesData);
