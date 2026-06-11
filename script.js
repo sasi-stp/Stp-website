@@ -24,7 +24,9 @@ const salesDateInput = document.getElementById('sales-date');
 const itemTypeSelect = document.getElementById('item-type');
 const shopSelect = document.getElementById('shop-select');
 const filterShopSelect = document.getElementById('filter-shop-select');
+const filterProductSelect = document.getElementById('filter-product-select');
 const filterTimeSelect = document.getElementById('filter-time-select');
+const pnlProductFilterSelect = document.getElementById('pnl-product-filter-select');
 
 const quantityInput = document.getElementById('quantity');
 const returnQuantityInput = document.getElementById('return-quantity');
@@ -68,6 +70,11 @@ function initApp() {
     renderMonthlyPnL();
     updateFilteredAnalytics();
     updateLiveTotal();
+    
+    // Listeners for advanced matrix filtering
+    [filterShopSelect, filterProductSelect, filterTimeSelect].forEach(element => {
+        element.addEventListener('change', updateFilteredAnalytics);
+    });
 }
 
 // --- TABS CONTROLLER ---
@@ -83,10 +90,22 @@ function populateDropdowns() {
     const stockItemSelect = document.getElementById('stock-item-select');
     stockItemSelect.innerHTML = '';
     
+    // Save previous selected values for clean UX update
+    const prevFilterProduct = filterProductSelect.value || "ALL";
+    const prevPnlFilterProduct = pnlProductFilterSelect.value || "ALL";
+
+    filterProductSelect.innerHTML = '<option value="ALL">== සියලුම භාණ්ඩ ==</option>';
+    pnlProductFilterSelect.innerHTML = '<option value="ALL">== සියලුම භාණ්ඩ (මුළු වාර්තාව) ==</option>';
+    
     Object.keys(productsMap).forEach(t => {
         itemTypeSelect.add(new Option(t, t));
         stockItemSelect.add(new Option(t, t));
+        filterProductSelect.add(new Option(t, t));
+        pnlProductFilterSelect.add(new Option(t, t));
     });
+
+    filterProductSelect.value = prevFilterProduct;
+    pnlProductFilterSelect.value = prevPnlFilterProduct;
 }
 
 // --- DYNAMIC STOCK CALCULATION MECHANICS ---
@@ -131,29 +150,28 @@ function getUnitPrice(type) {
     return parseFloat(productsMap[type]) || 0;
 }
 
-// --- FIX: FIXED DYNAMIC PRODUCT REFRESH BUG WITH EXPLICIT CLICK LISTENER ---
-document.getElementById('submit-product-btn').addEventListener('click', () => {
+// --- 🛠️ FIX: ADD PRODUCT WITH CORRECT EVENT PREVENT PREVENTING RELOAD ---
+document.getElementById('add-product-form').addEventListener('submit', (e) => {
+    e.preventDefault();
     const nameInput = document.getElementById('new-prod-name');
     const priceInput = document.getElementById('new-prod-price');
     
     const name = nameInput.value.trim();
     const price = parseFloat(priceInput.value);
     
-    if(!name || isNaN(price)) {
-        alert("⚠️ කරුණාකර වලංගු නමක් සහ මිලක් ඇතුළත් කරන්න!");
-        return;
+    if(name && !isNaN(price)) {
+        productsMap[name] = price;
+        localStorage.setItem('watalappan_products_map', JSON.stringify(productsMap));
+        
+        populateDropdowns();
+        renderProductsSettings();
+        renderStockOverview();
+        updateLiveTotal();
+        
+        nameInput.value = '';
+        priceInput.value = '';
+        alert(`✅ '${name}' සාර්ථකව පද්ධතියට එකතු කරගත්තා!`);
     }
-    
-    productsMap[name] = price;
-    localStorage.setItem('watalappan_products_map', JSON.stringify(productsMap));
-    
-    populateDropdowns();
-    renderProductsSettings();
-    renderStockOverview();
-    updateLiveTotal();
-    
-    nameInput.value = '';
-    priceInput.value = '';
 });
 
 function renderProductsSettings() {
@@ -240,11 +258,11 @@ function showInvoicePreview(rec) {
     document.getElementById('inv-table-body').innerHTML = `
         <tr><td>${rec.item}</td><td>${rec.qty}</td><td>${rec.retQty}</td><td>රු.${rec.total}</td></tr>
     `;
-    document.getElementById('inv-total').textContent = `මුළු මුදල: ਰੁ. ${rec.total.toFixed(2)}`;
+    document.getElementById('inv-total').textContent = `මුළු මුදල: රු. ${rec.total.toFixed(2)}`;
     document.getElementById('inv-paymode').textContent = `ගනුදෙනු ක්‍රමය: ${rec.payMode === 'Credit' ? 'ණය (Credit Book)' : 'මුදල් (Cash)'}`;
 
     document.getElementById('whatsapp-share-btn').onclick = () => {
-        const txt = `*🍮 WATALAPPAN INVOICE*\n-------------------------\n*කඩය:* ${rec.shop}\n*දිනය:* ${rec.date}\n*වර්ගය:* ${rec.item}\n*බෙදාහැරීම:* ${rec.qty}\n*රිටන්:* ${rec.retQty}\n*විකුණුම්:* ${rec.netQty}\n-------------------------\n*මුළු ශුද්ධ මුදල: රු.${rec.total}*\n*ක්‍රමය:* ${rec.payMode === 'Credit' ? 'ණයට' : 'මුදල් ලැබුණා'}\n\nස්תූතියි!`;
+        const txt = `*🍮 WATALAPPAN INVOICE*\n-------------------------\n*කඩය:* ${rec.shop}\n*දිනය:* ${rec.date}\n*වර්ගය:* ${rec.item}\n*බෙදාහැරීම:* ${rec.qty}\n*රිටන්:* ${rec.retQty}\n*විකුණුම්:* ${rec.netQty}\n-------------------------\n*මුළු ශුද්ධ මුදල: රු.${rec.total}*\n*ක්‍රමය:* ${rec.payMode === 'Credit' ? 'ණයට' : 'මුදල් ලැබුණා'}\n\nස්තූතියි!`;
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(txt)}`, '_blank');
     };
 }
@@ -270,33 +288,43 @@ window.deleteRecord = function(id) {
     }
 };
 
-// --- CREDIT OUTSTATIONS ---
-function calculateShopCredit(shopName) {
-    let totalDebt = 0;
-    salesData.forEach(item => {
-        if(item.shop === shopName && item.payMode === 'Credit') totalDebt += item.total;
-    });
-    return totalDebt;
-}
-
+// --- ✨ CREDIT MAP BY SHOP AND PRODUCT DISPLAY ---
 function renderCreditTable() {
-    const creditBody = document.getElementById('credit-table-body'); creditBody.innerHTML = '';
-    shops.forEach(shop => {
-        let debt = calculateShopCredit(shop);
-        if(debt > 0) {
-            creditBody.innerHTML += `
-                <tr>
-                    <td><b>${shop}</b></td>
-                    <td style="color:red; font-weight:bold;">රු. ${debt.toFixed(2)}</td>
-                    <td><button class="btn btn-secondary" style="padding:4px 8px; font-size:0.75rem; background-color:#2e7d32;" onclick="settleCredit('${shop}')">Mark as Paid</button></td>
-                </tr>`;
+    const creditBody = document.getElementById('credit-table-body'); 
+    creditBody.innerHTML = '';
+    
+    // Group outstanding tokens by both shop and item dynamically
+    let creditTracking = {};
+
+    salesData.forEach(item => {
+        if(item.payMode === 'Credit' && item.total > 0) {
+            let key = `${item.shop}__${item.item}`;
+            if(!creditTracking[key]) {
+                creditTracking[key] = { shop: item.shop, item: item.item, debt: 0 };
+            }
+            creditTracking[key].debt += item.total;
         }
     });
+
+    Object.keys(creditTracking).forEach(key => {
+        let entry = creditTracking[key];
+        creditBody.innerHTML += `
+            <tr>
+                <td><b>${entry.shop}</b></td>
+                <td><span class="product-tag" style="background:#efebe9; padding:3px 6px; border-radius:4px; font-weight:600; color:#5d4037;">🍮 ${entry.item}</span></td>
+                <td style="color:red; font-weight:bold;">රු. ${entry.debt.toFixed(2)}</td>
+                <td><button class="btn btn-secondary" style="padding:4px 8px; font-size:0.75rem; background-color:#2e7d32;" onclick="settleSpecificCredit('${entry.shop}', '${entry.item}')">Mark as Paid</button></td>
+            </tr>`;
+    });
 }
 
-window.settleCredit = function(shopName) {
-    if(confirm(`${shopName} කඩෙන් සියලුම ණය මුදල් ලැබුණාද?`)) {
-        salesData.forEach(item => { if(item.shop === shopName && item.payMode === 'Credit') item.payMode = 'Cash'; });
+window.settleSpecificCredit = function(shopName, itemName) {
+    if(confirm(`${shopName} කඩෙන් '${itemName}' සඳහා වූ සියලුම හිඟ ණය ලැබුණාද?`)) {
+        salesData.forEach(item => { 
+            if(item.shop === shopName && item.item === itemName && item.payMode === 'Credit') {
+                item.payMode = 'Cash'; 
+            }
+        });
         localStorage.setItem('watalappan_sales', JSON.stringify(salesData));
         renderSalesTable(); renderCreditTable(); renderMonthlyPnL(); updateFilteredAnalytics();
     }
@@ -369,21 +397,28 @@ window.deleteExpense = function(id) {
     renderExpenseTable(); renderMonthlyPnL(); updateFilteredAnalytics();
 };
 
-// --- MONTHLY PROFIT & LOSS GENERATOR ---
+// --- ✨ UPGRADED: MONTHLY P&L MATRIX (TOTAL VS PRODUCT SELECTIVE) ---
 function renderMonthlyPnL() {
     const pnlBody = document.getElementById('pnl-table-body');
     pnlBody.innerHTML = '';
     
+    const selectedPnlProduct = pnlProductFilterSelect.value || "ALL";
     let monthlyData = {};
 
     salesData.forEach(s => {
-        let m = s.date.substring(0, 7);
+        // Filter by product type if dynamic product selection is active
+        if(selectedPnlProduct !== "ALL" && s.item !== selectedPnlProduct) return;
+
+        let m = s.date.substring(0, 7); // "YYYY-MM"
         if(!monthlyData[m]) monthlyData[m] = { income: 0, loss: 0, exp: 0 };
         monthlyData[m].income += s.total;
         monthlyData[m].loss += s.returnLoss;
     });
 
+    // Operational expenses apply dynamically 
+    // If filtering specific product, general operational expenses are omitted to see true product metrics
     expenses.forEach(e => {
+        if(selectedPnlProduct !== "ALL") return; 
         let m = e.date.substring(0, 7);
         if(!monthlyData[m]) monthlyData[m] = { income: 0, loss: 0, exp: 0 };
         monthlyData[m].exp += e.amount;
@@ -403,47 +438,60 @@ function renderMonthlyPnL() {
     });
 }
 
-// --- BUSINESS INTELLIGENCE & ALERTS ENGINE ---
+// --- ✨ UPGRADED: MULTI-MATRIX ADVANCED FILTER ENGINE ---
 function updateFilteredAnalytics() {
     const targetShop = filterShopSelect.value;
+    const targetProduct = filterProductSelect.value; // Product selective filtering mapping
     const timePeriod = filterTimeSelect.value;
     const todayStr = new Date().toISOString().split('T')[0];
 
-    let soldQty = 0, totalIncome = 0, returnQty = 0, returnLoss = 0, totalExp = 0;
+    let soldQty = 0, totalIncome = 0, returnQty = 0, returnLoss = 0, totalExp = 0, filteredOutstanding = 0;
     
     let shopPerformance = {};
     let productPerformance = {};
 
     salesData.forEach(item => {
+        // Base telemetry calculation metrics
         if(!shopPerformance[item.shop]) shopPerformance[item.shop] = 0;
         shopPerformance[item.shop] += item.total;
 
         if(!productPerformance[item.item]) productPerformance[item.item] = 0;
         productPerformance[item.item] += item.netQty;
 
+        // Apply Core Filters (Shop Name + Product Type + Time Scale)
         if (targetShop !== "ALL" && item.shop !== targetShop) return;
+        if (targetProduct !== "ALL" && item.item !== targetProduct) return;
         if (timePeriod === "daily" && item.date !== todayStr) return;
 
-        soldQty += item.netQty; totalIncome += item.total; returnQty += item.retQty; returnLoss += item.returnLoss;
+        soldQty += item.netQty; 
+        totalIncome += item.total; 
+        returnQty += item.retQty; 
+        returnLoss += item.returnLoss;
+
+        if (item.payMode === 'Credit') {
+            filteredOutstanding += item.total;
+        }
     });
 
+    // Expenses mapped into structural data
+    // General operational expenses omitted when item-wise cross checking is ongoing
     expenses.forEach(ex => {
+        if (targetProduct !== "ALL") return; 
         if (timePeriod === "daily" && ex.date !== todayStr) return;
         totalExp += ex.amount;
     });
-
-    let grandTotalOutstanding = 0;
-    shops.forEach(s => { grandTotalOutstanding += calculateShopCredit(s); });
 
     const netProfit = totalIncome - totalExp;
     document.getElementById('f-sold-qty').textContent = soldQty;
     document.getElementById('f-total-income').textContent = `රු. ${totalIncome.toFixed(2)}`;
     document.getElementById('f-return-qty').textContent = `${returnQty}`;
     document.getElementById('f-return-loss').textContent = `අලාභය: රු. ${returnLoss.toFixed(0)}`;
-    document.getElementById('f-total-outstanding').textContent = `රු. ${grandTotalOutstanding.toFixed(2)}`;
+    document.getElementById('f-total-outstanding').textContent = `රු. ${filteredOutstanding.toFixed(2)}`;
     document.getElementById('f-net-profit').textContent = `රු. ${netProfit.toFixed(2)}`;
+    
     document.getElementById('f-net-profit').parentElement.style.background = netProfit >= 0 ? 'linear-gradient(135deg, #2e7d32, #1b5e20)' : 'linear-gradient(135deg, #d32f2f, #c62828)';
 
+    // Update AI Insights Dashboard Panel
     let topShop = Object.keys(shopPerformance).reduce((a, b) => shopPerformance[a] > shopPerformance[b] ? a : b, "--");
     let topProd = Object.keys(productPerformance).reduce((a, b) => productPerformance[a] > productPerformance[b] ? a : b, "--");
     document.getElementById('insight-top-shop').textContent = topShop !== "--" ? `${topShop} (රු.${shopPerformance[topShop].toFixed(0)})` : "--";
@@ -479,7 +527,7 @@ function triggerSmartAlerts() {
         if(d > 0 && (r / d) >= 0.30) {
             let pct = ((r / d) * 100).toFixed(0);
             alertsContainer.innerHTML += `
-                <div class="alert-banner danger-alert">🚨 <b>අධික Return අවදානම:</b> '${shop}' කඩේ Return ප්‍රතිශතය ඉතා ඉහළයි (${pct}%)! බඩු දෙන ප්‍රමාණය සීමා කරන්න.</div>`;
+                <div class="alert-banner danger-alert">🚨 <b>අධික Return අවදානම:</b> '${shop}' කඩේ Return ප්‍රතිශතය ඉතා ඉහළයි (${pct}%)! බඩු දෙන專 ප්‍රමාණය සීමා කරන්න.</div>`;
         }
     });
 }
