@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watalappan Business Tabs App</title>
+    <title>Watalappan Super Business ERP</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -24,19 +24,21 @@
     <div id="app-container" class="hidden animate-slide-up">
         
         <header class="app-header">
-            <h1>🍮 වටලප්පන් පද්ධතිය</h1>
+            <h1>🍮 වටලප්පන් මහා ව්‍යාපාරික පද්ධතිය</h1>
             <button id="logout-btn" class="btn btn-danger">Log Out</button>
         </header>
 
         <div class="tabs-nav">
             <button class="tab-btn active" onclick="switchTab('tab-analytics')">📈 වාර්තා</button>
             <button class="tab-btn" onclick="switchTab('tab-entry')">📝 ඇතුළත් කිරීම</button>
-            <button class="tab-btn" onclick="switchTab('tab-data')">📊 සටහන් & මිල</button>
+            <button class="tab-btn" onclick="switchTab('tab-credit')">💳 ණය පොත</button>
+            <button class="tab-btn" onclick="switchTab('tab-stock-expense')">📦 තොග & වියදම්</button>
+            <button class="tab-btn" onclick="switchTab('tab-settings')">⚙️ සැකසුම්</button>
         </div>
 
         <div id="tab-analytics" class="tab-content active-content">
             <div class="card filter-dashboard">
-                <h3>🏪 කඩවල් අනුව විකුණුම් විශ්ලේෂණය</h3>
+                <h3>🏪 කඩවල් සහ ලාභ විශ්ලේෂණය</h3>
                 <div class="filter-controls">
                     <div class="form-group">
                         <label>කඩය තෝරන්න:</label>
@@ -63,12 +65,14 @@
                         <p id="f-total-income">රු. 0.00</p>
                     </div>
                     <div class="summary-box filter-return">
-                        <h4>Return වූ ප්‍රමාණය</h4>
+                        <h4>Return ප්‍රමාණය & අලාභය</h4>
                         <p id="f-return-qty">0</p>
+                        <small id="f-return-loss">අලාභය: රු. 0.00</small>
                     </div>
-                    <div class="summary-box filter-loss">
-                        <h4>Return අලාභය (Loss)</h4>
-                        <p id="f-return-loss">රු. 0.00</p>
+                    <div class="summary-box filter-profit">
+                        <h4>පිරිසිදු ශුද්ධ ලාභය (Net Profit)</h4>
+                        <p id="f-net-profit">රු. 0.00</p>
+                        <small style="opacity:0.8;">(ආදායම - වියදම් - රිටන් අලාභ)</small>
                     </div>
                 </div>
             </div>
@@ -84,27 +88,23 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="item-type">වර්ගය:</label>
-                        <select id="item-type" required>
-                            <option value="වටලප්පන්">වටලප්පන්</option>
-                            <option value="යෝගට්">යෝගට්</option>
-                            <option value="ජෙලි යෝගට්">ජෙලි යෝගට්</option>
-                            <option value="කැරමල් පුඩිං">කැරමල් පුඩිං</option>
-                        </select>
+                        <label for="shop-select">කඩය (Shop Name):</label>
+                        <select id="shop-select" required></select>
                     </div>
 
                     <div class="form-group">
-                        <label for="shop-select">කඩය:</label>
-                        <select id="shop-select" required></select>
+                        <label for="item-type">වර්ගය (Item Type):</label>
+                        <select id="item-type" required></select>
                     </div>
 
                     <div class="form-group-row">
                         <div class="form-group" style="flex: 1;">
-                            <label for="quantity">Qty:</label>
+                            <label for="quantity">දැමූ ප්‍රමාණය (Qty):</label>
                             <input type="number" id="quantity" min="1" value="1" required>
+                            <small id="stock-available-lbl" style="color: blue; font-weight: bold; margin-top: 2px;">තොගයේ ඇත: 0</small>
                         </div>
                         <div class="form-group" style="flex: 1;">
-                            <label for="return-quantity">Return:</label>
+                            <label for="return-quantity">Return ප්‍රමාණය:</label>
                             <input type="number" id="return-quantity" min="0" value="0" required>
                         </div>
                     </div>
@@ -112,26 +112,102 @@
                     <div class="form-group">
                         <label>ගනුදෙනු වර්ගය:</label>
                         <div class="radio-group">
-                            <label class="radio-label">
-                                <input type="radio" name="payment-method" value="Cash" checked> මුදල් (Cash)
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="payment-method" value="Credit"> ණය (Credit)
-                            </label>
+                            <label class="radio-label"><input type="radio" name="payment-method" value="Cash" checked> මුදල් (Cash)</label>
+                            <label class="radio-label"><input type="radio" name="payment-method" value="Credit"> ණය (Credit)</label>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>ශුද්ධ මුළු මුදල (Net Total):</label>
-                        <div id="total-price-display" class="total-highlight">රු. 150.00</div>
+                        <div id="total-price-display" class="total-highlight">රු. 0.00</div>
                     </div>
 
-                    <button type="submit" class="btn btn-success">දත්ත ඇතුළත් කරන්න (Save)</button>
+                    <button type="submit" class="btn btn-success">දත්ත ඇතුළත් කර බිල සාදන්න</button>
                 </form>
+            </div>
+
+            <div id="invoice-card" class="card hidden">
+                <div id="invoice-print-area">
+                    <h3 style="text-align:center; color:#6d4c41;">🍮 WATALAPPAN INVOICE</h3>
+                    <p style="text-align:center; font-size:0.85rem;" id="inv-date-shop"></p>
+                    <hr style="margin:10px 0; border:1px dashed #ccc;">
+                    <table style="min-width:100%; font-size:0.85rem;">
+                        <thead><tr><th>විස්තරය</th><th>Qty</th><th>Ret</th><th>මුදල</th></tr></thead>
+                        <tbody id="inv-table-body"></tbody>
+                    </table>
+                    <hr style="margin:10px 0; border:1px dashed #ccc;">
+                    <p style="text-align:right; font-weight:bold; font-size:1.1rem;" id="inv-total"></p>
+                    <p style="text-align:center; font-size:0.8rem; margin-top:5px;" id="inv-paymode"></p>
+                </div>
+                <button id="whatsapp-share-btn" class="btn btn-secondary" style="width:100%; margin-top:10px; background-color:#25D366;">💬 WhatsApp මඟින් මුදලාලිට යවන්න</button>
             </div>
         </div>
 
-        <div id="tab-data" class="tab-content">
+        <div id="tab-credit" class="tab-content">
+            <div class="card">
+                <h3>💳 කඩවල් අනුව ලැබීමට ඇති මුළු ණය (Credit Balance)</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>කඩේ නම</th>
+                                <th>හිඟ ණය මුදල (Outstanding)</th>
+                                <th>ක්‍රියාමාර්ගය</th>
+                            </tr>
+                        </thead>
+                        <tbody id="credit-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-stock-expense" class="tab-content">
+            <div class="card">
+                <h3>📦 නිෂ්පාදන තොග ඇතුළත් කිරීම (Daily Stock Intake)</h3>
+                <form id="stock-form" class="form-group-row" style="align-items: flex-end;">
+                    <div class="form-group" style="flex:1;">
+                        <label>වර්ගය:</label>
+                        <select id="stock-item-select"></select>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>හදපු ප්‍රමාණය (Qty):</label>
+                        <input type="number" id="stock-qty-input" min="1" required>
+                    </div>
+                    <button type="submit" class="btn btn-success" style="width:auto; height:45px; margin-bottom:12px;">Add Stock</button>
+                </form>
+                <div class="table-responsive">
+                    <table style="min-width:100%;">
+                        <thead><tr><th>පැණිරස වර්ගය</th><th>වත්මන් තොගය (Current Available Stock)</th></tr></thead>
+                        <tbody id="stock-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>⛽ දෛනික වියදම් ඇතුළත් කිරීම (Expense Tracker)</h3>
+                <form id="expense-form">
+                    <div class="form-group-row">
+                        <div class="form-group" style="flex:1.5;">
+                            <label>වියදම් විස්තරය (උදා: කිරි, ගෑස්, තෙල්):</label>
+                            <input type="text" id="expense-desc" placeholder="සීනි සහ කිරි මිලදී ගැනීම" required>
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>මුදල (රු.):</label>
+                            <input type="number" id="expense-amount" min="1" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-secondary" style="width:100%;">වියදම ඇතුළත් කරන්න</button>
+                </form>
+                <div class="table-responsive" style="margin-top:15px;">
+                    <table style="min-width:100%;">
+                        <thead><tr><th>විස්තරය</th><th>මුදල (රු.)</th><th>මකන්න</th></tr></thead>
+                        <tbody id="expense-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-settings" class="tab-content">
             <div class="grid-container">
                 <div class="sidebar">
                     <div class="card">
@@ -141,9 +217,8 @@
                         <div class="form-group"><label>ජෙලි යෝගට් (රු.):</label><input type="number" id="price-jelly" value="90"></div>
                         <div class="form-group"><label>කැරමල් පුඩිං (රු.):</label><input type="number" id="price-caramel" value="180"></div>
                     </div>
-
                     <div class="card">
-                        <h3>🏪 කඩවල් (Shops)</h3>
+                        <h3>🏪 කඩවල් ලියාපදිංචිය</h3>
                         <div class="form-group row-group">
                             <input type="text" id="new-shop-name" placeholder="කඩේ නම">
                             <button id="add-shop-btn" class="btn btn-secondary">Add</button>
@@ -151,27 +226,17 @@
                         <ul id="shop-list"></ul>
                     </div>
                 </div>
-
                 <div class="main-content">
                     <div class="card">
                         <div class="table-header">
-                            <h3>📊 ඇතුළත් කළ දත්ත සටහන</h3>
-                            <button id="export-btn" class="btn btn-export">📥 Excel බාගත කරන්න</button>
+                            <h3>📊 සියලුම විකුණුම් ඉතිහාසය</h3>
+                            <button id="export-btn" class="btn btn-export">📥 Excel වාර්තාවක් බාගන්න</button>
                         </div>
                         <div class="table-responsive">
                             <table id="sales-table">
                                 <thead>
                                     <tr>
-                                        <th>දිනය</th>
-                                        <th>කඩේ</th>
-                                        <th>වර්ගය</th>
-                                        <th>Qty</th>
-                                        <th>Ret</th>
-                                        <th>විකුණුම්</th>
-                                        <th>වර්ගය</th>
-                                        <th>මිල</th>
-                                        <th>මුදල</th>
-                                        <th>මකන්න</th>
+                                        <th>දිනය</th><th>කඩේ</th><th>වර්ගය</th><th>Qty</th><th>Ret</th><th>විකුණුම්</th><th>වර්ගය</th><th>මුදල</th><th>මකන්න</th>
                                     </tr>
                                 </thead>
                                 <tbody id="sales-table-body"></tbody>
