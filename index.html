@@ -40,15 +40,12 @@
         <div id="smart-alerts-container"></div>
 
         <div id="tab-analytics" class="tab-content active-content">
-            <div id="shop-credit-alert" class="total-highlight" style="margin-bottom: 15px; color: #c62828; background: #ffebee; font-size: 1.1rem; border: 1px solid #ffcdd2;">
-                තෝරන ලද කඩෙන් ලැබීමට ඇති ණය: <b>රු. 0.00</b>
-            </div>
-
-            <div class="card" style="border-left: 5px solid #673ab7; background: #f3e5f5;">
+            
+            <div class="card" style="border-left: 5px solid #673ab7; background: #f3e5f5; margin-top: 5px;">
                 <h3 style="color:#673ab7;">💡 ව්‍යාපාරික විශ්ලේෂණ (Smart Insights)</h3>
                 <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px; font-size:0.9rem;">
                     <p>🥇 වැඩිම ආදායමක් දුන් කඩය: <span id="insight-top-shop" style="font-weight:bold; color:#2e7d32;">--</span></p>
-                    <p>🔥 වැඩිපුරම විකිනෙන භාණ්ඩය: <span id="insight-top-product" style="font-weight:bold; color:#0288d1;">--</span></p>
+                    <p>🔥鋪 වැඩිපුරම විකිනෙන භාණ්ඩය: <span id="insight-top-product" style="font-weight:bold; color:#0288d1;">--</span></p>
                 </div>
             </div>
 
@@ -56,7 +53,7 @@
                 <h3>🏪 කඩවල් සහ ලාභ විශ්ලේෂණය</h3>
                 <div class="filter-controls">
                     <div class="form-group">
-                        <label>ಕඩය තෝරන්න:</label>
+                        <label>කඩය තෝරන්න:</label>
                         <select id="filter-shop-select"></select>
                     </div>
                     <div class="form-group">
@@ -82,7 +79,7 @@
                     <div class="summary-box filter-return">
                         <h4>Return ප්‍රමාණය & අලාභය</h4>
                         <p id="f-return-qty">0</p>
-                        <small id="f-return-loss">අලාභය: රു. 0.00</small>
+                        <small id="f-return-loss">අලාභය: රু. 0.00</small>
                     </div>
                     <div class="summary-box filter-outstanding">
                         <h4>ලැබීමට ඇති මුළු ණය</h4>
@@ -120,7 +117,7 @@
                     <div class="form-group-row">
                         <div class="form-group" style="flex: 1;">
                             <label for="quantity">දැමූ ප්‍රමාණය (Qty):</label>
-                            <input type="number" id="quantity" min="1" value="1" required>
+                            <input type="number" id="quantity" min="0" value="0" required>
                             <small id="stock-available-lbl" style="color: blue; font-weight: bold; margin-top: 2px;">තොගයේ ඇත: 0</small>
                         </div>
                         <div class="form-group" style="flex: 1;">
@@ -271,7 +268,7 @@
                             <label style="font-size:0.75rem;">අලුත් භාණ්ඩයක් එකතු කරන්න:</label>
                             <div class="form-group"><input type="text" id="new-prod-name" placeholder="උදා: චොකලට් පුඩිං" required></div>
                             <div class="form-group"><input type="number" id="new-prod-price" placeholder="මිල (රු.)" required></div>
-                            <button type="submit" class="btn btn-secondary" style="background:#e91e63; padding:5px 10px; font-size:0.8rem; width:100%;">භාණ්ඩය ඇතුළත් කරන්න</button>
+                            <button type="button" id="submit-product-btn" class="btn btn-secondary" style="background:#e91e63; padding:5px 10px; font-size:0.8rem; width:100%;">භාණ්ඩය ඇතුළත් කරන්න</button>
                         </form>
                         <div class="table-responsive">
                             <table style="min-width:100%; font-size:0.8rem;">
