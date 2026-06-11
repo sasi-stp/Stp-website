@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watalappan Advanced Sales Dashboard</title>
+    <title>Watalappan Business Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="login-container" class="card fade-in">
         <h2>🔒 ඇතුළු වන්න (Login)</h2>
-        <p style="color: #666; margin-bottom: 20px;">ව්‍යාපාරික දත්ත බැලීමට කරුණාකර මුරපදය ඇතුළත් කරන්න.</p>
+        <p style="color: #666; margin-bottom: 20px; font-size: 0.9rem;">ව්‍යාපාරික දත්ත බැලීමට කරුණාකර මුරපදය ඇතුළත් කරන්න.</p>
         <form id="login-form">
             <div class="form-group">
                 <label for="password">මුරපදය (Password):</label>
                 <input type="password" id="password" placeholder="••••••••" required>
             </div>
-            <button type="submit" class="btn">Login</button>
+            <button type="submit" class="btn btn-success" style="margin-top: 10px;">Login</button>
             <p id="login-error" class="error-msg"></p>
         </form>
     </div>
@@ -24,12 +24,12 @@
     <div id="app-container" class="hidden animate-slide-up">
         
         <header class="app-header">
-            <h1>🍮 වටලප්පන් සහ අතුරුපස විකුණුම් පද්ධතිය</h1>
+            <h1>🍮 වටලප්පන් විකුණුම් පද්ධතිය</h1>
             <button id="logout-btn" class="btn btn-danger">Log Out</button>
         </header>
 
         <div class="card filter-dashboard">
-            <h3>🏪 කඩවල් අනුව විකුණුම් විශ්ලේෂණය (Shop-wise Analytics)</h3>
+            <h3>🏪 කඩවල් අනුව විකුණුම් විශ්ලේෂණය</h3>
             <div class="filter-controls">
                 <div class="form-group">
                     <label>කඩය තෝරන්න:</label>
@@ -95,6 +95,100 @@
                         <input type="text" id="new-shop-name" placeholder="කඩේ නම">
                         <button id="add-shop-btn" class="btn btn-secondary">Add</button>
                     </div>
+                    <ul id="shop-list"></ul>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="card">
+                    <h3>📝 අලෙවිය සහ රිටන් ඇතුළත් කිරීම</h3>
+                    <form id="sales-form">
+                        <div class="form-group">
+                            <label for="sales-date">දිනය (Date):</label>
+                            <input type="date" id="sales-date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="item-type">වර්ගය:</label>
+                            <select id="item-type" required>
+                                <option value="වටලප්පන්">වටලප්පන්</option>
+                                <option value="යෝගට්">යෝගට්</option>
+                                <option value="ජෙලි යෝගට්">ජෙලි යෝගට්</option>
+                                <option value="කැරමල් පුඩිං">කැරමල් පුඩිං</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="shop-select">කඩය:</label>
+                            <select id="shop-select" required></select>
+                        </div>
+
+                        <div class="form-group-row">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="quantity">Qty:</label>
+                                <input type="number" id="quantity" min="1" value="1" required>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="return-quantity">Return:</label>
+                                <input type="number" id="return-quantity" min="0" value="0" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>ගනුදෙනු වර්ගය:</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="payment-method" value="Cash" checked> මුදල් ලැබුණා (Cash)
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="payment-method" value="Credit"> ණයට (Credit)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>ශුද්ධ මුළු මුදල (Net Total):</label>
+                            <div id="total-price-display" class="total-highlight">රු. 150.00</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">දත්ත ඇතුළත් කරන්න (Save)</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="table-header">
+                        <h3>📊 ඇතුළත් කළ දත්ත සටහන</h3>
+                        <button id="export-btn" class="btn btn-export">📥 Excel බාගත කරගන්න</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="sales-table">
+                            <thead>
+                                <tr>
+                                    <th>දිනය</th>
+                                    <th>කඩේ නම</th>
+                                    <th>වර්ගය</th>
+                                    <th>Qty</th>
+                                    <th>Return</th>
+                                    <th>විකුණුම්</th>
+                                    <th>වර්ගය</th>
+                                    <th>මිල</th>
+                                    <th>මුළු මුදල</th>
+                                    <th>මකන්න</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sales-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>                    </div>
                     <ul id="shop-list"></ul>
                 </div>
             </div>
