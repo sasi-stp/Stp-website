@@ -3,162 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watalappan Smart Enterprise ERP v3.3</title>
+    <title>Watalappan Smart Enterprise ERP v3.4</title>
     <style>
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Arial, sans-serif;
-        }
+        /* --- 🎨 කලින් තිබුණු ලස්සනම DESKTOP STYLE එක (ෆෝන් එකටත් ගැළපෙන ලෙස) --- */
         body {
+            font-family: 'Segoe UI', Arial, sans-serif;
             background-color: #f4f6f9;
             color: #333;
             margin: 0;
-            padding: 10px;
+            padding: 20px;
         }
         .container {
-            max-width: 100%;
+            max-width: 1200px;
             margin: 0 auto;
         }
-        .header-area {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #fff;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .header-area h2 {
-            font-size: 1.1rem;
-            margin: 0;
+        h1, h2, h3 {
             color: #5c3a21;
         }
         .card {
             background: #fff;
-            padding: 15px;
-            margin-bottom: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
             border-radius: 8px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             border-left: 5px solid #8d6e63;
         }
-        h3 {
-            font-size: 1rem;
-            color: #5c3a21;
-            margin-top: 0;
-            margin-bottom: 15px;
-            border-bottom: 1px dashed #e0e0e0;
-            padding-bottom: 8px;
-        }
-        .form-group-stack {
+        
+        /* 📱 TABLET/DESKTOP GRID (කලින් වගේම ලස්සනට පේන්න) */
+        .grid {
             display: flex;
-            flex-direction: column;
-            gap: 12px;
+            flex-wrap: wrap;
+            gap: 15px;
             margin-bottom: 15px;
         }
-        .form-field {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
+        .col {
+            flex: 1;
+            min-width: 250px; /* ෆෝන් එකේදී පේළියට හැරේ, ටැබ්/ලැප්ටොප් එකේදී පැත්තට ලස්සනට පේන්න */
         }
+        
         label {
+            display: block;
             font-weight: bold;
             margin-bottom: 5px;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: #4e342e;
         }
         input, select, textarea {
-            width: 100% !important;
-            padding: 12px;
-            border: 1px solid #bcaaa4;
-            border-radius: 6px;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
             font-size: 0.95rem;
-            background-color: #fff;
-            height: 45px;
         }
+        
+        /* BUTTONS */
         .btn {
             background-color: #8d6e63;
             color: white;
             border: none;
-            padding: 12px 18px;
+            padding: 10px 20px;
             font-size: 0.95rem;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
-            width: 100%;
-            text-align: center;
-            margin-bottom: 8px;
             display: inline-block;
+            text-align: center;
         }
+        .btn:hover { background-color: #70554c; }
+        .btn-danger { background-color: #e53935; }
+        .btn-danger:hover { background-color: #c62828; }
         .btn-success { background-color: #43a047; }
-        .btn-danger { background-color: #e53935; width: auto; padding: 6px 12px; }
+        .btn-success:hover { background-color: #2e7d32; }
         
+        /* SCROLLABLE TABLES (කලින් වගේම ලොකු ටේබල්ස් - හැබැයි ෆෝන් එකේදී පැත්තට Scroll කරන්න පුළුවන්) */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            margin-top: 10px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 500px;
+            margin-top: 15px;
+            background: #fff;
+            min-width: 600px; /* කලින් තිබුණු ලොකු ලස්සන ටේබල් එකමයි */
         }
         th, td {
             border: 1px solid #e0e0e0;
-            padding: 10px 8px;
+            padding: 12px 10px;
             text-align: left;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
         }
         th { background-color: #efebe9; color: #4e342e; }
+        tr:nth-child(even) { background-color: #fafafa; }
         
-        .tabs {
+        /* TABS (කලින් වගේම ලස්සනට පැත්තට තියෙන ඒවා) */
+        .tabs { 
             display: flex;
             overflow-x: auto;
-            white-space: nowrap;
             gap: 5px;
-            margin-bottom: 15px;
+            margin-bottom: 20px; 
             padding-bottom: 5px;
-            -webkit-overflow-scrolling: touch;
         }
         .tab-btn {
-            padding: 10px 16px;
+            padding: 12px 24px;
             background: #e0e0e0;
             border: none;
             cursor: pointer;
             font-weight: bold;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            flex-shrink: 0;
+            border-radius: 4px 4px 0 0;
+            white-space: nowrap;
         }
         .tab-btn.active { background: #8d6e63; color: white; }
         .hidden { display: none !important; }
-
+        
+        /* MULTI ITEM BOX (කලින් වගේම ලස්සන රෝස පාට බොක්ස් එක) */
         .item-row-box {
             background: #fbe9e7;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 12px;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
             border: 1px solid #ffccbc;
         }
-        .item-row-grid {
+        .item-grid {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .qty-row {
-            display: flex;
-            gap: 10px;
-        }
-        .qty-row .form-field {
-            flex: 1;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
         }
         
+        /* LOGIN PAGE */
         .login-screen {
-            max-width: 360px;
-            margin: 60px auto;
+            max-width: 400px;
+            margin: 100px auto;
             background: white;
-            padding: 25px;
+            padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             text-align: center;
@@ -170,41 +150,41 @@
 
     <div id="login-block" class="login-screen">
         <h2>🍮 වටලප්පන් ERP - Login</h2>
-        <p style="color: #666; font-size: 0.85rem;">කරුණාකර රහස්පදය ඇතුළත් කරන්න</p>
-        <div style="margin: 20px 0; text-align: left;" class="form-field">
+        <p style="color: #666; font-size: 0.9rem;">කරුණාකර රහස්පදය ඇතුළත් කරන්න</p>
+        <div style="margin: 20px 0; text-align: left;">
             <label>Password / මුද්‍රපදය:</label>
             <input type="password" id="login-pass" placeholder="Enter Password" style="text-align: center;">
         </div>
-        <button class="btn btn-success" onclick="checkLogin()">ඇතුළු වන්න (Login)</button>
+        <button class="btn btn-success" style="width: 100%; padding: 12px;" onclick="checkLogin()">ඇතුළු වන්න (Login)</button>
         <p id="login-err" style="color: red; font-weight: bold; margin-top: 10px; display: none;">❌ වැරදි මුද්‍රපදයක්!</p>
     </div>
 
     <div id="main-system-block" class="container hidden">
-        <div class="header-area">
-            <h2>🍮 වටලප්පන් ERP v3.3</h2>
-            <button class="btn btn-danger" onclick="logout()">🔒 Logout</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+            <h2>🍮 වටලප්පන් ස්මාර්ට් ව්‍යාපාරික පද්ධතිය v3.4</h2>
+            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.85rem;" onclick="logout()">🔒 Logout</button>
         </div>
         
         <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('tab-sales')">📝 බිල්පත් (Invoicing)</button>
-            <button class="tab-btn" onclick="showTab('tab-stock')">📦 තොග & Wastage</button>
-            <button class="tab-btn" onclick="showTab('tab-shops')">🏪 කඩවල් & මිල</button>
+            <button class="tab-btn active" onclick="showTab('tab-sales')">📝 බහු-භාණ්ඩ විකුණුම් & බිල්පත්</button>
+            <button class="tab-btn" onclick="showTab('tab-stock')">📦 නිෂ්පාදන තොග & Wastage</button>
+            <button class="tab-btn" onclick="showTab('tab-shops')">🏪 කඩවල් සහ මිල පාලනය</button>
             <button class="tab-btn" onclick="showTab('tab-expenses')">⛽ දෛනික වියදම්</button>
         </div>
 
         <div id="tab-sales" class="tab-content">
             <div class="card">
-                <h3>📝 නව විකුණුම් බිල්පත (Multi-Item)</h3>
-                <div class="form-group-stack">
-                    <div class="form-field">
+                <h3>📝 නව විකුණුම් බිල්පත (Multi-Item Invoicing)</h3>
+                <div class="grid">
+                    <div class="col">
                         <label>දිනය:</label>
                         <input type="date" id="sales-date">
                     </div>
-                    <div class="form-field">
+                    <div class="col">
                         <label>කඩය තෝරන්න:</label>
                         <select id="sales-shop-select"></select>
                     </div>
-                    <div class="form-field">
+                    <div class="col">
                         <label>ගනුදෙනු ක්‍රමය:</label>
                         <select id="sales-pay-mode">
                             <option value="Cash">මුදල් (Cash)</option>
@@ -215,28 +195,31 @@
 
                 <div id="invoice-items-container"></div>
                 
-                <button class="btn" style="background-color: #a1887f;" onclick="addInvoiceItemRow()">➕ තවත් භාණ්ඩයක් එකතු කරන්න</button>
-                <button class="btn btn-success" onclick="generateInvoiceInvoice()">📄 බිල්පත සහ දත්ත සුරකින්න</button>
+                <div style="margin-top: 15px;">
+                    <button class="btn" style="background-color: #a1887f;" onclick="addInvoiceItemRow()">➕ තවත් භාණ්ඩයක් එකතු කරන්න</button>
+                    <button class="btn btn-success" style="float: right;" onclick="generateInvoiceInvoice()">📄 බිල්පත සහ දත්ත සුරකින්න</button>
+                    <div style="clear: both;"></div>
+                </div>
             </div>
 
             <div id="pdf-preview-card" class="card hidden">
                 <h3>📄 නිපදවූ බිල්පත (Invoice Preview)</h3>
-                <div id="invoice-pdf-area" style="padding: 15px; border: 1px solid #ccc; background: white; max-width: 100%; margin: 0 auto;">
-                    <h2 style="text-align: center; margin: 0; color: #5c3a21; font-size: 1.2rem;">WATALAPPAN ENTERPRISE</h2>
-                    <p style="text-align: center; font-size: 0.8rem; margin: 5px 0;" id="pdf-inv-meta"></p>
+                <div id="invoice-pdf-area" style="padding: 20px; border: 1px solid #ccc; background: white; max-width: 500px; margin: 0 auto;">
+                    <h2 style="text-align: center; margin: 0; color: #5c3a21;">WATALAPPAN ENTERPRISE</h2>
+                    <p style="text-align: center; font-size: 0.85rem; margin: 5px 0;" id="pdf-inv-meta"></p>
                     <hr>
-                    <table style="width: 100%; font-size: 0.8rem; min-width: auto;">
+                    <table style="width: 100%; font-size: 0.85rem; min-width: auto;">
                         <thead>
                             <tr><th>විස්තරය</th><th>Qty</th><th>Ret</th><th>මිල</th><th>මුළු</th></tr>
                         </thead>
                         <tbody id="pdf-inv-body"></tbody>
                     </table>
                     <hr>
-                    <h3 style="text-align: right; margin: 5px 0; font-size: 1rem;" id="pdf-inv-total"></h3>
-                    <p style="text-align: center; font-size: 0.75rem; font-weight: bold;" id="pdf-inv-paytype"></p>
+                    <h3 style="text-align: right; margin: 5px 0;" id="pdf-inv-total"></h3>
+                    <p style="text-align: center; font-size: 0.8rem; font-weight: bold;" id="pdf-inv-paytype"></p>
                 </div>
                 <div style="text-align: center; margin-top: 15px;">
-                    <button class="btn btn-success" onclick="downloadInvoicePDF()">📥 PDF එක බාගත කරගන්න</button>
+                    <button class="btn btn-success" onclick="downloadInvoicePDF()">📥 PDF එක බාගත කරගන්න (Download PDF)</button>
                 </div>
             </div>
         </div>
@@ -244,21 +227,23 @@
         <div id="tab-stock" class="tab-content hidden">
             <div class="card">
                 <h3>📦 නිෂ්පාදන තොග සහ හානි ලුහුබැඳීම</h3>
-                <div class="form-group-stack">
-                    <div class="form-field">
+                <div class="grid">
+                    <div class="col">
                         <label>නිෂ්පාදිත දිනය:</label>
                         <input type="date" id="stock-date" onchange="syncWastageFields()">
                     </div>
-                    <div class="form-field">
+                    <div class="col">
                         <label>භාණ්ඩ වර්ගය:</label>
                         <select id="stock-item-select" onchange="syncWastageFields()"></select>
                     </div>
-                    <div class="form-field">
-                        <label>මුළු නිපදවූ ප්‍රමාණය (Total Built):</label>
+                </div>
+                <div class="grid">
+                    <div class="col">
+                        <label>මුළු නිපදවූ ප්‍රමාණය (Total Built Qty):</label>
                         <input type="number" id="stock-qty-input" min="0" value="0">
                     </div>
-                    <div class="form-field">
-                        <label>සිදු වූ හානි/නරක්වීම් ප්‍රමාණය (Wastage):</label>
+                    <div class="col">
+                        <label>එම දිනයේ සිදු වූ හානි/නරක්වීම් ප්‍රමාණය (Wastage Qty):</label>
                         <input type="number" id="stock-wastage-input" min="0" value="0">
                     </div>
                 </div>
@@ -266,15 +251,15 @@
             </div>
 
             <div class="card">
-                <h3>📊 ඉතිහාස වාර්තා එකතුව (Historical Record)</h3>
+                <h3>📊 දෛනික නිෂ්පාදන සහ හානි වාර්තා එකතුව</h3>
                 <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
                                 <th>දිනය</th>
-                                <th>වර්ගය</th>
-                                <th>නිපදවූ Qty</th>
-                                <th>හානි Qty</th>
+                                <th>භාණ්ඩ වර්ගය</th>
+                                <th>මුළු නිපදවූ ප්‍රමාණය</th>
+                                <th>හානි වූ ප්‍රමාණය</th>
                                 <th>ක්‍රියාමාර්ග</th>
                             </tr>
                         </thead>
@@ -287,16 +272,11 @@
         <div id="tab-shops" class="tab-content hidden">
             <div class="card">
                 <h3>🏪 කඩවල් ලියාපදිංචිය සහ සංස්කරණය</h3>
-                <div class="form-group-stack">
-                    <div class="form-field">
-                        <input type="text" id="shop-name-input" placeholder="කඩේ නම">
-                    </div>
-                    <div class="form-field">
-                        <input type="text" id="shop-phone-input" placeholder="දුරකථන අංකය">
-                    </div>
+                <div class="grid">
+                    <div class="col"><input type="text" id="shop-name-input" placeholder="කඩේ නම"></div>
+                    <div class="col"><input type="text" id="shop-phone-input" placeholder="දුරකථන අංකය"></div>
+                    <div class="col"><button class="btn" onclick="saveShopData()">🏪 කඩය සුරකින්න</button></div>
                 </div>
-                <button class="btn" onclick="saveShopData()">🏪 කඩය සුරකින්න / වෙනස් කරන්න</button>
-                
                 <div class="table-responsive">
                     <table>
                         <thead>
@@ -309,33 +289,35 @@
 
             <div class="card" style="border-left: 5px solid #e91e63;">
                 <h3>🥛 කිරි සහ සීනි මිල වෙනස්වීම් පාලනය</h3>
-                <div class="form-group-stack">
-                    <div class="form-field">
+                <div class="grid">
+                    <div class="col">
                         <label>භාණ්ඩය:</label>
                         <select id="cost-product-select"></select>
                     </div>
-                    <div class="form-field">
-                        <label>විකුණන මිල (Selling):</label>
+                    <div class="col">
+                        <label>විකුණන මිල (Selling Price):</label>
                         <input type="number" id="cost-selling-price" min="0">
                     </div>
-                    <div class="form-field">
-                        <label>වත්මන් පිරිවැය (Unit Cost):</label>
+                    <div class="col">
+                        <label>වත්මන් නිෂ්පාදන පිරිවැය (Unit Cost):</label>
                         <input type="number" id="cost-unit-cost" min="0">
                     </div>
+                    <div class="col" style="display: flex; align-items: flex-end;">
+                        <button class="btn" style="background-color: #e91e63; width: 100%;" onclick="updateProductPricing()">💰 මිල ගණන් යාවත්කාලීන කරන්න</button>
+                    </div>
                 </div>
-                <button class="btn" style="background-color: #e91e63;" onclick="updateProductPricing()">💰 මිල ගණන් යාවත්කාලීන කරන්න</button>
             </div>
         </div>
 
         <div id="tab-expenses" class="tab-content hidden">
             <div class="card">
                 <h3>⛽ දෛනික වියදම් ඇතුළත් කිරීම</h3>
-                <div class="form-group-stack">
-                    <div class="form-field">
+                <div class="grid">
+                    <div class="col">
                         <label>වියදම් දිනය:</label>
                         <input type="date" id="expense-date">
                     </div>
-                    <div class="form-field">
+                    <div class="col">
                         <label>වියදම් වර්ගය:</label>
                         <select id="expense-category">
                             <option value="General">පොදු ද්‍රව්‍ය (සීනි/කිරි/ඇසුරුම්)</option>
@@ -344,11 +326,13 @@
                             <option value="Other">වෙනත් වියදම්</option>
                         </select>
                     </div>
-                    <div class="form-field">
+                </div>
+                <div class="grid">
+                    <div class="col">
                         <label>විස්තරය:</label>
                         <input type="text" id="expense-desc" placeholder="විස්තරය">
                     </div>
-                    <div class="form-field">
+                    <div class="col">
                         <label>මුදල (රු.):</label>
                         <input type="number" id="expense-amount" min="1">
                     </div>
@@ -373,7 +357,7 @@
         const SYSTEM_PASSWORD = "1234"; 
 
         function checkLogin() {
-            const entered = document.getElementById('login-pass').value;
+            const entered = document.getElementById('login-pass').value.trim();
             if(entered === SYSTEM_PASSWORD) {
                 document.getElementById('login-block').classList.add('hidden');
                 document.getElementById('main-system-block').classList.remove('hidden');
@@ -436,18 +420,21 @@
 
         function initDropdowns() {
             const shopSelect = document.getElementById('sales-shop-select');
-            shopSelect.innerHTML = '';
-            shops.forEach(s => shopSelect.add(new Option(s.name, s.name)));
+            if(shopSelect) {
+                shopSelect.innerHTML = '';
+                shops.forEach(s => shopSelect.add(new Option(s.name, s.name)));
+            }
 
             const stockItem = document.getElementById('stock-item-select');
             const costItem = document.getElementById('cost-product-select');
-            stockItem.innerHTML = '';
-            costItem.innerHTML = '';
-            
-            Object.keys(products).forEach(p => {
-                stockItem.add(new Option(p, p));
-                costItem.add(new Option(p, p));
-            });
+            if(stockItem && costItem) {
+                stockItem.innerHTML = '';
+                costItem.innerHTML = '';
+                Object.keys(products).forEach(p => {
+                    stockItem.add(new Option(p, p));
+                    costItem.add(new Option(p, p));
+                });
+            }
             syncWastageFields();
             loadProductCostDetails();
         }
@@ -476,17 +463,19 @@
             const tbody = document.getElementById('shops-table-body');
             tbody.innerHTML = '';
             shops.forEach(s => {
-                tbody.innerHTML += `<tr><td><b>${s.name}</b></td><td>${s.phone || '-'}</td><td><button class="btn" style="padding:4px 8px; font-size:0.8rem; width:auto; margin:0;" onclick="editShop('${s.name}', '${s.phone}')">✍️ Edit</button></td></tr>`;
+                tbody.innerHTML += `<tr><td><b>${s.name}</b></td><td>${s.phone || '-'}</td><td><button class="btn" style="padding:4px 8px; font-size:0.8rem;" onclick="editShop('${s.name}', '${s.phone}')">✍️ Edit</button></td></tr>`;
             });
         }
 
         window.editShop = function(name, phone) {
             document.getElementById('shop-name-input').value = name;
             document.getElementById('shop-phone-input').value = phone;
-            showTab('tab-shops');
         }
 
-        document.getElementById('cost-product-select').addEventListener('change', loadProductCostDetails);
+        if(document.getElementById('cost-product-select')) {
+            document.getElementById('cost-product-select').addEventListener('change', loadProductCostDetails);
+        }
+        
         function loadProductCostDetails() {
             const prod = document.getElementById('cost-product-select').value;
             if(products[prod]) {
@@ -557,7 +546,7 @@
                     <td><b>${p.item}</b></td>
                     <td>${p.qty}</td>
                     <td style="color:${p.wastage !== '-'?'red':'inherit'}; font-weight:bold;">${p.wastage}</td>
-                    <td><button class="btn" style="padding:4px 8px; font-size:0.75rem; background-color:#616161; width:auto; margin:0;" onclick="editStockRecord('${p.date}', '${p.item}')">🛠️ Edit</button></td>
+                    <td><button class="btn" style="padding:4px 8px; font-size:0.8rem; background-color:#616161;" onclick="editStockRecord('${p.date}', '${p.item}')">🛠️ Edit</button></td>
                 </tr>`;
             });
         }
@@ -601,25 +590,23 @@
             const container = document.getElementById('invoice-items-container');
             const rowHtml = `
                 <div class="item-row-box" id="inv-row-${rowCounter}">
-                    <div class="item-row-grid">
-                        <div class="form-field">
+                    <div class="item-grid">
+                        <div style="flex: 2; min-width: 200px;">
                             <label>භාණ්ඩ වර්ගය:</label>
                             <select class="row-item-select" id="row-item-${rowCounter}">
                                 ${Object.keys(products).map(p => `<option value="${p}">${p}</option>`).join('')}
                             </select>
                         </div>
-                        <div class="qty-row">
-                            <div class="form-field">
-                                <label>බෙදාහළ Qty:</label>
-                                <input type="number" class="row-qty" id="row-qty-${rowCounter}" value="0" min="0">
-                            </div>
-                            <div class="form-field">
-                                <label>රිටන් Qty:</label>
-                                <input type="number" class="row-ret" id="row-ret-${rowCounter}" value="0" min="0">
-                            </div>
-                            <div style="display:flex; align-items:flex-end;">
-                                <button class="btn btn-danger" style="margin:0; height:45px; width:45px; padding:0; display:flex; align-items:center; justify-content:center;" onclick="removeInvoiceItemRow(${rowCounter})">❌</button>
-                            </div>
+                        <div style="flex: 1; min-width: 100px;">
+                            <label>බෙදාහළ Qty:</label>
+                            <input type="number" class="row-qty" id="row-qty-${rowCounter}" value="0" min="0">
+                        </div>
+                        <div style="flex: 1; min-width: 100px;">
+                            <label>රිටන් Qty:</label>
+                            <input type="number" class="row-ret" id="row-ret-${rowCounter}" value="0" min="0">
+                        </div>
+                        <div>
+                            <button class="btn btn-danger" style="padding: 10px 15px;" onclick="removeInvoiceItemRow(${rowCounter})">❌</button>
                         </div>
                     </div>
                 </div>`;
@@ -678,22 +665,21 @@
             invoiceItems.forEach(i => {
                 pBody.innerHTML += `<tr><td>${i.item}</td><td>${i.qty}</td><td>${i.ret}</td><td>රු.${i.price}</td><td>රු.${i.total.toFixed(2)}</td></tr>`;
             });
-            document.getElementById('pdf-inv-total').textContent = `මුළු එකතුව: ਰੁ. ${netTotal.toFixed(2)}`;
+            document.getElementById('pdf-inv-total').textContent = `මුළු එකතුව: රු. ${netTotal.toFixed(2)}`;
             document.getElementById('pdf-inv-paytype').textContent = `ගනුදෙනු ක්‍රමය: ${payMode === 'Credit' ? 'ණය (Credit Book)' : 'මුදල් ලැබුණි (Cash)'}`;
             
-            alert("📄 බිල්පත සාර්ථකව එක්වුණා! දැන් PDF එක බාගත කරගත හැක.");
-            window.scrollTo(0, document.getElementById('pdf-preview-card').offsetTop);
+            alert("📄 බිල්පත සාර්ථකව එක්වුණා!");
         }
 
         function downloadInvoicePDF() {
             if(!currentActiveInvoiceData) return;
             const element = document.getElementById('invoice-pdf-area');
             const opt = {
-                margin:       5,
+                margin:       10,
                 filename:     `Invoice_${currentActiveInvoiceData.shop}_${currentActiveInvoiceData.date}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a5', orientation: 'portrait' }
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             html2pdf().set(opt).from(element).save();
         }
