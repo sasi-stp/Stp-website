@@ -3,167 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watalappan Smart Enterprise ERP v3.4</title>
-    <style>
-        /* --- 🎨 කලින් තිබුණු ලස්සනම DESKTOP STYLE එක (ෆෝන් එකටත් ගැළපෙන ලෙස) --- */
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f4f6f9;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        h1, h2, h3 {
-            color: #5c3a21;
-        }
-        .card {
-            background: #fff;
-            padding: 20px;
-            margin-bottom: 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-left: 5px solid #8d6e63;
-        }
-        
-        /* 📱 TABLET/DESKTOP GRID (කලින් වගේම ලස්සනට පේන්න) */
-        .grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        .col {
-            flex: 1;
-            min-width: 250px; /* ෆෝන් එකේදී පේළියට හැරේ, ටැබ්/ලැප්ටොප් එකේදී පැත්තට ලස්සනට පේන්න */
-        }
-        
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-            color: #4e342e;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 0.95rem;
-        }
-        
-        /* BUTTONS */
-        .btn {
-            background-color: #8d6e63;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 0.95rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            display: inline-block;
-            text-align: center;
-        }
-        .btn:hover { background-color: #70554c; }
-        .btn-danger { background-color: #e53935; }
-        .btn-danger:hover { background-color: #c62828; }
-        .btn-success { background-color: #43a047; }
-        .btn-success:hover { background-color: #2e7d32; }
-        
-        /* SCROLLABLE TABLES (කලින් වගේම ලොකු ටේබල්ස් - හැබැයි ෆෝන් එකේදී පැත්තට Scroll කරන්න පුළුවන්) */
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            background: #fff;
-            min-width: 600px; /* කලින් තිබුණු ලොකු ලස්සන ටේබල් එකමයි */
-        }
-        th, td {
-            border: 1px solid #e0e0e0;
-            padding: 12px 10px;
-            text-align: left;
-            font-size: 0.9rem;
-        }
-        th { background-color: #efebe9; color: #4e342e; }
-        tr:nth-child(even) { background-color: #fafafa; }
-        
-        /* TABS (කලින් වගේම ලස්සනට පැත්තට තියෙන ඒවා) */
-        .tabs { 
-            display: flex;
-            overflow-x: auto;
-            gap: 5px;
-            margin-bottom: 20px; 
-            padding-bottom: 5px;
-        }
-        .tab-btn {
-            padding: 12px 24px;
-            background: #e0e0e0;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            border-radius: 4px 4px 0 0;
-            white-space: nowrap;
-        }
-        .tab-btn.active { background: #8d6e63; color: white; }
-        .hidden { display: none !important; }
-        
-        /* MULTI ITEM BOX (කලින් වගේම ලස්සන රෝස පාට බොක්ස් එක) */
-        .item-row-box {
-            background: #fbe9e7;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            border: 1px solid #ffccbc;
-        }
-        .item-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: flex-end;
-        }
-        
-        /* LOGIN PAGE */
-        .login-screen {
-            max-width: 400px;
-            margin: 100px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            text-align: center;
-            border-top: 5px solid #8d6e63;
-        }
-    </style>
+    <title>Watalappan Smart Enterprise ERP v3.0</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <div id="login-block" class="login-screen">
-        <h2>🍮 වටලප්පන් ERP - Login</h2>
-        <p style="color: #666; font-size: 0.9rem;">කරුණාකර රහස්පදය ඇතුළත් කරන්න</p>
-        <div style="margin: 20px 0; text-align: left;">
-            <label>Password / මුද්‍රපදය:</label>
-            <input type="password" id="login-pass" placeholder="Enter Password" style="text-align: center;">
-        </div>
-        <button class="btn btn-success" style="width: 100%; padding: 12px;" onclick="checkLogin()">ඇතුළු වන්න (Login)</button>
-        <p id="login-err" style="color: red; font-weight: bold; margin-top: 10px; display: none;">❌ වැරදි මුද්‍රපදයක්!</p>
-    </div>
-
-    <div id="main-system-block" class="container hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
-            <h2>🍮 වටලප්පන් ස්මාර්ට් ව්‍යාපාරික පද්ධතිය v3.4</h2>
-            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.85rem;" onclick="logout()">🔒 Logout</button>
-        </div>
+    <div class="container">
+        <h2>🍮 වටලප්පන් ස්මාර්ට් ව්‍යාපාරික පද්ධතිය v3.0</h2>
         
         <div class="tabs">
             <button class="tab-btn active" onclick="showTab('tab-sales')">📝 බහු-භාණ්ඩ විකුණුම් & බිල්පත්</button>
@@ -176,41 +21,41 @@
             <div class="card">
                 <h3>📝 නව විකුණුම් බිල්පත (Multi-Item Invoicing)</h3>
                 <div class="grid">
-                    <div class="col">
-                        <label>දිනය:</label>
-                        <input type="date" id="sales-date">
-                    </div>
-                    <div class="col">
-                        <label>කඩය තෝරන්න:</label>
-                        <select id="sales-shop-select"></select>
-                    </div>
-                    <div class="col">
-                        <label>ගනුදෙනු ක්‍රමය:</label>
-                        <select id="sales-pay-mode">
-                            <option value="Cash">මුදල් (Cash)</option>
-                            <option value="Credit">ණය (Credit)</option>
-                        </select>
+                    <div class="row">
+                        <div class="col">
+                            <label>දිනය:</label>
+                            <input type="date" id="sales-date">
+                        </div>
+                        <div class="col">
+                            <label>කඩය තෝරන්න:</label>
+                            <select id="sales-shop-select"></select>
+                        </div>
+                        <div class="col">
+                            <label>ගනුදෙනු ක්‍රමය:</label>
+                            <select id="sales-pay-mode">
+                                <option value="Cash">මුදල් (Cash)</option>
+                                <option value="Credit">ණය (Credit)</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <div id="invoice-items-container"></div>
-                
-                <div style="margin-top: 15px;">
-                    <button class="btn" style="background-color: #a1887f;" onclick="addInvoiceItemRow()">➕ තවත් භාණ්ඩයක් එකතු කරන්න</button>
-                    <button class="btn btn-success" style="float: right;" onclick="generateInvoiceInvoice()">📄 බිල්පත සහ දත්ත සුරකින්න</button>
-                    <div style="clear: both;"></div>
-                </div>
+                <div id="invoice-items-container">
+                    </div>
+                <button class="btn" style="background-color: #a1887f;" onclick="addInvoiceItemRow()">➕ තවත් භාණ්ඩයක් එකතු කරන්න</button>
+                <button class="btn btn-success" style="float: right;" onclick="generateInvoiceInvoice()">📄 බිල්පත සහ දත්ත සුරකින්න</button>
+                <div style="clear: both;"></div>
             </div>
 
             <div id="pdf-preview-card" class="card hidden">
                 <h3>📄 නිපදවූ බිල්පත (Invoice Preview)</h3>
-                <div id="invoice-pdf-area" style="padding: 20px; border: 1px solid #ccc; background: white; max-width: 500px; margin: 0 auto;">
+                <div id="invoice-pdf-area">
                     <h2 style="text-align: center; margin: 0; color: #5c3a21;">WATALAPPAN ENTERPRISE</h2>
                     <p style="text-align: center; font-size: 0.85rem; margin: 5px 0;" id="pdf-inv-meta"></p>
                     <hr>
-                    <table style="width: 100%; font-size: 0.85rem; min-width: auto;">
+                    <table style="width: 100%; font-size: 0.85rem;">
                         <thead>
-                            <tr><th>විස්තරය</th><th>Qty</th><th>Ret</th><th>මිල</th><th>මුළු</th></tr>
+                            <tr><th>විස්තරය</th><th>Qty</th><th>Ret</th><th>මිල</th><th>මුළු මුදල</th></tr>
                         </thead>
                         <tbody id="pdf-inv-body"></tbody>
                     </table>
@@ -226,84 +71,86 @@
 
         <div id="tab-stock" class="tab-content hidden">
             <div class="card">
-                <h3>📦 නිෂ්පාදන තොග සහ හානි ලුහුබැඳීම</h3>
+                <h3>📦 නිෂ්පාදන තොග සහ හානි ලුහුබැඳීම (Daily Production & Wastage Log)</h3>
                 <div class="grid">
-                    <div class="col">
-                        <label>නිෂ්පාදිත දිනය:</label>
-                        <input type="date" id="stock-date" onchange="syncWastageFields()">
+                    <div class="row">
+                        <div class="col">
+                            <label>නිෂ්පාදිත දිනය:</label>
+                            <input type="date" id="stock-date" onchange="syncWastageFields()">
+                        </div>
+                        <div class="col">
+                            <label>භාණ්ඩ වර්ගය:</label>
+                            <select id="stock-item-select" onchange="syncWastageFields()"></select>
+                        </div>
                     </div>
-                    <div class="col">
-                        <label>භාණ්ඩ වර්ගය:</label>
-                        <select id="stock-item-select" onchange="syncWastageFields()"></select>
-                    </div>
-                </div>
-                <div class="grid">
-                    <div class="col">
-                        <label>මුළු නිපදවූ ප්‍රමාණය (Total Built Qty):</label>
-                        <input type="number" id="stock-qty-input" min="0" value="0">
-                    </div>
-                    <div class="col">
-                        <label>එම දිනයේ සිදු වූ හානි/නරක්වීම් ප්‍රමාණය (Wastage Qty):</label>
-                        <input type="number" id="stock-wastage-input" min="0" value="0">
+                    <div class="row">
+                        <div class="col">
+                            <label>මුළු නිපදවූ ප්‍රමාණය (Total Built Qty):</label>
+                            <input type="number" id="stock-qty-input" min="0" value="0">
+                        </div>
+                        <div class="col">
+                            <label>එම දිනයේ සිදු වූ හානි/නරක්වීම් ප්‍රමාණය (Wastage Qty):</label>
+                            <input type="number" id="stock-wastage-input" min="0" value="0" placeholder="හානියක් නැත්නම් 0 දමන්න">
+                        </div>
                     </div>
                 </div>
                 <button class="btn btn-success" onclick="saveProductionStock()">💾 තොග සහ හානි දත්ත සුරකින්න</button>
             </div>
 
             <div class="card">
-                <h3>📊 දෛනික නිෂ්පාදන සහ හානි වාර්තා එකතුව</h3>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>දිනය</th>
-                                <th>භාණ්ඩ වර්ගය</th>
-                                <th>මුළු නිපදවූ ප්‍රමාණය</th>
-                                <th>හානි වූ ප්‍රමාණය</th>
-                                <th>ක්‍රියාමාර්ග</th>
-                            </tr>
-                        </thead>
-                        <tbody id="stock-history-table-body"></tbody>
-                    </table>
-                </div>
+                <h3>📊 දෛනික නිෂ්පාදන සහ හානි වාර්තා එකතුව (Historical Record)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>දිනය</th>
+                            <th>භාණ්ඩ වර්ගය</th>
+                            <th>මුළු නිපදවූ ප්‍රමාණය</th>
+                            <th>විකිණීමට පෙර හානි වූ ප්‍රමාණය</th>
+                            <th>ක්‍රියාමාර්ග</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stock-history-table-body"></tbody>
+                </table>
             </div>
         </div>
 
         <div id="tab-shops" class="tab-content hidden">
             <div class="card">
-                <h3>🏪 කඩවල් ලියාපදිංචිය සහ සංස්කරණය</h3>
+                <h3>🏪 කඩවල් ලියාපදිංචිය සහ දුරකථන අංක වෙනස් කිරීම</h3>
                 <div class="grid">
-                    <div class="col"><input type="text" id="shop-name-input" placeholder="කඩේ නම"></div>
-                    <div class="col"><input type="text" id="shop-phone-input" placeholder="දුරකථන අංකය"></div>
-                    <div class="col"><button class="btn" onclick="saveShopData()">🏪 කඩය සුරකින්න</button></div>
+                    <div class="row">
+                        <div class="col"><input type="text" id="shop-name-input" placeholder="කඩේ නම"></div>
+                        <div class="col"><input type="text" id="shop-phone-input" placeholder="දුරකථන අංකය"></div>
+                        <div class="col"><button class="btn" onclick="saveShopData()">🏪 කඩය සුරකින්න / යාවත්කාලීන කරන්න</button></div>
+                    </div>
                 </div>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr><th>කඩේ නම</th><th>දුරකථන අංකය</th><th>සංස්කරණය</th></tr>
-                        </thead>
-                        <tbody id="shops-table-body"></tbody>
-                    </table>
-                </div>
+                <table>
+                    <thead>
+                        <tr><th>කඩේ නම</th><th>දුරකථන අංකය</th><th>සංස්කරණය</th></tr>
+                    </thead>
+                    <tbody id="shops-table-body"></tbody>
+                </table>
             </div>
 
             <div class="card" style="border-left: 5px solid #e91e63;">
-                <h3>🥛 කිරි සහ සීනි මිල වෙනස්වීම් පාලනය</h3>
+                <h3>🥛 කිරි සහ සීනි මිල වෙනස්වීම් පාලනය (Raw Material & Cost History)</h3>
                 <div class="grid">
-                    <div class="col">
-                        <label>භාණ්ඩය:</label>
-                        <select id="cost-product-select"></select>
-                    </div>
-                    <div class="col">
-                        <label>විකුණන මිල (Selling Price):</label>
-                        <input type="number" id="cost-selling-price" min="0">
-                    </div>
-                    <div class="col">
-                        <label>වත්මන් නිෂ්පාදන පිරිවැය (Unit Cost):</label>
-                        <input type="number" id="cost-unit-cost" min="0">
-                    </div>
-                    <div class="col" style="display: flex; align-items: flex-end;">
-                        <button class="btn" style="background-color: #e91e63; width: 100%;" onclick="updateProductPricing()">💰 මිල ගණන් යාවත්කාලීන කරන්න</button>
+                    <div class="row">
+                        <div class="col">
+                            <label>භාණ්ඩය:</label>
+                            <select id="cost-product-select"></select>
+                        </div>
+                        <div class="col">
+                            <label>විකුණන මිල (Selling Price):</label>
+                            <input type="number" id="cost-selling-price" min="0">
+                        </div>
+                        <div class="col">
+                            <label>වත්මන් නිෂ්පාදන පිරිවැය (Current Unit Cost):</label>
+                            <input type="number" id="cost-unit-cost" min="0">
+                        </div>
+                        <div class="col" style="vertical-align: bottom;">
+                            <button class="btn" style="background-color: #e91e63;" onclick="updateProductPricing()">💰 මිල ගණන් යාවත්කාලීන කරන්න</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -311,378 +158,47 @@
 
         <div id="tab-expenses" class="tab-content hidden">
             <div class="card">
-                <h3>⛽ දෛනික වියදම් ඇතුළත් කිරීම</h3>
+                <h3>⛽ දෛනික වියදම් ඇතුළත් කිරීම (Category Expense Tracker)</h3>
                 <div class="grid">
-                    <div class="col">
-                        <label>වියදම් දිනය:</label>
-                        <input type="date" id="expense-date">
+                    <div class="row">
+                        <div class="col">
+                            <label>වියදම් දිනය:</label>
+                            <input type="date" id="expense-date">
+                        </div>
+                        <div class="col">
+                            <label>වියදම් වර්ගය:</label>
+                            <select id="expense-category">
+                                <option value="General">පොදු ද්‍රව්‍ය (සීනි/කිරි/ඇසුරුම්)</option>
+                                <option value="Fuel">⛽ වාහන ඩීසල් /穩ප්‍රවාහන</option>
+                                <option value="Repair">🛠️ වාහන රෙපයාර් / නඩත්තු</option>
+                                <option value="Other">වෙනත් වියදම්</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="col">
-                        <label>වියදම් වර්ගය:</label>
-                        <select id="expense-category">
-                            <option value="General">පොදු ද්‍රව්‍ය (සීනි/කිරි/ඇසුරුම්)</option>
-                            <option value="Fuel">⛽ වාහන ඩීසල් / ප්‍රවාහන</option>
-                            <option value="Repair">🛠️ වාහන රෙපයාර් / නඩත්තු</option>
-                            <option value="Other">වෙනත් වියදම්</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid">
-                    <div class="col">
-                        <label>විස්තරය:</label>
-                        <input type="text" id="expense-desc" placeholder="විස්තරය">
-                    </div>
-                    <div class="col">
-                        <label>මුදල (රු.):</label>
-                        <input type="number" id="expense-amount" min="1">
+                    <div class="row">
+                        <div class="col">
+                            <label>විස්තරය:</label>
+                            <input type="text" id="expense-desc" placeholder="විස්තරය">
+                        </div>
+                        <div class="col">
+                            <label>මුදල (රු.):</label>
+                            <input type="number" id="expense-amount" min="1">
+                        </div>
                     </div>
                 </div>
                 <button class="btn" onclick="saveExpenseData()">⛽ වියදම ඇතුළත් කරන්න</button>
                 
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr><th>දිනය</th><th>වර්ගය</th><th>විස්තරය</th><th>මුදල (රු.)</th></tr>
-                        </thead>
-                        <tbody id="expenses-table-body"></tbody>
-                    </table>
-                </div>
+                <table>
+                    <thead>
+                        <tr><th>දිනය</th><th>වර්ගය</th><th>විස්තරය</th><th>මුදල (රු.)</th></tr>
+                    </thead>
+                    <tbody id="expenses-table-body"></tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script>
-        // --- 🔐 LOGIN LOGIC ---
-        const SYSTEM_PASSWORD = "1234"; 
-
-        function checkLogin() {
-            const entered = document.getElementById('login-pass').value.trim();
-            if(entered === SYSTEM_PASSWORD) {
-                document.getElementById('login-block').classList.add('hidden');
-                document.getElementById('main-system-block').classList.remove('hidden');
-                sessionStorage.setItem('w_logged_in', 'true');
-                document.getElementById('login-err').style.display = 'none';
-            } else {
-                document.getElementById('login-err').style.display = 'block';
-            }
-        }
-
-        function logout() {
-            sessionStorage.removeItem('w_logged_in');
-            document.getElementById('login-pass').value = '';
-            document.getElementById('login-block').classList.remove('hidden');
-            document.getElementById('main-system-block').classList.add('hidden');
-        }
-
-        // --- DATA STRUCTURES ---
-        let shops = JSON.parse(localStorage.getItem('w_shops')) || [
-            { name: "Main Shop", phone: "0771234567" },
-            { name: "Town Bakery", phone: "0719876543" }
-        ];
-        
-        let products = JSON.parse(localStorage.getItem('w_products')) || {
-            "වටලප්පන්": { price: 150, cost: 90 },
-            "යෝගට්": { price: 70, cost: 40 },
-            "ජෙලි යෝගට්": { price: 90, cost: 50 },
-            "කැරමල් පුඩිං": { price: 180, cost: 110 }
-        };
-
-        let productionHistory = JSON.parse(localStorage.getItem('w_production')) || [];
-        let expenses = JSON.parse(localStorage.getItem('w_expenses')) || [];
-        let salesInvoices = JSON.parse(localStorage.getItem('w_invoices')) || [];
-
-        document.addEventListener("DOMContentLoaded", () => {
-            if(sessionStorage.getItem('w_logged_in') === 'true') {
-                document.getElementById('login-block').classList.add('hidden');
-                document.getElementById('main-system-block').classList.remove('hidden');
-            }
-
-            document.getElementById('sales-date').value = new Date().toISOString().split('T')[0];
-            document.getElementById('stock-date').value = new Date().toISOString().split('T')[0];
-            document.getElementById('expense-date').value = new Date().toISOString().split('T')[0];
-            
-            initDropdowns();
-            renderShopsTable();
-            renderProductionTable();
-            renderExpensesTable();
-            addInvoiceItemRow(); 
-        });
-
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.remove('hidden');
-            if(event && event.currentTarget) {
-                event.currentTarget.classList.add('active');
-            }
-        }
-
-        function initDropdowns() {
-            const shopSelect = document.getElementById('sales-shop-select');
-            if(shopSelect) {
-                shopSelect.innerHTML = '';
-                shops.forEach(s => shopSelect.add(new Option(s.name, s.name)));
-            }
-
-            const stockItem = document.getElementById('stock-item-select');
-            const costItem = document.getElementById('cost-product-select');
-            if(stockItem && costItem) {
-                stockItem.innerHTML = '';
-                costItem.innerHTML = '';
-                Object.keys(products).forEach(p => {
-                    stockItem.add(new Option(p, p));
-                    costItem.add(new Option(p, p));
-                });
-            }
-            syncWastageFields();
-            loadProductCostDetails();
-        }
-
-        function saveShopData() {
-            const name = document.getElementById('shop-name-input').value.trim();
-            const phone = document.getElementById('shop-phone-input').value.trim();
-            if(!name) return alert("කඩේ නම ඇතුළත් කරන්න!");
-
-            let existingIdx = shops.findIndex(s => s.name.toLowerCase() === name.toLowerCase());
-            if(existingIdx >= 0) {
-                shops[existingIdx].phone = phone;
-                alert("🏪 කඩේ දුරකථන අංකය සාර්ථකව වෙනස් කළා!");
-            } else {
-                shops.push({ name: name, phone: phone });
-                alert("🏪 නව කඩය සාර්ථකව එකතු කළා!");
-            }
-            localStorage.setItem('w_shops', JSON.stringify(shops));
-            document.getElementById('shop-name-input').value = '';
-            document.getElementById('shop-phone-input').value = '';
-            initDropdowns();
-            renderShopsTable();
-        }
-
-        function renderShopsTable() {
-            const tbody = document.getElementById('shops-table-body');
-            tbody.innerHTML = '';
-            shops.forEach(s => {
-                tbody.innerHTML += `<tr><td><b>${s.name}</b></td><td>${s.phone || '-'}</td><td><button class="btn" style="padding:4px 8px; font-size:0.8rem;" onclick="editShop('${s.name}', '${s.phone}')">✍️ Edit</button></td></tr>`;
-            });
-        }
-
-        window.editShop = function(name, phone) {
-            document.getElementById('shop-name-input').value = name;
-            document.getElementById('shop-phone-input').value = phone;
-        }
-
-        if(document.getElementById('cost-product-select')) {
-            document.getElementById('cost-product-select').addEventListener('change', loadProductCostDetails);
-        }
-        
-        function loadProductCostDetails() {
-            const prod = document.getElementById('cost-product-select').value;
-            if(products[prod]) {
-                document.getElementById('cost-selling-price').value = products[prod].price;
-                document.getElementById('cost-unit-cost').value = products[prod].cost;
-            }
-        }
-
-        function updateProductPricing() {
-            const prod = document.getElementById('cost-product-select').value;
-            const price = parseFloat(document.getElementById('cost-selling-price').value) || 0;
-            const cost = parseFloat(document.getElementById('cost-unit-cost').value) || 0;
-            
-            if(prod) {
-                products[prod] = { price: price, cost: cost };
-                localStorage.setItem('w_products', JSON.stringify(products));
-                alert(`🥛 ${prod} මිල ගණන් යාවත්කාලීන කලා!`);
-            }
-        }
-
-        function syncWastageFields() {
-            const dt = document.getElementById('stock-date').value;
-            const item = document.getElementById('stock-item-select').value;
-            
-            let match = productionHistory.find(p => p.date === dt && p.item === item);
-            if(match) {
-                document.getElementById('stock-qty-input').value = match.qty;
-                document.getElementById('stock-wastage-input').value = match.wastage === '-' ? 0 : match.wastage;
-            } else {
-                document.getElementById('stock-qty-input').value = 0;
-                document.getElementById('stock-wastage-input').value = 0;
-            }
-        }
-
-        function saveProductionStock() {
-            const dt = document.getElementById('stock-date').value;
-            const item = document.getElementById('stock-item-select').value;
-            const qty = parseInt(document.getElementById('stock-qty-input').value) || 0;
-            const wastageQty = parseInt(document.getElementById('stock-wastage-input').value) || 0;
-
-            let existingIdx = productionHistory.findIndex(p => p.date === dt && p.item === item);
-            let finalWastage = wastageQty > 0 ? wastageQty : '-';
-
-            if(existingIdx >= 0) {
-                productionHistory[existingIdx].qty = qty; 
-                if(wastageQty > 0) {
-                    let oldWastage = productionHistory[existingIdx].wastage === '-' ? 0 : parseInt(productionHistory[existingIdx].wastage);
-                    productionHistory[existingIdx].wastage = oldWastage + wastageQty;
-                }
-                alert("📦 තොග සහ හානි තොරතුරු යාවත්කාලීන කළා!");
-            } else {
-                productionHistory.push({
-                    date: dt, item: item, qty: qty, wastage: finalWastage
-                });
-                alert("📦 වාර්තාව සාර්ථකව සුරැකුවා!");
-            }
-
-            localStorage.setItem('w_production', JSON.stringify(productionHistory));
-            renderProductionTable();
-        }
-
-        function renderProductionTable() {
-            const tbody = document.getElementById('stock-history-table-body');
-            tbody.innerHTML = '';
-            productionHistory.slice().reverse().forEach(p => {
-                tbody.innerHTML += `<tr>
-                    <td>${p.date}</td>
-                    <td><b>${p.item}</b></td>
-                    <td>${p.qty}</td>
-                    <td style="color:${p.wastage !== '-'?'red':'inherit'}; font-weight:bold;">${p.wastage}</td>
-                    <td><button class="btn" style="padding:4px 8px; font-size:0.8rem; background-color:#616161;" onclick="editStockRecord('${p.date}', '${p.item}')">🛠️ Edit</button></td>
-                </tr>`;
-            });
-        }
-
-        window.editStockRecord = function(dt, item) {
-            document.getElementById('stock-date').value = dt;
-            document.getElementById('stock-item-select').value = item;
-            syncWastageFields();
-            showTab('tab-stock');
-        }
-
-        function saveExpenseData() {
-            const dt = document.getElementById('expense-date').value;
-            const cat = document.getElementById('expense-category').value;
-            const desc = document.getElementById('expense-desc').value.trim();
-            const amt = parseFloat(document.getElementById('expense-amount').value) || 0;
-
-            if(!dt || !desc || amt <= 0) return alert("සියලු විස්තර නිවැරදිව පුරවන්න!");
-
-            expenses.push({ date: dt, category: cat, desc: desc, amount: amt });
-            localStorage.setItem('w_expenses', JSON.stringify(expenses));
-            
-            document.getElementById('expense-desc').value = '';
-            document.getElementById('expense-amount').value = '';
-            renderExpensesTable();
-            alert("⛽ වියදම සටහන් කරගත්තා!");
-        }
-
-        function renderExpensesTable() {
-            const tbody = document.getElementById('expenses-table-body');
-            tbody.innerHTML = '';
-            expenses.slice().reverse().forEach(e => {
-                tbody.innerHTML += `<tr><td>${e.date}</td><td>${e.category}</td><td>${e.desc}</td><td>රු. ${e.amount.toFixed(2)}</td></tr>`;
-            });
-        }
-
-        // --- MULTI-ITEM INVOICING ---
-        let rowCounter = 0;
-        function addInvoiceItemRow() {
-            rowCounter++;
-            const container = document.getElementById('invoice-items-container');
-            const rowHtml = `
-                <div class="item-row-box" id="inv-row-${rowCounter}">
-                    <div class="item-grid">
-                        <div style="flex: 2; min-width: 200px;">
-                            <label>භාණ්ඩ වර්ගය:</label>
-                            <select class="row-item-select" id="row-item-${rowCounter}">
-                                ${Object.keys(products).map(p => `<option value="${p}">${p}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div style="flex: 1; min-width: 100px;">
-                            <label>බෙදාහළ Qty:</label>
-                            <input type="number" class="row-qty" id="row-qty-${rowCounter}" value="0" min="0">
-                        </div>
-                        <div style="flex: 1; min-width: 100px;">
-                            <label>රිටන් Qty:</label>
-                            <input type="number" class="row-ret" id="row-ret-${rowCounter}" value="0" min="0">
-                        </div>
-                        <div>
-                            <button class="btn btn-danger" style="padding: 10px 15px;" onclick="removeInvoiceItemRow(${rowCounter})">❌</button>
-                        </div>
-                    </div>
-                </div>`;
-            container.insertAdjacentHTML('beforeend', rowHtml);
-        }
-
-        function removeInvoiceItemRow(id) {
-            const row = document.getElementById(`inv-row-${id}`);
-            if(row) row.remove();
-        }
-
-        let currentActiveInvoiceData = null; 
-        function generateInvoiceInvoice() {
-            const dt = document.getElementById('sales-date').value;
-            const shop = document.getElementById('sales-shop-select').value;
-            const payMode = document.getElementById('sales-pay-mode').value;
-
-            const rows = document.querySelectorAll('.item-row-box');
-            if(rows.length === 0) return alert("කරුණාකර අවම වශයෙන් එක භාණ්ඩයක්වත් ඇතුලත් කරන්න!");
-
-            let invoiceItems = [];
-            let netTotal = 0;
-
-            for(let row of rows) {
-                let id = row.id.split('-')[2];
-                let item = document.getElementById(`row-item-${id}`).value;
-                let qty = parseInt(document.getElementById(`row-qty-${id}`).value) || 0;
-                let ret = parseInt(document.getElementById(`row-ret-${id}`).value) || 0;
-                
-                if(qty === 0 && ret === 0) continue;
-
-                let price = products[item].price;
-                let finalQty = Math.max(0, qty - ret);
-                let rowTotal = finalQty * price;
-                netTotal += rowTotal;
-
-                invoiceItems.push({
-                    item: item, qty: qty, ret: ret, price: price, total: rowTotal
-                });
-            }
-
-            if(invoiceItems.length === 0) return alert("Qty හෝ Return ප්‍රමාණයන් ඇතුළත් කරන්න!");
-
-            currentActiveInvoiceData = {
-                date: dt, shop: shop, payMode: payMode, items: invoiceItems, total: netTotal
-            };
-
-            salesInvoices.push(currentActiveInvoiceData);
-            localStorage.setItem('w_invoices', JSON.stringify(salesInvoices));
-
-            document.getElementById('pdf-preview-card').classList.remove('hidden');
-            document.getElementById('pdf-inv-meta').textContent = `දිනය: ${dt} | වෙළඳසැල: ${shop}`;
-            
-            const pBody = document.getElementById('pdf-inv-body');
-            pBody.innerHTML = '';
-            invoiceItems.forEach(i => {
-                pBody.innerHTML += `<tr><td>${i.item}</td><td>${i.qty}</td><td>${i.ret}</td><td>රු.${i.price}</td><td>රු.${i.total.toFixed(2)}</td></tr>`;
-            });
-            document.getElementById('pdf-inv-total').textContent = `මුළු එකතුව: රු. ${netTotal.toFixed(2)}`;
-            document.getElementById('pdf-inv-paytype').textContent = `ගනුදෙනු ක්‍රමය: ${payMode === 'Credit' ? 'ණය (Credit Book)' : 'මුදල් ලැබුණි (Cash)'}`;
-            
-            alert("📄 බිල්පත සාර්ථකව එක්වුණා!");
-        }
-
-        function downloadInvoicePDF() {
-            if(!currentActiveInvoiceData) return;
-            const element = document.getElementById('invoice-pdf-area');
-            const opt = {
-                margin:       10,
-                filename:     `Invoice_${currentActiveInvoiceData.shop}_${currentActiveInvoiceData.date}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().set(opt).from(element).save();
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
