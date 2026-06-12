@@ -24,7 +24,7 @@
     <div id="app-container" class="hidden">
         
         <header class="app-header">
-            <h1>🍮 වටලප්පන් ස්මාර්ට් ව්‍යාපාරික පද්ධතිය v2.1</h1>
+            <h1>🍮 වටලප්පන් ස්මාර්ට් ව්‍යාපාරික පද්ධතිය v2.0</h1>
             <button id="logout-btn" class="btn btn-danger">Log Out</button>
         </header>
 
@@ -44,7 +44,7 @@
                 <h3 style="color:#673ab7;">💡 ව්‍යාපාරික විශ්ලේෂණ (Smart Insights)</h3>
                 <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px; font-size:0.9rem;">
                     <p>🥇 වැඩිම ආදායමක් දුන් කඩය: <span id="insight-top-shop" style="font-weight:bold; color:#2e7d32;">--</span></p>
-                    <p>🔥鋪 වැඩිපුරම විකිනෙන භාණ්ඩය: <span id="insight-top-product" style="font-weight:bold; color:#0288d1;">--</span></p>
+                    <p>🔥 වැඩිපුරම විකිනෙන භාණ්ඩය: <span id="insight-top-product" style="font-weight:bold; color:#0288d1;">--</span></p>
                 </div>
             </div>
 
@@ -95,7 +95,7 @@
                     <div class="summary-box filter-profit" style="grid-column: span 2;">
                         <h4>පිරිසිදු ශුද්ධ ලාභය (Net Profit)</h4>
                         <p id="f-net-profit">රු. 0.00</p>
-                        <small style="opacity:0.8;">(ආදායම - පිරිවැය - රිටන්/නරක්වීම් අලාභ - ප්‍රවාහන)</small>
+                        <small style="opacity:0.8;">(ආදායම - ද්‍රව්‍ය/ප්‍රවාහන පිරිවැය - රිටන් අලාභ)</small>
                     </div>
                 </div>
             </div>
@@ -139,11 +139,11 @@
                         <label>💡 බිල්පත යවන ක්‍රමය (Sharing Mode):</label>
                         <div class="radio-group">
                             <label class="radio-label"><input type="radio" name="share-mode" value="WhatsApp" checked> 💬 WhatsApp</label>
-                            <label class="radio-label"><input type="radio" name="share-mode" value="SMS"> 📱 සාමාන්‍ය SMS</label>
+                            <label class="radio-label"><input type="radio" name="share-mode" value="SMS"> 📱 සාමාන්‍ย SMS</label>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Commercial ශුද්ධ මුළු මුදල (Net Total):</label>
+                        <label>ශුද්ධ මුළු මුදල (Net Total):</label>
                         <div id="total-price-display" class="total-highlight">රු. 0.00</div>
                     </div>
                     <button type="submit" class="btn btn-success">දත්ත ඇතුළත් කර බිල සාදන්න</button>
@@ -216,34 +216,6 @@
                 </div>
             </div>
 
-            <div class="card" style="border-left: 5px solid #e65100; background: #fff3e0;">
-                <h3 style="color:#e65100;">🗑️ විකිණීමට පෙර හානි වූ / නරක් වූ තොග ඉවත් කිරීම (Wastage Tracker)</h3>
-                <p style="font-size:0.8rem; color:#555; margin-bottom:8px;">නිවසින් පිටත් වීමට පෙර හෝ ප්‍රවාහනයේදී සිදුවූ හානි, හැලීම් සහ නරක්වීම් මෙතනින් ඇතුළත් කරන්න.</p>
-                <form id="wastage-form" class="form-group-row" style="align-items: flex-end;">
-                    <div class="form-group" style="flex:1;">
-                        <label>දිනය:</label>
-                        <input type="date" id="wastage-date" required>
-                    </div>
-                    <div class="form-group" style="flex:1;">
-                        <label>භාණ්ඩ වර්ගය:</label>
-                        <select id="wastage-item-select"></select>
-                    </div>
-                    <div class="form-group" style="flex:1;">
-                        <label>නරක් වූ ප්‍රමාණය (Qty):</label>
-                        <input type="number" id="wastage-qty-input" min="1" required>
-                    </div>
-                    <button type="submit" class="btn btn-danger" style="width:auto; height:45px; margin-bottom:12px; background:#e65100;">Wastage ඇතුළත් කරන්න</button>
-                </form>
-                <div class="table-responsive">
-                    <table style="min-width:100%;">
-                        <thead>
-                            <tr><th>දිනය</th><th>භාණ්ඩය</th><th>නරක් වූ Qty</th><th>පිරිවැය අලාභය</th><th>මකන්න</th></tr>
-                        </thead>
-                        <tbody id="wastage-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-
             <div class="card">
                 <h3>⛽ දෛනික වියදම් ඇතුළත් කිරීම (Category Expense Tracker)</h3>
                 <form id="expense-form">
@@ -293,8 +265,8 @@
                                 <th>මාසය (Month)</th>
                                 <th style="color:green;">මුළු ආදායම</th>
                                 <th style="color:orange;">රිටන් අලාභ</th>
-                                <th style="color:#b91c1c;">Wastage (නරක්වීම්) අලාභ</th> <th style="color:red;">නිෂ්පාදන පිරිවැය (Cost)</th>
-                                <th style="color:#e65100;">ප්‍රවාහන වියදම් (Fuel)</th>
+                                <th style="color:red;">නිෂ්පාදන පිරිවැය (Cost)</th>
+                                <th style="color:#7f1d1d;">ප්‍රවාහන වියදම් (Fuel)</th>
                                 <th style="background:#e8f5e9;">ශුද්ධ ලාභය (Net Profit)</th>
                             </tr>
                         </thead>
@@ -328,7 +300,7 @@
                         <h3>🏪 කඩවල් සහ දුරකථන අංක ලියාපදිංචිය</h3>
                         <form id="add-shop-form" style="margin-top:10px;">
                             <div class="form-group"><input type="text" id="new-shop-name" placeholder="කඩේ නම" required></div>
-                            <div class="form-group"><input type="text" id="new-shop-phone" placeholder="දුරකථන අංකය" required></div>
+                            <div class="form-group"><input type="text" id="new-shop-phone" placeholder="දුරකථන අංකය (උදා: 0771234567)" required></div>
                             <button type="submit" class="btn btn-secondary" style="width:100%;">කඩය එකතු කරන්න</button>
                         </form>
                         <ul id="shop-list" style="margin-top:10px;"></ul>
