@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watalappan Smart Enterprise ERP v3.2</title>
+    <title>Watalappan Smart Enterprise ERP v3.3</title>
     <style>
-        /* --- 📱 MOBILE-FIRST CSS LAYOUT (ෆෝන් එකටම විශේෂයෙන් හැදූ මෝස්තර) --- */
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -51,8 +50,6 @@
             border-bottom: 1px dashed #e0e0e0;
             padding-bottom: 8px;
         }
-        
-        /* 📱 RESPONSIVE FORM GRID (කොටු කැපෙන්නේ නැති වෙන්න) */
         .form-group-stack {
             display: flex;
             flex-direction: column;
@@ -71,21 +68,14 @@
             color: #4e342e;
         }
         input, select, textarea {
-            width: 100% !important; /* කොටුව සම්පූර්ණයෙන්ම පෙනීමට */
-            padding: 12px; /* ඇඟිල්ලෙන් ඔබන්න ලේසි වෙන්න */
+            width: 100% !important;
+            padding: 12px;
             border: 1px solid #bcaaa4;
             border-radius: 6px;
             font-size: 0.95rem;
             background-color: #fff;
             height: 45px;
         }
-        input:focus, select:focus {
-            border-color: #8d6e63;
-            outline: none;
-            background-color: #fafafa;
-        }
-
-        /* 📱 BUTTONS */
         .btn {
             background-color: #8d6e63;
             color: white;
@@ -95,7 +85,7 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            width: 100%; /* ෆෝන් එකේදී බොත්තම් පළලටම */
+            width: 100%;
             text-align: center;
             margin-bottom: 8px;
             display: inline-block;
@@ -103,7 +93,6 @@
         .btn-success { background-color: #43a047; }
         .btn-danger { background-color: #e53935; width: auto; padding: 6px 12px; }
         
-        /* 📱 SCROLLABLE TABLES (වගු පැත්තට ලස්සනට Scroll වෙනවා) */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
@@ -113,7 +102,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 500px; /* ෆෝන් එකේදී හිර නොවී ඉඩ තියාගන්න */
+            min-width: 500px;
         }
         th, td {
             border: 1px solid #e0e0e0;
@@ -123,7 +112,6 @@
         }
         th { background-color: #efebe9; color: #4e342e; }
         
-        /* 📱 TABS SCROLLABLE (ටැබ්ස් ටික පැත්තට ලස්සනට සර්ව කරන්න පුළුවන්) */
         .tabs {
             display: flex;
             overflow-x: auto;
@@ -141,12 +129,11 @@
             font-weight: bold;
             border-radius: 6px;
             font-size: 0.85rem;
-            flex-shrink: 0; /* ටැබ්ස් හකුලන්න එපා */
+            flex-shrink: 0;
         }
         .tab-btn.active { background: #8d6e63; color: white; }
         .hidden { display: none !important; }
 
-        /* 🛍️ MULTI-ITEM BOXES FOR MOBILE */
         .item-row-box {
             background: #fbe9e7;
             padding: 12px;
@@ -167,7 +154,6 @@
             flex: 1;
         }
         
-        /* LOGIN SCREEN */
         .login-screen {
             max-width: 360px;
             margin: 60px auto;
@@ -195,7 +181,7 @@
 
     <div id="main-system-block" class="container hidden">
         <div class="header-area">
-            <h2>🍮 වටලප්පන් ERP v3.2</h2>
+            <h2>🍮 වටලප්පන් ERP v3.3</h2>
             <button class="btn btn-danger" onclick="logout()">🔒 Logout</button>
         </div>
         
@@ -221,14 +207,13 @@
                     <div class="form-field">
                         <label>ගනුදෙනු ක්‍රමය:</label>
                         <select id="sales-pay-mode">
-                            <option value="Cash">मुදල් (Cash)</option>
+                            <option value="Cash">මුදල් (Cash)</option>
                             <option value="Credit">ණය (Credit)</option>
                         </select>
                     </div>
                 </div>
 
-                <div id="invoice-items-container">
-                    </div>
+                <div id="invoice-items-container"></div>
                 
                 <button class="btn" style="background-color: #a1887f;" onclick="addInvoiceItemRow()">➕ තවත් භාණ්ඩයක් එකතු කරන්න</button>
                 <button class="btn btn-success" onclick="generateInvoiceInvoice()">📄 බිල්පත සහ දත්ත සුරකින්න</button>
@@ -393,6 +378,7 @@
                 document.getElementById('login-block').classList.add('hidden');
                 document.getElementById('main-system-block').classList.remove('hidden');
                 sessionStorage.setItem('w_logged_in', 'true');
+                document.getElementById('login-err').style.display = 'none';
             } else {
                 document.getElementById('login-err').style.display = 'block';
             }
@@ -443,7 +429,9 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.remove('hidden');
-            event.currentTarget.classList.add('active');
+            if(event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
         }
 
         function initDropdowns() {
@@ -606,4 +594,109 @@
             });
         }
 
-        // --- MULT
+        // --- MULTI-ITEM INVOICING ---
+        let rowCounter = 0;
+        function addInvoiceItemRow() {
+            rowCounter++;
+            const container = document.getElementById('invoice-items-container');
+            const rowHtml = `
+                <div class="item-row-box" id="inv-row-${rowCounter}">
+                    <div class="item-row-grid">
+                        <div class="form-field">
+                            <label>භාණ්ඩ වර්ගය:</label>
+                            <select class="row-item-select" id="row-item-${rowCounter}">
+                                ${Object.keys(products).map(p => `<option value="${p}">${p}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="qty-row">
+                            <div class="form-field">
+                                <label>බෙදාහළ Qty:</label>
+                                <input type="number" class="row-qty" id="row-qty-${rowCounter}" value="0" min="0">
+                            </div>
+                            <div class="form-field">
+                                <label>රිටන් Qty:</label>
+                                <input type="number" class="row-ret" id="row-ret-${rowCounter}" value="0" min="0">
+                            </div>
+                            <div style="display:flex; align-items:flex-end;">
+                                <button class="btn btn-danger" style="margin:0; height:45px; width:45px; padding:0; display:flex; align-items:center; justify-content:center;" onclick="removeInvoiceItemRow(${rowCounter})">❌</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', rowHtml);
+        }
+
+        function removeInvoiceItemRow(id) {
+            const row = document.getElementById(`inv-row-${id}`);
+            if(row) row.remove();
+        }
+
+        let currentActiveInvoiceData = null; 
+        function generateInvoiceInvoice() {
+            const dt = document.getElementById('sales-date').value;
+            const shop = document.getElementById('sales-shop-select').value;
+            const payMode = document.getElementById('sales-pay-mode').value;
+
+            const rows = document.querySelectorAll('.item-row-box');
+            if(rows.length === 0) return alert("කරුණාකර අවම වශයෙන් එක භාණ්ඩයක්වත් ඇතුලත් කරන්න!");
+
+            let invoiceItems = [];
+            let netTotal = 0;
+
+            for(let row of rows) {
+                let id = row.id.split('-')[2];
+                let item = document.getElementById(`row-item-${id}`).value;
+                let qty = parseInt(document.getElementById(`row-qty-${id}`).value) || 0;
+                let ret = parseInt(document.getElementById(`row-ret-${id}`).value) || 0;
+                
+                if(qty === 0 && ret === 0) continue;
+
+                let price = products[item].price;
+                let finalQty = Math.max(0, qty - ret);
+                let rowTotal = finalQty * price;
+                netTotal += rowTotal;
+
+                invoiceItems.push({
+                    item: item, qty: qty, ret: ret, price: price, total: rowTotal
+                });
+            }
+
+            if(invoiceItems.length === 0) return alert("Qty හෝ Return ප්‍රමාණයන් ඇතුළත් කරන්න!");
+
+            currentActiveInvoiceData = {
+                date: dt, shop: shop, payMode: payMode, items: invoiceItems, total: netTotal
+            };
+
+            salesInvoices.push(currentActiveInvoiceData);
+            localStorage.setItem('w_invoices', JSON.stringify(salesInvoices));
+
+            document.getElementById('pdf-preview-card').classList.remove('hidden');
+            document.getElementById('pdf-inv-meta').textContent = `දිනය: ${dt} | වෙළඳසැල: ${shop}`;
+            
+            const pBody = document.getElementById('pdf-inv-body');
+            pBody.innerHTML = '';
+            invoiceItems.forEach(i => {
+                pBody.innerHTML += `<tr><td>${i.item}</td><td>${i.qty}</td><td>${i.ret}</td><td>රු.${i.price}</td><td>රු.${i.total.toFixed(2)}</td></tr>`;
+            });
+            document.getElementById('pdf-inv-total').textContent = `මුළු එකතුව: ਰੁ. ${netTotal.toFixed(2)}`;
+            document.getElementById('pdf-inv-paytype').textContent = `ගනුදෙනු ක්‍රමය: ${payMode === 'Credit' ? 'ණය (Credit Book)' : 'මුදල් ලැබුණි (Cash)'}`;
+            
+            alert("📄 බිල්පත සාර්ථකව එක්වුණා! දැන් PDF එක බාගත කරගත හැක.");
+            window.scrollTo(0, document.getElementById('pdf-preview-card').offsetTop);
+        }
+
+        function downloadInvoicePDF() {
+            if(!currentActiveInvoiceData) return;
+            const element = document.getElementById('invoice-pdf-area');
+            const opt = {
+                margin:       5,
+                filename:     `Invoice_${currentActiveInvoiceData.shop}_${currentActiveInvoiceData.date}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a5', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>
