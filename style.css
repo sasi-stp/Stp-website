@@ -25,7 +25,6 @@ body { background-color: var(--bg-color); color: var(--text-color); padding: 8px
     border-radius: 8px; 
     overflow-x: auto; 
     white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
 }
 .tabs-nav::-webkit-scrollbar { display: none; }
 .tab-btn { padding: 10px 14px; border: none; background: none; font-size: 0.85rem; font-weight: bold; color: var(--text-color); cursor: pointer; border-radius: 6px; flex-shrink: 0; }
@@ -34,7 +33,7 @@ body { background-color: var(--bg-color); color: var(--text-color); padding: 8px
 .tab-content { display: none; }
 .tab-content.active-content { display: block; animation: fadeIn 0.2s ease-in-out; }
 
-.alert-banner { background: #fff3e0; color: #e65100; padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; font-size: 0.8rem; font-weight: bold; border-left: 4px solid #ff9800; display: flex; justify-content: space-between; }
+.alert-banner { background: #fff3e0; color: #e65100; padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; font-size: 0.8rem; font-weight: bold; border-left: 4px solid #ff9800; }
 .alert-banner.danger-alert { background: #ffebee; color: #c62828; border-left: 4px solid #f44336; }
 
 .filter-dashboard { border-left: 5px solid #00acc1; }
@@ -52,8 +51,6 @@ body { background-color: var(--bg-color); color: var(--text-color); padding: 8px
 
 .form-group { margin-bottom: 10px; display: flex; flex-direction: column; }
 .form-group-row { display: flex; gap: 10px; }
-.row-group { display: flex; gap: 5px; }
-.row-group input { flex: 1; }
 label { font-weight: 600; margin-bottom: 3px; font-size: 0.8rem; }
 input, select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; width: 100%; }
 
@@ -68,7 +65,7 @@ input, select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-
 .btn-export { background-color: #0288d1; color: white; font-size: 0.75rem; padding: 6px 10px; }
 
 .total-highlight { font-size: 1.3rem; font-weight: bold; color: var(--success-color); background: #e8f5e9; padding: 8px; border-radius: 6px; text-align: center; }
-#shop-list { list-style: none; max-height: 90px; overflow-y: auto; }
+#shop-list { list-style: none; max-height: 120px; overflow-y: auto; }
 #shop-list li { display: flex; justify-content: space-between; padding: 6px; background: #fdfdfd; border-bottom: 1px solid #eee; font-size: 0.85rem; }
 .delete-btn { color: var(--danger-color); cursor: pointer; font-weight: bold; }
 
