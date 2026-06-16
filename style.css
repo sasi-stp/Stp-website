@@ -51,6 +51,7 @@ body { background-color: var(--bg-color); color: var(--text-color); padding: 8px
 
 .form-group { margin-bottom: 10px; display: flex; flex-direction: column; }
 .form-group-row { display: flex; gap: 10px; }
+.form-group-row-three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 label { font-weight: 600; margin-bottom: 3px; font-size: 0.8rem; }
 input, select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; width: 100%; }
 
@@ -65,9 +66,10 @@ input, select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-
 .btn-export { background-color: #0288d1; color: white; font-size: 0.75rem; padding: 6px 10px; }
 
 .total-highlight { font-size: 1.3rem; font-weight: bold; color: var(--success-color); background: #e8f5e9; padding: 8px; border-radius: 6px; text-align: center; }
-#shop-list { list-style: none; max-height: 120px; overflow-y: auto; }
-#shop-list li { display: flex; justify-content: space-between; padding: 6px; background: #fdfdfd; border-bottom: 1px solid #eee; font-size: 0.85rem; }
-.delete-btn { color: var(--danger-color); cursor: pointer; font-weight: bold; }
+#shop-list { list-style: none; max-height: 150px; overflow-y: auto; }
+#shop-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #fdfdfd; border-bottom: 1px solid #eee; font-size: 0.85rem; }
+.delete-btn { color: var(--danger-color); cursor: pointer; font-weight: bold; margin-left: 10px; }
+.edit-btn-icon { color: #0288d1; cursor: pointer; font-weight: bold; margin-right: 10px; font-size: 1.1rem; }
 
 .table-header { display: flex; flex-direction: column; gap: 5px; margin-bottom: 8px; }
 .table-responsive { overflow-x: auto; border: 1px solid #ddd; border-radius: 6px; background: white; margin-bottom: 10px;}
@@ -77,6 +79,11 @@ th { background-color: #efebe9; color: var(--primary-color); }
 
 .hidden { display: none !important; }
 .error-msg { color: var(--danger-color); font-weight: bold; font-size: 0.8rem; margin-top: 5px; }
+
+/* Modal Styling */
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+.modal-content { max-width: 400px; width: 90%; background: white; border-left: 5px solid #ffa726; }
+
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 @media (min-width: 769px) {
