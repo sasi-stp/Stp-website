@@ -8,7 +8,6 @@ let shopDirectory = JSON.parse(localStorage.getItem('watalappan_shop_directory')
     { name: "Town Bakery", phone: "0719876543" }
 ];
 
-// Map contains [Selling Price, Cost Price per Unit, Free Trigger Qty, Free Give Qty]
 let productsMap = JSON.parse(localStorage.getItem('watalappan_products_map')) || {
     "වටලප්පන්": [150, 90, 10, 1], 
     "යෝගට්": [70, 40, 0, 0], 
@@ -18,7 +17,6 @@ let productsMap = JSON.parse(localStorage.getItem('watalappan_products_map')) ||
 
 let salesData = JSON.parse(localStorage.getItem('watalappan_sales')) || [];
 let expenses = JSON.parse(localStorage.getItem('watalappan_expenses')) || [];
-// stockHistory objects: { id, date, item, prevBal, qty }
 let stockHistory = JSON.parse(localStorage.getItem('watalappan_stock_history')) || [];
 let creditPayments = JSON.parse(localStorage.getItem('watalappan_credit_payments')) || [];
 
@@ -30,19 +28,19 @@ const passwordInput = document.getElementById('password');
 const loginError = document.getElementById('login-error');
 
 const salesDateInput = document.getElementById('sales-date');
-const itemTypeSelect = document.getElementById('item-type');
 const shopSelect = document.getElementById('shop-select');
 const filterShopSelect = document.getElementById('filter-shop-select');
 const filterProductSelect = document.getElementById('filter-product-select');
 const filterTimeSelect = document.getElementById('filter-time-select');
 const pnlProductFilterSelect = document.getElementById('pnl-product-filter-select');
 
-const quantityInput = document.getElementById('quantity');
-const freeQuantityInput = document.getElementById('free-quantity');
-const returnQuantityInput = document.getElementById('return-quantity');
+const itemsContainer = document.getElementById('items-container');
 const totalPriceDisplay = document.getElementById('total-price-display');
 const salesForm = document.getElementById('sales-form');
 const salesTableBody = document.getElementById('sales-table-body');
+
+const sendBillCheckbox = document.getElementById('send-bill-checkbox');
+const sharingOptionsWrapper = document.getElementById('sharing-options-wrapper');
 
 // --- APP LIFECYCLE ---
 document.addEventListener("DOMContentLoaded", () => {
@@ -76,6 +74,11 @@ function initApp() {
     populateDropdowns();
     renderShops();
     renderProductsSettings();
+    
+    // Clear and build initial dynamic row for multi item entry grid layout
+    itemsContainer.innerHTML = '';
+    addItemRow();
+    
     renderSalesTable();
     renderStockOverview();
     renderStockHistoryTable();
@@ -83,24 +86,27 @@ function initApp() {
     renderCreditTable();
     renderMonthlyPnL();
     updateFilteredAnalytics();
-    updateLiveTotal();
     
     [filterShopSelect, filterProductSelect, filterTimeSelect].forEach(el => {
         el.addEventListener('change', updateFilteredAnalytics);
     });
     
     pnlProductFilterSelect.addEventListener('change', renderMonthlyPnL);
+
+    // Setup Optional Notification Toggler Observer logic
+    sendBillCheckbox.addEventListener('change', () => {
+        if(sendBillCheckbox.checked) {
+            sharingOptionsWrapper.classList.remove('hidden');
+        } else {
+            sharingOptionsWrapper.classList.add('hidden');
+        }
+    });
+
+    // Auto calculate stock intake default balance based on selected asset type
+    document.getElementById('stock-item-select').addEventListener('change', updateStockPrevBalPreview);
 }
 
-window.switchTab = function(tabId) {
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-content'));
-    document.querySelectorAll('.tabs-nav .tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active-content');
-    if(event && event.currentTarget) event.currentTarget.classList.add('active');
-};
-
 function populateDropdowns() {
-    itemTypeSelect.innerHTML = '';
     shopSelect.innerHTML = '';
     filterShopSelect.innerHTML = '<option value="ALL">== සියලුම කඩවල් ==</option>';
     document.getElementById('credit-shop-select').innerHTML = '';
@@ -121,7 +127,6 @@ function populateDropdowns() {
     });
 
     Object.keys(productsMap).forEach(t => {
-        itemTypeSelect.add(new Option(t, t));
         stockItemSelect.add(new Option(t, t));
         filterProductSelect.add(new Option(t, t));
         pnlProductFilterSelect.add(new Option(t, t));
@@ -130,6 +135,59 @@ function populateDropdowns() {
     filterProductSelect.value = prevFilterProduct;
     pnlProductFilterSelect.value = prevPnlFilterProduct;
 }
+
+// --- DYNAMIC MULTI-ITEM GRID STRUCTURE CONSTRUCTORS ---
+window.addItemRow = function() {
+    const rowId = 'row_' + Date.now() + '_' + Math.floor(Math.random() * 100);
+    const rowCard = document.createElement('div');
+    rowCard.className = 'item-row-card';
+    rowCard.id = rowId;
+
+    let optionsHtml = '';
+    Object.keys(productsMap).forEach(prodName => {
+        optionsHtml += `<option value="${prodName}">${prodName}</option>`;
+    });
+
+    rowCard.innerHTML = `
+        <button type="button" class="btn-remove-row" onclick="removeItemRow('${rowId}')">✖</button>
+        <div class="form-group">
+            <label>භාණ්ඩ වර්ගය:</label>
+            <select class="row-item-select" onchange="updateLiveTotal()">${optionsHtml}</select>
+            <small class="row-scheme-lbl" style="color: #ff9800; font-weight: bold; margin-top: 2px;"></small>
+        </div>
+        <div class="form-group-row-three">
+            <div class="form-group">
+                <label>දැමූ ප්‍රමාණය (Qty):</label>
+                <input type="number" class="row-qty-input" min="0" value="0" oninput="updateLiveTotal()">
+                <small class="row-stock-lbl" style="color: blue; font-weight: bold; margin-top: 2px;">තොගයේ ඇත: 0</small>
+            </div>
+            <div class="form-group">
+                <label>Free ප්‍රමාණය:</label>
+                <input type="number" class="row-free-input" min="0" value="0" oninput="updateLiveTotal()">
+            </div>
+            <div class="form-group">
+                <label>Return ප්‍රමාණය:</label>
+                <input type="number" class="row-ret-input" min="0" value="0" oninput="updateLiveTotal()">
+            </div>
+        </div>
+    `;
+
+    itemsContainer.appendChild(rowCard);
+    updateLiveTotal();
+};
+
+window.removeItemRow = function(rowId) {
+    const rows = itemsContainer.getElementsByClassName('item-row-card');
+    if(rows.length <= 1) {
+        alert("⚠️ බිලකට අවම වශයෙන් එක භාණ්ඩ වර්ගයක්වත් තිබිය යුතුය.");
+        return;
+    }
+    const targetRow = document.getElementById(rowId);
+    if(targetRow) {
+        targetRow.remove();
+        updateLiveTotal();
+    }
+};
 
 // --- DYNAMIC STOCK CALCULATION MECHANICS ---
 function calculateCurrentStock() {
@@ -149,7 +207,13 @@ function calculateCurrentStock() {
     Object.keys(totalBuilt).forEach(k => { remainingStock[k] = totalBuilt[k]; });
 
     salesData.forEach(s => {
-        if(remainingStock[s.item] !== undefined) {
+        if(s.itemsList && Array.isArray(s.itemsList)) {
+            s.itemsList.forEach(si => {
+                if(remainingStock[si.item] !== undefined) {
+                    remainingStock[si.item] -= si.qty;
+                }
+            });
+        } else if(remainingStock[s.item] !== undefined) {
             remainingStock[s.item] -= s.qty;
         }
     });
@@ -158,32 +222,53 @@ function calculateCurrentStock() {
 }
 
 function updateLiveTotal() {
-    const item = itemTypeSelect.value;
-    if(!item) return;
-    
-    const qty = parseInt(quantityInput.value) || 0;
-    const freeQty = parseInt(freeQuantityInput.value) || 0;
-    const retQty = parseInt(returnQuantityInput.value) || 0;
-    
     const stock = calculateCurrentStock();
-    const avail = stock.remainingStock[item] || 0;
-    
-    const scheme = productsMap[item];
-    const schemeLbl = document.getElementById('prod-free-scheme-lbl');
-    if(scheme && scheme[2] > 0 && scheme[3] > 0) {
-        schemeLbl.textContent = `💡 Free ක්‍රමය: ඒකක ${scheme[2]} කට ${scheme[3]} ක් නොමිලේ හිමිවේ.`;
-    } else {
-        schemeLbl.textContent = '';
+    let overallBillNetTotal = 0;
+
+    const rows = itemsContainer.getElementsByClassName('item-row-card');
+    for(let row of rows) {
+        const itemSelect = row.querySelector('.row-item-select');
+        const qtyInput = row.querySelector('.row-qty-input');
+        const freeInput = row.querySelector('.row-free-input');
+        const retInput = row.querySelector('.row-ret-input');
+        
+        const schemeLbl = row.querySelector('.row-scheme-lbl');
+        const stockLbl = row.querySelector('.row-stock-lbl');
+
+        const item = itemSelect.value;
+        const qty = parseInt(qtyInput.value) || 0;
+        const freeQty = parseInt(freeInput.value) || 0;
+        const retQty = parseInt(retInput.value) || 0;
+
+        const avail = stock.remainingStock[item] || 0;
+        stockLbl.textContent = `තොගයේ ඇත: ${avail}`;
+
+        const scheme = productsMap[item];
+        if(scheme && scheme[2] > 0 && scheme[3] > 0) {
+            schemeLbl.textContent = `💡 Free ක්‍රමය: ඒකක ${scheme[2]} කට ${scheme[3]} ක් නොමිලේ හිමිවේ.`;
+        } else {
+            schemeLbl.textContent = '';
+        }
+
+        const price = getUnitPrice(item);
+        const finalBillableQty = Math.max(0, qty - freeQty - retQty);
+        overallBillNetTotal += (finalBillableQty * price);
     }
-    
-    document.getElementById('stock-available-lbl').textContent = `තොගයේ ඇත: ${avail}`;
-    
-    // වෙනස්කම 8: දැමූ ප්‍රමාණයෙන් free සහ return ප්‍රමාණය අඩු කර net total එක හැදීම
-    const finalBillableQty = Math.max(0, qty - freeQty - retQty);
-    const total = finalBillableQty * getUnitPrice(item);
-    totalPriceDisplay.textContent = `රු. ${total.toFixed(2)}`;
+
+    totalPriceDisplay.textContent = `රු. ${overallBillNetTotal.toFixed(2)}`;
 }
-[quantityInput, freeQuantityInput, returnQuantityInput, itemTypeSelect].forEach(el => el.addEventListener('input', updateLiveTotal));
+
+// --- INTAKE SYSTEM: YESTERDAY PREVIEW UPDATE FLOW MECHANICS ---
+function updateStockPrevBalPreview() {
+    const selectedItem = document.getElementById('stock-item-select').value;
+    if(!selectedItem) return;
+
+    const stock = calculateCurrentStock();
+    const currentRemaining = stock.remainingStock[selectedItem] || 0;
+    
+    // Automatically pre-populate and keep it fully editable for users
+    document.getElementById('stock-prev-bal').value = currentRemaining;
+}
 
 function getUnitPrice(type) {
     return productsMap[type] ? parseFloat(productsMap[type][0]) : 0;
@@ -250,7 +335,7 @@ window.deleteProduct = function(name) {
     }
 };
 
-// --- SHOP REGISTRATION MODIFICATIONS (DUPLICATE PHONE CHECK & EDIT DIALOGS) ---
+// --- SHOP REGISTRATION MODIFICATIONS ---
 document.getElementById('add-shop-form').addEventListener('submit', (e) => {
     e.preventDefault();
     let nameVal = document.getElementById('new-shop-name').value.trim();
@@ -258,7 +343,6 @@ document.getElementById('add-shop-form').addEventListener('submit', (e) => {
     
     if(!nameVal) return;
     
-    // වෙනස්කම 3: එකම දුරකථන අංකය නැවත නැවත ඇතුළත් කිරීම වැළැක්වීම
     if(phoneVal) {
         const isDuplicate = shopDirectory.some(s => s.phone && s.phone.replace(/\s+/g, '') === phoneVal.replace(/\s+/g, ''));
         if(isDuplicate) {
@@ -306,7 +390,6 @@ window.closeShopPhoneModal = function() {
     document.getElementById('edit-phone-modal').classList.add('hidden');
 };
 
-// වෙනස්කම 3: පසුව දුරකථන අංකය ඇතුළත් කිරීමේදීත් එකම අංකය බ්ලොක් කිරීම
 window.saveShopPhoneModal = function() {
     const idx = parseInt(document.getElementById('modal-shop-index').value);
     const newPhone = document.getElementById('modal-phone-input').value.trim();
@@ -334,26 +417,39 @@ window.deleteShop = function(idx) {
     }
 };
 
-// --- SALES SUBMISSION MECHANICS & DISPATCH ---
+// --- SALES MULTI ITEM SUBMISSION MECHANICS & DISPATCH ---
 salesForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const dt = salesDateInput.value;
     const shop = shopSelect.value;
-    const item = itemTypeSelect.value;
-    const qty = parseInt(quantityInput.value) || 0;
-    const free = parseInt(freeQuantityInput.value) || 0;
-    const ret = parseInt(returnQuantityInput.value) || 0;
     const payMethod = document.querySelector('input[name="payment-method"]:checked').value;
-    const shareMode = document.querySelector('input[name="share-mode"]:checked').value;
     
-    if(qty === 0 && ret === 0 && free === 0) return alert("කරුණාකර ප්‍රමාණයන් ඇතුළත් කරන්න!");
-    
-    const price = getUnitPrice(item);
-    const finalBillableQty = Math.max(0, qty - free - ret);
-    const netTotal = finalBillableQty * price;
+    let overallBillNetTotal = 0;
+    let itemsList = [];
+
+    const rows = itemsContainer.getElementsByClassName('item-row-card');
+    for(let row of rows) {
+        const item = row.querySelector('.row-item-select').value;
+        const qty = parseInt(row.querySelector('.row-qty-input').value) || 0;
+        const free = parseInt(row.querySelector('.row-free-input').value) || 0;
+        const ret = parseInt(row.querySelector('.row-ret-input').value) || 0;
+        
+        if(qty === 0 && free === 0 && ret === 0) continue;
+
+        const price = getUnitPrice(item);
+        const finalBillableQty = Math.max(0, qty - free - ret);
+        const lineTotal = finalBillableQty * price;
+
+        overallBillNetTotal += lineTotal;
+        itemsList.push({ item: item, qty: qty, free: free, ret: ret, total: lineTotal });
+    }
+
+    if(itemsList.length === 0) {
+        return alert("කරුණාකර අවම වශයෙන් එක භාණ්ඩයකටවත් ප්‍රමාණයන් ඇතුළත් කරන්න!");
+    }
     
     const record = {
-        id: Date.now(), date: dt, shop: shop, item: item, qty: qty, free: free, ret: ret, total: netTotal, mode: payMethod
+        id: Date.now(), date: dt, shop: shop, itemsList: itemsList, total: overallBillNetTotal, mode: payMethod
     };
     
     salesData.push(record);
@@ -365,26 +461,37 @@ salesForm.addEventListener('submit', (e) => {
     renderMonthlyPnL();
     updateFilteredAnalytics();
     
-    triggerBillNotification(record, shareMode);
+    // Process optional notification criteria based on checkbox condition
+    if(sendBillCheckbox.checked) {
+        const shareMode = document.querySelector('input[name="share-mode"]:checked').value;
+        triggerBillNotification(record, shareMode);
+    }
     
-    quantityInput.value = '0';
-    freeQuantityInput.value = '0';
-    returnQuantityInput.value = '0';
+    // Clear dynamic UI rows layout grid setup entirely back to safe defaults
+    itemsContainer.innerHTML = '';
+    addItemRow();
+    sendBillCheckbox.checked = false;
+    sharingOptionsWrapper.classList.add('hidden');
     updateLiveTotal();
 });
 
 function renderSalesTable() {
     salesTableBody.innerHTML = '';
     salesData.slice().reverse().forEach(s => {
-        const freeVal = s.free || 0;
+        let descHtml = '';
+        if(s.itemsList && Array.isArray(s.itemsList)) {
+            s.itemsList.forEach(si => {
+                descHtml += `• ${si.item} (${si.qty} Qty, ${si.free} Free, ${si.ret} Ret)<br>`;
+            });
+        } else {
+            descHtml = `• ${s.item} (${s.qty} Qty, ${s.free || 0} Free, ${s.ret} Ret)`;
+        }
+
         salesTableBody.innerHTML += `
             <tr>
                 <td>${s.date}</td>
                 <td><b>${s.shop}</b></td>
-                <td>${s.item}</td>
-                <td>${s.qty}</td>
-                <td style="color:#ff9800; font-weight:bold;">${freeVal}</td>
-                <td style="color:red; font-weight:bold;">${s.ret}</td>
+                <td style="font-size: 0.75rem; max-width: 250px; line-height: 1.3;">${descHtml}</td>
                 <td><b>රු. ${s.total.toFixed(2)}</b></td>
                 <td><span style="color:${s.mode === 'Cash' ? 'green':'purple'}; font-weight:bold;">${s.mode}</span></td>
                 <td><span class="delete-btn" onclick="deleteSalesRecord(${s.id})">❌</span></td>
@@ -404,9 +511,18 @@ function triggerBillNotification(r, mode) {
     const targetShop = shopDirectory.find(s => s.name === r.shop);
     const phone = targetShop ? targetShop.phone : "";
     
-    const msg = `*🍮 WATALAPPAN ENTERPRISE DAILY BILL*%0A----------------------------------------%0A📅 *දිනය (Date):* ${r.date}%0A🏪 *වෙළඳසැල:* ${r.shop}%0A📦 *භාණ්ඩය:* ${r.item}%0A🔹 *බෙදාහළ තොග (Qty):* ${r.qty}%0A🎁 *නොමිලේ දුන් (Free):* ${r.free || 0}%0A🔺 *රිටන් ප්‍රමාණය (Return):* ${r.ret}%0A💰 *කඩයට දාන මිල:* රු. ${getUnitPrice(r.item)}%0A----------------------------------------%0A💵 *ගෙවිය යුතු ශුද්ධ මුළු මුදල:* රු. ${r.total.toFixed(2)}%0A----------------------------------------%0A📑 *ගනුදෙනු ක්‍රමය:* ${r.mode === 'Cash' ? '🤝 CASH (මුදල් ලැබුණි)' : '💳 CREDIT (ණය පොතට)'}%0A----------------------------------------%0A_Watalappan ERP Smart Messaging v2.0_`;
+    if(!phone) return;
 
-    if(!phone) return; 
+    let itemsDescriptionText = "";
+    if(r.itemsList && Array.isArray(r.itemsList)) {
+        r.itemsList.forEach(si => {
+            itemsDescriptionText += `📦 *භාණ්ඩය:* ${si.item}%0A🔹 *Qty:* ${si.qty} | 🎁 *Free:* ${si.free} | 🔺 *Ret:* ${si.ret}%0A%0A`;
+        });
+    } else {
+        itemsDescriptionText = `📦 *භාණ්ඩය:* ${r.item}%0A🔹 *Qty:* ${r.qty} | 🎁 *Free:* ${r.free || 0} | 🔺 *Ret:* ${r.ret}%0A%0A`;
+    }
+    
+    const msg = `*🍮 WATALAPPAN ENTERPRISE DAILY BILL*%0A----------------------------------------%0A📅 *දිනය (Date):* ${r.date}%0A🏪 *වෙළඳසැල:* ${r.shop}%0A----------------------------------------%0A${itemsDescriptionText}----------------------------------------%0A💵 *ගෙවිය යුතු ශුද්ධ මුළු මුදල:* රු. ${r.total.toFixed(2)}%0A----------------------------------------%0A... *ගනුදෙනු ක්‍රමය:* ${r.mode === 'Cash' ? '🤝 CASH (මුදල් ලැබුණි)' : '💳 CREDIT (ණය පොතට)'}%0A----------------------------------------%0A_Watalappan ERP Smart Messaging v2.0_`;
 
     let formattedPhone = phone.startsWith('0') ? '94' + phone.substring(1) : phone;
     if(mode === "WhatsApp") {
@@ -416,20 +532,18 @@ function triggerBillNotification(r, mode) {
     }
 }
 
-// --- PRODUCTION STOCK INTAKE TRACKING (WITH EDIT MECHANICS & HISTORICAL GRID) ---
+// --- PRODUCTION STOCK INTAKE TRACKING ---
 document.getElementById('stock-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const editId = document.getElementById('stock-edit-id').value;
     const dt = document.getElementById('stock-date').value;
     const item = document.getElementById('stock-item-select').value;
-    // වෙනස්කම 5: පෙර දින ඉතිරිවීම් සංස්කරණය
     const prevBal = parseInt(document.getElementById('stock-prev-bal').value) || 0;
     const qty = parseInt(document.getElementById('stock-qty').value) || 0;
     
     if(!dt || !item) return;
 
     if(editId) {
-        // වෙනස්කම 4 සහ 5: පැරණි සටහන යාවත්කාලීන කිරීම (Edit Mode)
         stockHistory = stockHistory.map(h => {
             if(h.id == editId) {
                 return { ...h, date: dt, item: item, prevBal: prevBal, qty: qty };
@@ -450,7 +564,6 @@ document.getElementById('stock-form').addEventListener('submit', (e) => {
     renderMonthlyPnL();
 });
 
-// වෙනස්කම 4: Edit Icon (බටන්) එක එබූ විට පෝරමය වෙනස් කිරීම
 window.editStockRecord = function(id) {
     const rec = stockHistory.find(h => h.id == id);
     if(!rec) return;
@@ -475,6 +588,7 @@ window.resetStockForm = function() {
     document.getElementById('stock-form-title').textContent = "📦 නිෂ්පාදන තොග ඇතුළත් කිරීම (Daily Stock Intake)";
     document.getElementById('stock-submit-btn').textContent = "තොගය ඇතුළත් කරන්න";
     document.getElementById('stock-cancel-btn').classList.add('hidden');
+    updateStockPrevBalPreview();
 };
 
 function renderStockOverview() {
@@ -484,13 +598,23 @@ function renderStockOverview() {
     
     Object.keys(productsMap).forEach(item => {
         const total = stock.totalBuilt[item] || 0;
-        const sold = salesData.filter(s => s.item === item).reduce((acc, curr) => acc + curr.qty, 0);
+        
+        let sold = 0;
+        salesData.forEach(s => {
+            if(s.itemsList && Array.isArray(s.itemsList)) {
+                s.itemsList.forEach(si => {
+                    if(si.item === item) sold += si.qty;
+                });
+            } else if(s.item === item) {
+                sold += s.qty;
+            }
+        });
+
         const rem = total - sold;
         tbody.innerHTML += `<tr><td><b>${item}</b></td><td>${total}</td><td>${sold}</td><td style="font-weight:bold; color:${rem < 20 ? 'red':'green'}">${rem}</td></tr>`;
     });
 }
 
-// වෙනස්කම 6: තොරතුරු දිනය සහිතව වගුගත කිරීම සහ සංස්කරණ (Edit) අයිකන එක් කිරීම
 function renderStockHistoryTable() {
     const tbody = document.getElementById('stock-history-table-body');
     tbody.innerHTML = '';
@@ -598,7 +722,15 @@ function updateFilteredAnalytics() {
     
     let filteredSales = salesData.filter(s => {
         if(shop !== "ALL" && s.shop !== shop) return false;
-        if(prod !== "ALL" && s.item !== prod) return false;
+        
+        if(prod !== "ALL") {
+            if(s.itemsList && Array.isArray(s.itemsList)) {
+                let hasProduct = s.itemsList.some(si => si.item === prod);
+                if(!hasProduct) return false;
+            } else if(s.item !== prod) {
+                return false;
+            }
+        }
         
         const sDate = new Date(s.date);
         if(time === "daily") return sDate.toDateString() === now.toDateString();
@@ -611,17 +743,39 @@ function updateFilteredAnalytics() {
         return true;
     });
 
-    let totalSoldQty = filteredSales.reduce((a,c) => a + c.qty, 0);
-    let totalIncome = filteredSales.reduce((a,c) => a + c.total, 0);
-    let totalRetQty = filteredSales.reduce((a,c) => a + c.ret, 0);
-    
-    let totalReturnLoss = filteredSales.reduce((a,c) => {
-        return a + (c.ret * getUnitCost(c.item));
-    }, 0);
-    
-    let totalProductionCost = filteredSales.reduce((a,c) => {
-        return a + ((c.qty - c.ret) * getUnitCost(c.item));
-    }, 0);
+    let totalSoldQty = 0;
+    let totalIncome = 0;
+    let totalRetQty = 0;
+    let totalReturnLoss = 0;
+    let totalProductionCost = 0;
+    let outstandingIncurred = 0;
+
+    filteredSales.forEach(s => {
+        if(s.itemsList && Array.isArray(s.itemsList)) {
+            s.itemsList.forEach(si => {
+                if(prod !== "ALL" && si.item !== prod) return;
+                totalSoldQty += si.qty;
+                totalIncome += si.total;
+                totalRetQty += si.ret;
+                totalReturnLoss += (si.ret * getUnitCost(si.item));
+                totalProductionCost += ((si.qty - si.ret) * getUnitCost(si.item));
+            });
+            if(prod === "ALL" && s.mode === 'Credit') {
+                outstandingIncurred += s.total;
+            } else if(prod !== "ALL" && s.mode === 'Credit') {
+                s.itemsList.forEach(si => {
+                    if(si.item === prod) outstandingIncurred += si.total;
+                });
+            }
+        } else {
+            totalSoldQty += s.qty;
+            totalIncome += s.total;
+            totalRetQty += s.ret;
+            totalReturnLoss += (s.ret * getUnitCost(s.item));
+            totalProductionCost += ((s.qty - s.ret) * getUnitCost(s.item));
+            if(s.mode === 'Credit') outstandingIncurred += s.total;
+        }
+    });
 
     let filteredExpenses = expenses.filter(e => {
         const eDate = new Date(e.date);
@@ -652,7 +806,6 @@ function updateFilteredAnalytics() {
         allocatedExpense = filteredExpenses.reduce((a,c) => a + c.amount, 0) * ratio;
     }
 
-    let outstandingIncurred = filteredSales.filter(x => x.mode === 'Credit').reduce((a,c) => a + c.total, 0);
     let netProfit = totalIncome - totalProductionCost - totalReturnLoss - allocatedExpense;
 
     document.getElementById('f-sold-qty').textContent = totalSoldQty;
@@ -677,7 +830,14 @@ function calculateSmartInsights() {
     
     salesData.forEach(s => {
         shopVolume[s.shop] = (shopVolume[s.shop] || 0) + s.total;
-        productVolume[s.item] = (productVolume[s.item] || 0) + (s.qty - s.ret);
+        
+        if(s.itemsList && Array.isArray(s.itemsList)) {
+            s.itemsList.forEach(si => {
+                productVolume[si.item] = (productVolume[si.item] || 0) + (si.qty - si.ret);
+            });
+        } else {
+            productVolume[s.item] = (productVolume[s.item] || 0) + (s.qty - s.ret);
+        }
     });
     
     let topShop = Object.keys(shopVolume).reduce((a, b) => shopVolume[a] > shopVolume[b] ? a : b, "--");
@@ -706,14 +866,23 @@ function renderMonthlyPnL() {
     let monthlyMatrix = {};
     
     salesData.forEach(s => {
-        if(targetProd !== "ALL" && s.item !== targetProd) return;
-        
         const monthStr = s.date.substring(0, 7);
-        if(!monthlyMatrix[monthStr]) monthlyMatrix[monthStr] = { sales: 0, prodCost: 0, retLoss: 0, rawSales: 0 };
         
-        monthlyMatrix[monthStr].sales += s.total;
-        monthlyMatrix[monthStr].prodCost += ((s.qty - s.ret) * getUnitCost(s.item));
-        monthlyMatrix[monthStr].retLoss += (s.ret * getUnitCost(s.item));
+        if(!monthlyMatrix[monthStr]) monthlyMatrix[monthStr] = { sales: 0, prodCost: 0, retLoss: 0 };
+        
+        if(s.itemsList && Array.isArray(s.itemsList)) {
+            s.itemsList.forEach(si => {
+                if(targetProd !== "ALL" && si.item !== targetProd) return;
+                monthlyMatrix[monthStr].sales += si.total;
+                monthlyMatrix[monthStr].prodCost += ((si.qty - si.ret) * getUnitCost(si.item));
+                monthlyMatrix[monthStr].retLoss += (si.ret * getUnitCost(si.item));
+            });
+        } else {
+            if(targetProd !== "ALL" && s.item !== targetProd) return;
+            monthlyMatrix[monthStr].sales += s.total;
+            monthlyMatrix[monthStr].prodCost += ((s.qty - s.ret) * getUnitCost(s.item));
+            monthlyMatrix[monthStr].retLoss += (s.ret * getUnitCost(s.item));
+        }
     });
 
     let monthlyExpenses = {};
@@ -755,7 +924,7 @@ function renderMonthlyPnL() {
     });
 }
 
-// --- CLOUD TELEMETRY BRIDGE (GOOGLE SHEETS SYNC) ---
+// --- CLOUD TELEMETRY BRIDGE ---
 window.exportToGoogleSheets = function(type) {
     if(GOOGLE_SHEETS_WEBAPP_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") {
         return alert("ℹ️ Cloud Sync සක්‍රීය කිරීමට කරුණාකර Apps Script URL එක සැකසුම් (script.js) තුලට ඇතුලත් කරන්න.");
