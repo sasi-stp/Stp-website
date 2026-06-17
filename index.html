@@ -9,7 +9,7 @@
 <body>
 
     <div id="login-container" class="card fade-in">
-        <h2>🔒 ඇතුළු වන්න (Login)</h2>
+        <h2>🔒 ඈතුළු වන්න (Login)</h2>
         <p style="color: #666; margin-bottom: 20px; font-size: 0.9rem;">ව්‍යාපාරික දත්ත බැලීමට කරුණාකර මුරපදය ඇතුළත් කරන්න.</p>
         <form id="login-form">
             <div class="form-group">
@@ -105,53 +105,50 @@
             <div class="card">
                 <h3>📝 අලෙවිය සහ රිටන් ඇතුළත් කිරීම</h3>
                 <form id="sales-form">
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 15px;">
                         <label for="sales-date">දිනය (Date):</label>
                         <input type="date" id="sales-date" required>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 15px;">
                         <label for="shop-select">කඩය (Shop Name):</label>
                         <select id="shop-select" required></select>
                     </div>
-                    <div class="form-group">
-                        <label for="item-type">වර්ගය (Item Type):</label>
-                        <select id="item-type" required></select>
-                        <small id="prod-free-scheme-lbl" style="color: #ff9800; font-weight: bold; margin-top: 2px;"></small>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 style="font-size: 0.9rem; color: var(--primary-color);">📦 භාණ්ඩ ලැයිස්තුව (Items List)</h4>
+                        <button type="button" class="btn-add-item" onclick="addItemRow()">➕ තව වර්ගයක් එකතු කරන්න</button>
                     </div>
-                    <div class="form-group-row-three">
-                        <div class="form-group">
-                            <label for="quantity">දැමූ ප්‍රමාණය (Qty):</label>
-                            <input type="number" id="quantity" min="0" value="0" required>
-                            <small id="stock-available-lbl" style="color: blue; font-weight: bold; margin-top: 2px;">තොගයේ ඇත: 0</small>
+                    
+                    <div id="items-container">
                         </div>
-                        <div class="form-group">
-                            <label for="free-quantity">Free ප්‍රමාණය:</label>
-                            <input type="number" id="free-quantity" min="0" value="0" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="return-quantity">Return ප්‍රමාණය:</label>
-                            <input type="number" id="return-quantity" min="0" value="0" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
+
+                    <div class="form-group" style="margin-top: 15px;">
                         <label>ගනුදෙනු වර්ගය:</label>
                         <div class="radio-group">
                             <label class="radio-label"><input type="radio" name="payment-method" value="Cash" checked> මුදල් (Cash)</label>
                             <label class="radio-label"><input type="radio" name="payment-method" value="Credit"> ණය (Credit)</label>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>💡 බිල්පත යවන ක්‍රමය (Sharing Mode):</label>
-                        <div class="radio-group">
-                            <label class="radio-label"><input type="radio" name="share-mode" value="WhatsApp" checked> 💬 WhatsApp</label>
-                            <label class="radio-label"><input type="radio" name="share-mode" value="SMS"> 📱 සාමාන්‍ය SMS</label>
+
+                    <div class="form-group" style="background: #f1f8e9; padding: 12px; border-radius: 8px; border: 1px solid #c5e1a5; margin-top: 15px;">
+                        <label class="radio-label" style="font-weight: bold; color: #33691e; margin-bottom: 8px;">
+                            <input type="checkbox" id="send-bill-checkbox" style="width:18px; height:18px; accent-color:#4caf50;"> 💬 පාරිභෝගිකයාට බිලක් යැවීමට අවශ්‍යයි
+                        </label>
+                        
+                        <div id="sharing-options-wrapper" class="hidden" style="margin-top: 8px; padding-left: 24px;">
+                            <label style="margin-bottom: 4px; font-size: 0.8rem; font-weight: bold;">බිල යවන ක්‍රමය (Sharing Mode):</label>
+                            <div class="radio-group">
+                                <label class="radio-label"><input type="radio" name="share-mode" value="WhatsApp" checked> WhatsApp</label>
+                                <label class="radio-label"><input type="radio" name="share-mode" value="SMS"> SMS</label>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label># ශුද්ධ මුළු මුදල (Net Total):</label>
+
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label># මුළු ශුද්ධ එකතුව (Net Total):</label>
                         <div id="total-price-display" class="total-highlight">රු. 0.00</div>
                     </div>
-                    <button type="submit" class="btn btn-success">දත්ත ඇතුළත් කර බිල සාදන්න</button>
+                    <button type="submit" class="btn btn-success" style="margin-top:10px;">දත්ත ඇතුළත් කර බිල සාදන්න</button>
                 </form>
             </div>
 
@@ -166,11 +163,8 @@
                             <tr>
                                 <th>දිනය</th>
                                 <th>කඩේ නම</th>
-                                <th>භාණ්ඩය</th>
-                                <th>Qty</th>
-                                <th>Free</th>
-                                <th>Ret</th>
-                                <th>මුදල</th>
+                                <th>භාණ්ඩ විස්තරය</th>
+                                <th>මුළු මුදල</th>
                                 <th>ක්‍රමය</th>
                                 <th>ක්‍රියාමාර්ග</th>
                             </tr>
@@ -364,7 +358,7 @@
                                 <input type="text" id="new-shop-name" placeholder="Ex: Perera Bakery" required>
                             </div>
                             <div class="form-group" style="flex:1;">
-                                <label>දුරකථන අංකය (WhatsApp) [ಐච්ඡිකයි]:</label>
+                                <label>දුරකථන අංකය (WhatsApp) [아이च्छිකයි]:</label>
                                 <input type="tel" id="new-shop-phone" placeholder="Ex: 0771234567">
                             </div>
                         </div>
