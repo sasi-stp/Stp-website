@@ -75,7 +75,6 @@ function initApp() {
     renderShops();
     renderProductsSettings();
     
-    // Clear and build initial dynamic row for multi item entry grid layout
     itemsContainer.innerHTML = '';
     addItemRow();
     
@@ -93,7 +92,6 @@ function initApp() {
     
     pnlProductFilterSelect.addEventListener('change', renderMonthlyPnL);
 
-    // Setup Optional Notification Toggler Observer logic
     sendBillCheckbox.addEventListener('change', () => {
         if(sendBillCheckbox.checked) {
             sharingOptionsWrapper.classList.remove('hidden');
@@ -102,7 +100,6 @@ function initApp() {
         }
     });
 
-    // Auto calculate stock intake default balance based on selected asset type
     document.getElementById('stock-item-select').addEventListener('change', updateStockPrevBalPreview);
 }
 
@@ -136,7 +133,40 @@ function populateDropdowns() {
     pnlProductFilterSelect.value = prevPnlFilterProduct;
 }
 
-// --- DYNAMIC MULTI-ITEM GRID STRUCTURE CONSTRUCTORS ---
+// --- TAB NAVIGATION FUNCTION (FIXED) ---
+window.switchTab = function(tabId) {
+    const contents = document.querySelectorAll('.tab-content');
+    contents.forEach(content => content.classList.remove('active-content'));
+    
+    const buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    const targetContent = document.getElementById(tabId);
+    if (targetContent) {
+        targetContent.classList.add('active-content');
+    }
+    
+    const evt = window.event;
+    if (evt && evt.target && evt.target.classList.contains('tab-btn')) {
+        evt.target.classList.add('active');
+    } else {
+        buttons.forEach(btn => {
+            if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabId)) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    if(tabId === 'tab-entry') {
+        updateLiveTotal();
+    } else if(tabId === 'tab-analytics') {
+        updateFilteredAnalytics();
+    } else if(tabId === 'tab-pnl') {
+        renderMonthlyPnL();
+    }
+};
+
+// --- DYNAMIC MULTI-ITEM GRID STRUCTURE ---
 window.addItemRow = function() {
     const rowId = 'row_' + Date.now() + '_' + Math.floor(Math.random() * 100);
     const rowCard = document.createElement('div');
@@ -258,15 +288,12 @@ function updateLiveTotal() {
     totalPriceDisplay.textContent = `රු. ${overallBillNetTotal.toFixed(2)}`;
 }
 
-// --- INTAKE SYSTEM: YESTERDAY PREVIEW UPDATE FLOW MECHANICS ---
 function updateStockPrevBalPreview() {
     const selectedItem = document.getElementById('stock-item-select').value;
     if(!selectedItem) return;
 
     const stock = calculateCurrentStock();
     const currentRemaining = stock.remainingStock[selectedItem] || 0;
-    
-    // Automatically pre-populate and keep it fully editable for users
     document.getElementById('stock-prev-bal').value = currentRemaining;
 }
 
@@ -277,7 +304,7 @@ function getUnitCost(type) {
     return productsMap[type] ? parseFloat(productsMap[type][1]) : 0;
 }
 
-// --- PRODUCT REGISTRATION WITH PRODUCTION COST & FREE SCHEMES ---
+// --- PRODUCT REGSITRATION MANAGEMENT ---
 document.getElementById('add-product-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const nameInput = document.getElementById('new-prod-name');
@@ -335,7 +362,7 @@ window.deleteProduct = function(name) {
     }
 };
 
-// --- SHOP REGISTRATION MODIFICATIONS ---
+// --- SHOP DIRECTORY FLOWS ---
 document.getElementById('add-shop-form').addEventListener('submit', (e) => {
     e.preventDefault();
     let nameVal = document.getElementById('new-shop-name').value.trim();
@@ -417,7 +444,7 @@ window.deleteShop = function(idx) {
     }
 };
 
-// --- SALES MULTI ITEM SUBMISSION MECHANICS & DISPATCH ---
+// --- SALES PROCESSING MECHANICS ---
 salesForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const dt = salesDateInput.value;
@@ -461,13 +488,11 @@ salesForm.addEventListener('submit', (e) => {
     renderMonthlyPnL();
     updateFilteredAnalytics();
     
-    // Process optional notification criteria based on checkbox condition
     if(sendBillCheckbox.checked) {
         const shareMode = document.querySelector('input[name="share-mode"]:checked').value;
         triggerBillNotification(record, shareMode);
     }
     
-    // Clear dynamic UI rows layout grid setup entirely back to safe defaults
     itemsContainer.innerHTML = '';
     addItemRow();
     sendBillCheckbox.checked = false;
@@ -532,7 +557,7 @@ function triggerBillNotification(r, mode) {
     }
 }
 
-// --- PRODUCTION STOCK INTAKE TRACKING ---
+// --- PRODUCTION STOCK DATA STORAGE HANDLERS ---
 document.getElementById('stock-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const editId = document.getElementById('stock-edit-id').value;
@@ -647,7 +672,7 @@ window.deleteStockHistoryRecord = function(id) {
     }
 };
 
-// --- DAILY EXPENSES MANAGEMENT ---
+// --- GENERAL EXPENSES INFRASTRUCTURE ---
 document.getElementById('expense-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const dt = document.getElementById('expense-date').value;
@@ -682,7 +707,7 @@ window.deleteExpense = function(id) {
     }
 };
 
-// --- CREDIT MANAGEMENT INTERACTION ---
+// --- CREDIT BALANCING STRUCTURES ---
 document.getElementById('credit-payment-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const shop = document.getElementById('credit-shop-select').value;
@@ -712,7 +737,7 @@ function renderCreditTable() {
     });
 }
 
-// --- FILTERED BUSINESS INTEL & ANALYTICS ---
+// --- ANALYTICS CALCULATIONS MATRIX ---
 function updateFilteredAnalytics() {
     const shop = filterShopSelect.value;
     const prod = filterProductSelect.value;
@@ -821,7 +846,6 @@ function updateFilteredAnalytics() {
     calculateSmartInsights();
 }
 
-// --- CORE SMART INSIGHTS ENGINE ---
 function calculateSmartInsights() {
     if(salesData.length === 0) return;
     
@@ -857,7 +881,7 @@ function calculateSmartInsights() {
     });
 }
 
-// --- DYNAMIC STRATIFIED MONTHLY P&L MATRIX ---
+// --- MONTHLY DATA MATRIX STRUCTS ---
 function renderMonthlyPnL() {
     const tbody = document.getElementById('pnl-table-body');
     tbody.innerHTML = '';
@@ -924,7 +948,7 @@ function renderMonthlyPnL() {
     });
 }
 
-// --- CLOUD TELEMETRY BRIDGE ---
+// --- TELEMETRY BRIDGE CONFIG ---
 window.exportToGoogleSheets = function(type) {
     if(GOOGLE_SHEETS_WEBAPP_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") {
         return alert("ℹ️ Cloud Sync සක්‍රීය කිරීමට කරුණාකර Apps Script URL එක සැකසුම් (script.js) තුලට ඇතුලත් කරන්න.");
