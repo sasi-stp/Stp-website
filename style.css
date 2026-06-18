@@ -59,7 +59,7 @@ body {
     font-size: 1.1rem; 
 }
 
-/* Mobile Friendly Horizontal Scrolling Navigation Menu */
+/* Mobile Navigation Bar with Scrolling */
 .tabs-nav { 
     display: flex; 
     gap: 8px; 
@@ -287,6 +287,9 @@ input, select {
     color: white; 
     font-size: 0.75rem; 
     padding: 6px 10px; 
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
 }
 
 .total-highlight { 
@@ -364,6 +367,60 @@ th {
     color: var(--primary-color); 
 }
 
+/* LIVE BILL INVOICE CONTAINER STYLING */
+.bill-invoice-container {
+    background: #fffdf9;
+    border: 2px dashed #bcaaa4;
+    padding: 20px 15px;
+    border-radius: 6px;
+    min-height: 250px;
+    color: #2b1d1a;
+}
+
+.invoice-title {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.invoice-divider {
+    border-top: 1px dashed #795548;
+    margin: 10px 0;
+}
+
+.invoice-meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+}
+
+.invoice-table {
+    width: 100%;
+    min-width: 100% !important;
+    margin: 15px 0;
+}
+
+.invoice-table th, .invoice-table td {
+    padding: 6px 2px;
+    font-size: 0.8rem;
+    border-bottom: 1px solid #eee;
+    background: none !important;
+}
+
+.invoice-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-top: 10px;
+    background: #efebe9;
+    padding: 6px;
+    border-radius: 4px;
+}
+
 .hidden { 
     display: none !important; 
 }
@@ -395,11 +452,19 @@ th {
     border-left: 5px solid #ffa726; 
 }
 
+/* GRID LAYOUT FIXES FOR SCREEN TYPES (FIXED WIDTH FOR SETTINGS & ENTRY) */
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    width: 100%;
+}
+
 @media (min-width: 769px) {
     body { padding: 20px; }
     .filter-controls-four { grid-template-columns: repeat(3, 1fr); }
     .summary-grid { grid-template-columns: repeat(4, 1fr); }
-    .grid-container { display: grid; grid-template-columns: 1fr 2.5fr; gap: 15px; }
+    .grid-container { grid-template-columns: 1fr 1.3fr; } /* Balanced Double Column */
     .table-header { flex-direction: row; justify-content: space-between; }
     .tab-btn { font-size: 0.95rem; padding: 10px 20px; }
 }
