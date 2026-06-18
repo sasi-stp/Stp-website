@@ -3,423 +3,420 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watalappan Smart Enterprise ERP</title>
+    <title>Watalappan ERP v2.6</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="login-container" class="card">
-        <h2>🍮 Watalappan Smart ERP</h2>
-        <p style="font-size:0.85rem; color:gray; margin-bottom:15px;">ඇතුල් වීමට මුරපදය ලබාදෙන්න</p>
-        <form id="login-form">
-            <div class="form-group">
-                <input type="password" id="password" placeholder="මුරපදය (Password)" required>
-            </div>
-            <button type="submit" class="btn btn-success" style="margin-top:5px;">Log In</button>
-            <div id="login-error" class="error-msg"></div>
-        </form>
+    <!-- LOGIN CONTAINER -->
+    <div id="login-container" class="login-wrapper">
+        <div class="login-box">
+            <h2>🍮 Watalappan ERP Login</h2>
+            <p>පද්ධතියට ඇතුළු වීමට මුරපදය (Password) ඇතුළත් කරන්න.</p>
+            <form id="login-form">
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="මුරපදය ඇතුළත් කරන්න" required>
+                </div>
+                <button type="submit" class="btn-primary">ඇතුළු වන්න 🔓</button>
+                <p id="login-error" class="error-msg"></p>
+            </form>
+        </div>
     </div>
 
+    <!-- MAIN APP CONTAINER -->
     <div id="app-container" class="hidden">
-        
-        <div class="card app-header">
-            <div>
-                <h1>Watalappan Smart Enterprise ERP <span style="font-size:0.8rem; color:var(--accent-color);">v2.6</span></h1>
-                <p style="font-size:0.75rem; color:gray;">පාලන මැදිරිය (Control Panel)</p>
-            </div>
-            <button class="btn btn-danger" id="logout-btn">Log Out</button>
-        </div>
+        <header class="main-header">
+            <h1>🍮 Watalappan Daily Sales & Stock ERP <span style="font-size:1rem; color:#ffeb3b;">v2.6</span></h1>
+            <button id="logout-btn" class="btn-logout">Logout 🚪</button>
+        </header>
 
-        <div class="tabs-nav">
-            <button class="tab-btn active" onclick="switchTab('tab-analytics')">📊 වාර්තා & Insights</button>
-            <button class="tab-btn" onclick="switchTab('tab-entry')">📥 දත්ත ඇතුළත් කිරීම</button>
-            <button class="tab-btn" onclick="switchTab('tab-stock')">📦 නිෂ්පාදන තොග</button>
-            <button class="tab-btn" onclick="switchTab('tab-credit')">💳 ණය ලෙජරය</button>
-            <button class="tab-btn" onclick="switchTab('tab-expenses')">💸 වියදම් කළමනාකරණය</button>
-            <button class="tab-btn" onclick="switchTab('tab-settings')">⚙️ සැකසුම් (Settings)</button>
-        </div>
+        <!-- NAVIGATION TABS -->
+        <nav class="tab-navigation">
+            <button class="tab-btn active" onclick="switchTab('tab-entry')">📝 බිල් ඇතුළත් කිරීම</button>
+            <button class="tab-btn" onclick="switchTab('tab-sales-history')">📜 විකුණුම් වාර්තා</button>
+            <button class="tab-btn" onclick="switchTab('tab-stock')">📦 නිෂ්පාදන / තොග</button>
+            <button class="tab-btn" onclick="switchTab('tab-expenses')">💸 වියදම් සටහන්</button>
+            <button class="tab-btn" onclick="switchTab('tab-credit')">👥 කඩවල් හා ණය</button>
+            <button class="tab-btn" onclick="switchTab('tab-analytics')">📊 ලාභ අලාභ වාර්තා</button>
+        </nav>
 
-        <div id="tab-analytics" class="tab-content active-content">
-            <div id="smart-alerts-container"></div>
+        <main class="app-main-content">
+            
+            <!-- TAB 1: BILL ENTRY -->
+            <section id="tab-entry" class="tab-content active-content">
+                <div class="grid-2-col">
+                    <div class="card">
+                        <h3>📝 නව බිලක් ඇතුළත් කිරීම</h3>
+                        <form id="sales-form">
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label for="sales-date">දිනය:</label>
+                                    <input type="date" id="sales-date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="shop-select">වෙළඳසැල (Shop):</label>
+                                    <select id="shop-select" required></select>
+                                </div>
+                            </div>
 
-            <div class="card filter-dashboard">
-                <h3>📊 ව්‍යාපාරික විශ්ලේෂණ පුවරුව (Interactive Dashboard)</h3>
-                <div class="filter-controls-four" style="margin-top:10px;">
-                    <div class="form-group">
-                        <label>කඩය අනුව පෙරන්න:</label>
-                        <select id="filter-shop-select"></select>
+                            <div id="items-container">
+                                <!-- Dynamic rows added by JS -->
+                            </div>
+
+                            <button type="button" class="btn-add-item" onclick="addItemRow()">➕ තව භාණ්ඩයක් එක් කරන්න</button>
+
+                            <div class="payment-method-wrapper">
+                                <label>ගෙවීම් ක්‍රමය:</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="payment-method" value="Cash" checked> Cash (මුදල්)</label>
+                                    <label><input type="radio" name="payment-method" value="Credit"> Credit (ණය)</label>
+                                </div>
+                            </div>
+
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" id="send-bill-checkbox"> ✉️ පාරිභෝගිකයාට බිල යවන්න (SMS / WhatsApp)</label>
+                            </div>
+
+                            <div id="sharing-options-wrapper" class="radio-group hidden" style="margin-top:-10px; margin-bottom:15px; padding-left:25px;">
+                                <label><input type="radio" name="share-mode" value="WhatsApp" checked> WhatsApp</label>
+                                <label><input type="radio" name="share-mode" value="SMS"> Normal SMS</label>
+                            </div>
+
+                            <div class="bill-summary-bar">
+                                <span>මුළු එකතුව:</span>
+                                <span id="total-price-display">රු. 0.00</span>
+                            </div>
+
+                            <button type="submit" class="btn-submit-bill">💾 බිල ස්ථිර කර සුරකින්න</button>
+                        </form>
                     </div>
-                    <div class="form-group">
-                        <label>භාණ්ඩය අනුව පෙරන්න:</label>
-                        <select id="filter-product-select"></select>
-                    </div>
-                    <div class="form-group">
-                        <label>කාල වකවානුව:</label>
-                        <select id="filter-time-select">
-                            <option value="all">සියලුම දත්ත (All-Time)</option>
-                            <option value="daily">අද දවසේ විකුණුම් (Today)</option>
-                            <option value="weekly">පසුගිය දින 7 (Weekly)</option>
-                            <option value="monthly" selected>මේ මාසයේ (This Month)</option>
-                            <option value="yearly">මේ වසරේ (This Year)</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
 
-            <div class="summary-grid">
-                <div class="summary-box filter-sales">
-                    <h4>විකිණූ මුළු ප්‍රමාණය</h4>
-                    <p id="f-sold-qty">0</p>
-                    <small>භාණ්ඩ ඒකක</small>
-                </div>
-                <div class="summary-box filter-income">
-                    <h4>මුළු ශුද්ධ ආදායම</h4>
-                    <p id="f-total-income">රු. 0.00</p>
-                    <small>Returns අඩු කර පසු</small>
-                </div>
-                <div class="summary-box filter-return">
-                    <h4>නැවත ලැබුණු (Returns)</h4>
-                    <p id="f-return-qty">0</p>
-                    <small id="f-return-loss">අලාභය: ਰੁ. 0.00</small>
-                </div>
-                <div class="summary-box filter-outstanding">
-                    <h4>ජනනය වූ ණය ප්‍රමාණය</h4>
-                    <p id="f-total-outstanding">රු. 0.00</p>
-                    <small>තෝරාගත් කාල සීමාවේ</small>
-                </div>
-            </div>
-
-            <div class="summary-grid" style="margin-top:10px;">
-                <div class="summary-box filter-profit" style="grid-column: span 2;">
-                    <h4>තක්සේරුගත ශුද්ධ ලාභය (Estimated Net Profit)</h4>
-                    <p id="f-net-profit">රු. 0.00</p>
-                    <small>නිෂ්පාදන පිරිවැය සහ වියදම් අඩු කිරීමෙන් පසු</small>
-                </div>
-                <div class="summary-box" style="background:#455a64;">
-                    <h4>වැඩිම විකුණුම් කඩය</h4>
-                    <p id="insight-top-shop" style="font-size:0.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">--</p>
-                    <small>Top Customer</small>
-                </div>
-                <div class="summary-box" style="background:#e65100;">
-                    <h4>වැඩිම ඉල්ලුමක් ඇති භාණ්ඩය</h4>
-                    <p id="insight-top-product" style="font-size:0.9rem;">--</p>
-                    <small>Fast Product</small>
-                </div>
-            </div>
-
-            <div class="card" style="margin-top:15px;">
-                <div class="table-header">
-                    <h3>📅 මාසික ලාභ අලාභ විස්තරය (Monthly P&L Matrix)</h3>
-                    <div>
-                        <select id="pnl-product-filter-select" style="padding:5px; font-size:0.8rem; width:auto;"></select>
+                    <div class="card" style="background: #fdfefe;">
+                        <h3>📄 අවසන් බිල්පතේ දසුන (Invoice Preview)</h3>
+                        <div id="bill-preview-box">
+                            <p style="color:gray; text-align:center; padding: 40px 0;">තවමත් බිල්පතක් ඇතුළත් කර නොමැත.</p>
+                        </div>
                     </div>
                 </div>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr><th>මාසය</th><th>ශුද්ධ ආදායම</th><th>නිෂ්පාදන පිරිවැය</th><th>පොදු වියදම්</th><th>Return අලාභය</th><th>ශුද්ධ ලාභය</th></tr>
-                        </thead>
-                        <tbody id="pnl-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
+            </section>
 
-            <div class="card" style="margin-top:15px; border-left: 5px solid var(--accent-color);">
-                <div class="table-header">
-                    <h3>📜 මෑතකාලීන විකුණුම් ලේඛනය (Recent Sales Ledger)</h3>
-                    <div>
-                        <button class="btn btn-export" onclick="exportToGoogleSheets('sales')">☁️ Cloud ජාලයට Sync කරන්න (Sales)</button>
-                    </div>
-                </div>
-                <div class="table-responsive" style="max-height:300px; overflow-y:auto;">
-                    <table>
-                        <thead>
-                            <tr><th>දිනය</th><th>වෙළඳසැල</th><th>විස්තරය (Items Detail)</th><th>මුළු බිල</th><th>ගෙවීම් ක්‍රමය</th><th>මකන්න</th></tr>
-                        </thead>
-                        <tbody id="sales-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-entry" class="tab-content">
-            <div class="grid-container">
+            <!-- TAB 2: SALES HISTORY -->
+            <section id="tab-sales-history" class="tab-content">
                 <div class="card">
-                    <h3>📥 නව විකුණුම් සටහන</h3>
-                    <hr style="margin:8px 0; opacity:0.2;">
-                    <form id="sales-form">
-                        <div class="form-group-row">
-                            <div class="form-group" style="flex:1;">
-                                <label>දිනය:</label>
-                                <input type="date" id="sales-date" required>
-                            </div>
-                            <div class="form-group" style="flex:1;">
-                                <label>වෙළඳසැල (Shop):</label>
-                                <select id="shop-select" required></select>
-                            </div>
-                        </div>
-
-                        <div id="items-container">
-                            </div>
-
-                        <button type="button" class="btn-add-item" onclick="addItemRow()">➕ තව භාණ්ඩයක් එකතු කරන්න</button>
-                        
-                        <div class="form-group" style="margin-top:15px;">
-                            <label>ගනුදෙනු ක්‍රමය (Payment):</label>
-                            <div class="radio-group">
-                                <label class="radio-label"><input type="radio" name="payment-method" value="Cash" checked> Cash</label>
-                                <label class="radio-label"><input type="radio" name="payment-method" value="Credit"> Credit</label>
-                            </div>
-                        </div>
-
-                        <div class="form-group" style="margin-top:12px;">
-                            <label class="radio-label">
-                                <input type="checkbox" id="send-bill-checkbox"> 📱 පාරිභෝගිකයාට බිල යවන්න (WhatsApp/SMS)
-                            </label>
-                        </div>
-
-                        <div id="sharing-options-wrapper" class="form-group hidden" style="background:#fff3e0; padding:8px; border-radius:6px;">
-                            <label>යවන ක්‍රමය:</label>
-                            <div class="radio-group">
-                                <label class="radio-label"><input type="radio" name="share-mode" value="WhatsApp" checked> WhatsApp</label>
-                                <label class="radio-label"><input type="radio" name="share-mode" value="SMS"> SMS</label>
-                            </div>
-                        </div>
-
-                        <div class="total-highlight" style="margin:15px 0;">
-                            මුළු එකතුව: <span id="total-price-display">රු. 0.00</span>
-                        </div>
-
-                        <button type="submit" class="btn btn-success">📝 બિલા සාදන්න (Submit Bill)</button>
-                    </form>
-                </div>
-
-                <div class="card">
-                    <h3>📄 සාදන ලද අවසන් බිල්පත (Live Bill Preview)</h3>
-                    <div id="bill-preview-box" class="bill-invoice-container">
-                        <div style="text-align:center; color:gray; padding:40px 10px; font-style:italic;">
-                            තවමත් බිලක් සාදා නැත.
-                        </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                        <h3>📜 දෛනික විකුණුම් ඉතිහාසය</h3>
+                        <button class="btn-sync" onclick="exportToGoogleSheets('sales')">☁️ Sales Cloud Backup</button>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-stock" class="tab-content">
-            <div class="grid-container">
-                <div class="card">
-                    <h3 id="stock-form-title">📦 නිෂ්පාදන තොග ඇතුළත් කිරීම</h3>
-                    <hr style="margin:8px 0; opacity:0.2;">
-                    <form id="stock-form">
-                        <input type="hidden" id="stock-edit-id">
-                        <div class="form-group">
-                            <label>දිනය:</label>
-                            <input type="date" id="stock-date" required>
-                        </div>
-                        <div class="form-group">
-                            <label>භාණ්ඩ වර්ගය:</label>
-                            <select id="stock-item-select" required></select>
-                        </div>
-                        <div class="form-group-row">
-                            <div class="form-group" style="flex:1;">
-                                <label>පෙර ඉතිරිය:</label>
-                                <input type="number" id="stock-prev-bal" readonly value="0" style="background:#e9ecef;">
-                            </div>
-                            <div class="form-group" style="flex:1;">
-                                <label>අලුත් Qty:</label>
-                                <input type="number" id="stock-qty" min="0" value="0" required>
-                            </div>
-                        </div>
-                        <button type="submit" id="stock-submit-btn" class="btn btn-success">තොගය ඇතුළත් කරන්න</button>
-                        <button type="button" id="stock-cancel-btn" class="btn btn-danger hidden" onclick="resetStockForm()" style="margin-top:5px; background:gray;">අවලංගු කරන්න</button>
-                    </form>
-                </div>
-                <div class="card">
-                    <h3>📊 වර්තමාන තොග ශේෂය (Inventory)</h3>
                     <div class="table-responsive">
                         <table>
                             <thead>
-                                <tr><th>භාණ්ඩය</th><th>නිෂ්පාදනය</th><th>විකිණූ</th><th>ඉතිරි තොගය</th></tr>
+                                <tr>
+                                    <th>දිනය</th>
+                                    <th>වෙළඳසැල</th>
+                                    <th>විස්තරය (Items)</th>
+                                    <th>මුළු මුදල</th>
+                                    <th>ක්‍රමය</th>
+                                    <th>මකන්න</th>
+                                </tr>
                             </thead>
-                            <tbody id="stock-overview-body"></tbody>
+                            <tbody id="sales-table-body"></tbody>
                         </table>
                     </div>
-                    <h3 style="margin-top:15px;">📜 තොග ඇතුළත් කිරීම් ඉතිහාසය</h3>
-                    <div class="table-responsive" style="max-height:200px; overflow-y:auto;">
+                </div>
+            </section>
+
+            <!-- TAB 3: STOCK MANAGEMENT -->
+            <section id="tab-stock" class="tab-content">
+                <div class="grid-2-col">
+                    <div class="card">
+                        <h3 id="stock-form-title">📦 නිෂ්පාදන තොග ඇතුළත් කිරීම</h3>
+                        <form id="stock-form">
+                            <input type="hidden" id="stock-edit-id">
+                            <div class="form-group">
+                                <label for="stock-date">දිනය:</label>
+                                <input type="date" id="stock-date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="stock-item-select">භාණ්ඩ වර්ගය:</label>
+                                <select id="stock-item-select"></select>
+                            </div>
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label for="stock-prev-bal">ඉතිරි තොගය (Prev):</label>
+                                    <input type="number" id="stock-prev-bal" min="0" value="0" readonly style="background:#eee;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="stock-qty">නව නිෂ්පාදන (New):</label>
+                                    <input type="number" id="stock-qty" min="0" required>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                <button type="submit" id="stock-submit-btn" class="btn-primary">තොගය ඇතුළත් කරන්න</button>
+                                <button type="button" id="stock-cancel-btn" class="btn-secondary hidden" onclick="resetStockForm()">අවලංගු කරන්න</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <h3>📊 වත්මන් තොග ශේෂය (Current Stock)</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>භාණ්ඩය</th>
+                                        <th>මුළු එකතුව</th>
+                                        <th>විකිණූ ප්‍රමාණය</th>
+                                        <th>ලැබෙන්න ඇති තොගය</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stock-overview-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top:20px;">
+                    <h3>📜 නිෂ්පාදන තොග ඉතිහාසය</h3>
+                    <div class="table-responsive">
                         <table>
                             <thead>
-                                <tr><th>දිනය</th><th>භාණ්ඩය</th><th>පෙර</th><th>එකතුකල</th><th>මුළු</th><th>ක්‍රියා</th></tr>
+                                <tr>
+                                    <th>දිනය</th>
+                                    <th>භාණ්ඩය</th>
+                                    <th>පැරණි ශේෂය</th>
+                                    <th>එකතු කළ තොගය</th>
+                                    <th>මුළු එකතුව</th>
+                                    <th>ක්‍රියාමාර්ග</th>
+                                </tr>
                             </thead>
                             <tbody id="stock-history-table-body"></tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <div id="tab-credit" class="tab-content">
-            <div class="grid-container">
-                <div class="card">
-                    <h3>💵 ණය මුදල් එකතු කිරීම්</h3>
-                    <hr style="margin:8px 0; opacity:0.2;">
-                    <form id="credit-payment-form">
-                        <div class="form-group">
-                            <label>වෙළඳසැල තෝරන්න:</label>
-                            <select id="credit-shop-select" required></select>
+            <!-- TAB 4: EXPENSES -->
+            <section id="tab-expenses" class="tab-content">
+                <div class="grid-2-col">
+                    <div class="card">
+                        <h3>💸 දෛනික වියදම් ඇතුළත් කිරීම</h3>
+                        <form id="expense-form">
+                            <div class="form-group">
+                                <label for="expense-date">දිනය:</label>
+                                <input type="date" id="expense-date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="expense-category">වියදම් වර්ගය:</label>
+                                <select id="expense-category">
+                                    <option value="අමුද්‍රව්‍ය">අමුද්‍රව්‍ය (Ingredients)</option>
+                                    <option value="ප්‍රවාහන">ප්‍රවාහන (Fuel/Transport)</option>
+                                    <option value="වැටුප්">වැටුප් (Labor/Salary)</option>
+                                    <option value="ඇසුරුම්කරණය">ඇසුරුම්කරණය (Packaging)</option>
+                                    <option value="වෙනත්">වෙනත් වියදම්</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="expense-desc">විස්තරය:</label>
+                                <input type="text" id="expense-desc" placeholder="උද: සීනි කිලෝ 10" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="expense-amount">මුදල (රු.):</label>
+                                <input type="number" id="expense-amount" min="1" step="0.01" required>
+                            </div>
+                            <button type="submit" class="btn-primary">💸 වියදම සුරකින්න</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                            <h3>📜 වියදම් ලේඛනය</h3>
+                            <button class="btn-sync" onclick="exportToGoogleSheets('expenses')">☁️ Expenses Cloud Backup</button>
                         </div>
-                        <div class="form-group">
-                            <label>ලැබුණු මුදල (Paid Amount):</label>
-                            <input type="number" id="credit-paid-amount" min="1" step="0.01" placeholder="රු. 0.00" required>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>දිනය</th>
+                                        <th>වර්ගය</th>
+                                        <th>විස්තරය</th>
+                                        <th>මුදල</th>
+                                        <th>මකන්න</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expense-table-body"></tbody>
+                            </table>
                         </div>
-                        <button type="submit" class="btn btn-success">ණය බේරුම් කිරීම සටහන් කරන්න</button>
-                    </form>
-                </div>
-                <div class="card">
-                    <h3>📋 වෙළඳසැල් ණය ලෙජරය (Outstanding)</h3>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr><th>වෙළඳසැල (Shop)</th><th>මුළු ණය වූ</th><th>බේරුම් කළ</th><th>හිඟ ණය ශේෂය</th></tr>
-                            </thead>
-                            <tbody id="credit-ledger-body"></tbody>
-                        </table>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <div id="tab-expenses" class="tab-content">
-            <div class="grid-container">
-                <div class="card">
-                    <h3>💸 ව්‍යාපාරික වියදම් ඇතුළත් කිරීම</h3>
-                    <hr style="margin:8px 0; opacity:0.2;">
-                    <form id="expense-form">
+            <!-- TAB 5: SHOPS & CREDIT -->
+            <section id="tab-credit" class="tab-content">
+                <div class="grid-2-col">
+                    <div class="card">
+                        <h3>👥 කඩවල් කළමනාකරණය</h3>
+                        <form id="add-shop-form">
+                            <div class="form-group">
+                                <label>නව වෙළඳසැලේ නම:</label>
+                                <input type="text" id="new-shop-name" placeholder="උද: සිංහල කඩේ" required>
+                            </div>
+                            <div class="form-group">
+                                <label>දුරකථන අංකය (WhatsApp/SMS):</label>
+                                <input type="text" id="new-shop-phone" placeholder="උද: 077XXXXXXX">
+                            </div>
+                            <button type="submit" class="btn-primary">➕ කඩය ඇතුළත් කරන්න</button>
+                        </form>
+                        <ul id="shop-list" class="styled-list" style="margin-top:20px;"></ul>
+                    </div>
+
+                    <div class="card">
+                        <h3>💰 කඩවල් වල ණය ශේෂයන් (Credit Ledger)</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>වෙළඳසැල</th>
+                                        <th>මුළු ණය</th>
+                                        <th>ලැබුණු මුදල්</th>
+                                        <th>හිඟ ණය ප්‍රමාණය</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="credit-ledger-body"></tbody>
+                            </table>
+                        </div>
+
+                        <h3 style="margin-top:25px;">💵 ණය මුදල් ලැබීම් සටහන් කිරීම</h3>
+                        <form id="credit-payment-form" class="form-group-row" style="align-items: flex-end;">
+                            <div class="form-group">
+                                <label>වෙළඳසැල:</label>
+                                <select id="credit-shop-select"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>ලැබුණු මුදල (රු.):</label>
+                                <input type="number" id="credit-paid-amount" min="1" required>
+                            </div>
+                            <button type="submit" class="btn-primary" style="margin-bottom:15px;">💾 සුරකින්න</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: ANALYTICS & PNL -->
+            <section id="tab-analytics" class="tab-content">
+                <!-- Smart Insights Row -->
+                <div class="grid-3-col" style="margin-bottom: 20px;">
+                    <div class="insight-card">
+                        <h4>🏆 වැඩිම අලෙවියක් ඇති කඩය</h4>
+                        <p id="insight-top-shop">--</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4>🔥 වැඩිම ඉල්ලුමක් ඇති භාණ්ඩය</h4>
+                        <p id="insight-top-product">--</p>
+                    </div>
+                    <div class="insight-card" style="background:#fff3e0; color:#e65100;">
+                        <h4>🚨 ස්මාර්ට් අනතුරු ඇඟවීම්</h4>
+                        <div id="smart-alerts-container"><p style="font-size:0.85rem; color:gray;">සියලුම තොග ප්‍රමාණවත්.</p></div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:20px;">
+                    <h3>📊 පෙරහන් (Advanced Filters)</h3>
+                    <div class="grid-3-col">
                         <div class="form-group">
-                            <label>දිනය:</label>
-                            <input type="date" id="expense-date" required>
+                            <label>කඩය අනුව:</label>
+                            <select id="filter-shop-select"></select>
                         </div>
                         <div class="form-group">
-                            <label>වියදම් ගණය (Category):</label>
-                            <select id="expense-category">
-                                <option value="Raw Materials">අමුද්‍රව්‍ය (බිත්තර/කිරි/හකුරු)</option>
-                                <option value="Fuel / Transport">ඉන්ධන සහ ප්‍රවාහනය</option>
-                                <option value="Labor / Salaries">වැටුප් / ශ්‍රමික ගාස්තු</option>
-                                <option value="Utility Bills">විදුලිය / ජලය / දුරකථන</option>
-                                <option value="Marketing / Promo">ප්‍රචාරණ සහ ප්‍රවර්ධන</option>
-                                <option value="Other Expenses">වෙනත් වියදම්</option>
+                            <label>භාණ්ඩය අනුව:</label>
+                            <select id="filter-product-select"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>කාල පරාසය:</label>
+                            <select id="filter-time-select">
+                                <option value="ALL">සම්පූර්ණ ඉතිහාසය</option>
+                                <option value="daily">අද දවසේ පමණක්</option>
+                                <option value="weekly">පසුගිය දින 7</option>
+                                <option value="monthly">මේ මාසයේ</option>
+                                <option value="yearly">මේ වසරේ</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>විස්තරය (Description):</label>
-                            <input type="text" id="expense-desc" placeholder="උදා: බිත්තර මිලදී ගැනීම" required>
-                        </div>
-                        <div class="form-group">
-                            <label>වියදම් වූ මුදල:</label>
-                            <input type="number" id="expense-amount" min="1" step="0.01" placeholder="රු. 0.00" required>
-                        </div>
-                        <button type="submit" class="btn btn-success">වියදම ඇතුළත් කරන්න</button>
-                    </form>
-                </div>
-                <div class="card">
-                    <h3>📜 වියදම් ලේඛනය (History)</h3>
-                    <div class="table-responsive" style="max-height:350px; overflow-y:auto;">
-                        <table>
-                            <thead>
-                                <tr><th>දිනය</th><th>ගණය</th><th>විස්තරය</th><th>මුදල</th><th>මකන්න</th></tr>
-                            </thead>
-                            <tbody id="expense-table-body"></tbody>
-                        </table>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div id="tab-settings" class="tab-content">
-            <div class="grid-container">
-                <div class="card">
-                    <h3>🏪 නව වෙළඳසැලක් ලියාපදිංචි කිරීම</h3>
-                    <hr style="margin:8px 0; opacity:0.2;">
-                    <form id="add-shop-form">
-                        <div class="form-group">
-                            <label>කඩේ නම (Shop Name):</label>
-                            <input type="text" id="new-shop-name" placeholder="උදා: සිරිසඳ හෝටලය" required>
-                        </div>
-                        <div class="form-group">
-                            <label>දුරකථන අංකය (WhatsApp):</label>
-                            <input type="tel" id="new-shop-phone" placeholder="උදා: 0771234567">
-                        </div>
-                        <button type="submit" class="btn btn-success">වෙළඳසැල සුරකින්න</button>
-                    </form>
-                    <h3 style="margin-top:20px;">📋 පවතින වෙළඳසැල් ලැයිස්තුව</h3>
-                    <ul id="shop-list" style="margin-top:10px;"></ul>
+                <div class="grid-4-col">
+                    <div class="stat-card"><h5>විකිණූ මුළු ප්‍රමාණය</h5><h2 id="f-sold-qty">0</h2></div>
+                    <div class="stat-card"><h5>මුළු ආදායම (Gross Revenue)</h5><h2 id="f-total-income">රු. 0.00</h2></div>
+                    <div class="stat-card"><h5>ආපසු පැමිණි තොග (Returns)</h5><h2 id="f-return-qty">0</h2><small id="f-return-loss" style="color:#b71c1c; font-weight:bold;"></small></div>
+                    <div class="stat-card profit-card"><h5>ශුද්ධ ලාභය (Net Profit)</h5><h2 id="f-net-profit">රු. 0.00</h2></div>
                 </div>
-                <div class="card">
-                    <h3>🍮 නව භාණ්ඩ වර්ග හා මිල ගණන්</h3>
-                    <hr style="margin:8px 0; opacity:0.2;">
-                    <form id="add-product-form">
-                        <div class="form-group">
-                            <label>භාණ්ඩයේ නම:</label>
-                            <input type="text" id="new-prod-name" placeholder="උදා: කප් වටලප්පන්" required>
+                
+                <div class="grid-2-col" style="margin-top:20px;">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                            <h3>📈 මාසික ලාභ අලාභ විග්‍රහය (P&L Ledger)</h3>
+                            <select id="pnl-product-filter-select" style="max-width:200px;"></select>
                         </div>
-                        <div class="form-group-row">
-                            <div class="form-group" style="flex:1;">
-                                <label>විකුණුම් මිල:</label>
-                                <input type="number" id="new-prod-price" min="0" step="0.01" placeholder="0.00" required>
-                            </div>
-                            <div class="form-group" style="flex:1;">
-                                <label>නිෂ්පාදන පිරිවැය:</label>
-                                <input type="number" id="new-prod-cost" min="0" step="0.01" placeholder="0.00" required>
-                            </div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>මාසය</th>
+                                        <th>මුළු විකුණුම්</th>
+                                        <th>නිෂ්පාදන පිරිවැය</th>
+                                        <th>මෙහෙයුම් වියදම්</th>
+                                        <th>Return අලාභ</th>
+                                        <th>ශුද්ධ ලාභය</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pnl-table-body"></tbody>
+                            </table>
                         </div>
-                        <div style="background:#fff3e0; padding:8px; border-radius:6px; margin-bottom:10px;">
-                            <label style="color:#e65100;">🎁 නොමිලේ දීමේ ක්‍රමය:</label>
-                            <div class="form-group-row" style="margin-top:5px;">
-                                <div class="form-group" style="flex:1;">
-                                    <label style="font-size:0.75rem;">Qty Trigger:</label>
-                                    <input type="number" id="new-prod-free-trigger" placeholder="0">
-                                </div>
-                                <div class="form-group" style="flex:1;">
-                                    <label style="font-size:0.75rem;">Give Free:</label>
-                                    <input type="number" id="new-prod-free-give" placeholder="0">
-                                </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>⚙️ භාණ්ඩ පිරිවැය සහ මිල ගණන් (Product Config)</h3>
+                        <form id="add-product-form" class="grid-2-col" style="gap:10px;">
+                            <div class="form-group"><label>භාණ්ඩයේ නම:</label><input type="text" id="new-prod-name" placeholder="උද: ජෙලි" required></div>
+                            <div class="form-group"><label>විකුණුම් මිල (රු.):</label><input type="number" id="new-prod-price" min="0" step="0.01" required></div>
+                            <div class="form-group"><label>නිෂ්පාදන පිරිවැය (Cost):</label><input type="number" id="new-prod-cost" min="0" step="0.01" required></div>
+                            <div class="form-group-row-two" style="display:flex; gap:5px;">
+                                <div class="form-group"><label>Free Trigger Qty:</label><input type="number" id="new-prod-free-trigger" value="0"></div>
+                                <div class="form-group"><label>Free Given Qty:</label><input type="number" id="new-prod-free-give" value="0"></div>
                             </div>
+                            <button type="submit" class="btn-primary" style="grid-column: span 2; margin-top:5px;">➕ භාණ්ඩය සුරකින්න</button>
+                        </form>
+                        <div class="table-responsive" style="margin-top:15px;">
+                            <table>
+                                <thead>
+                                    <tr><th>භාණ්ඩය</th><th>විකුණුම් මිල</th><th>පිරිවැය</th><th>Free ක්‍රමය</th><th>මකන්න</th></tr>
+                                </thead>
+                                <tbody id="products-settings-body"></tbody>
+                            </table>
                         </div>
-                        <button type="submit" class="btn btn-success">භාණ්ඩය පද්ධතියට එක් කරන්න</button>
-                    </form>
-                    <h3 style="margin-top:20px;">📋 පවතින භාණ්ඩ සහ මිල ගණන්</h3>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr><th>භාණ්ඩය</th><th>මිල</th><th>පිරිවැය</th><th>Free</th><th>මකන්න</th></tr>
-                            </thead>
-                            <tbody id="products-settings-body"></tbody>
-                        </table>
                     </div>
                 </div>
-            </div>
-            <div class="card" style="margin-top:15px; border-left:5px solid #0288d1;">
-                <h3>☁️ පොදු ව්‍යාපාරික වියදම් Cloud සුරක්ෂිත කිරීම</h3>
-                <button class="btn" style="background-color:#0288d1; color:white; font-size:0.85rem;" onclick="exportToGoogleSheets('expenses')">☁️ Cloud ජාලයට Sync කරන්න (Expenses)</button>
-            </div>
-        </div>
-
+            </section>
+        </main>
     </div>
 
-    <div id="edit-phone-modal" class="modal hidden">
-        <div class="card modal-content">
+    <!-- PHONE NUMBER EDIT MODAL -->
+    <div id="edit-phone-modal" class="modal-backdrop hidden">
+        <div class="modal-box">
             <h3>✏️ දුරකථන අංකය සංස්කරණය</h3>
-            <p style="font-size:0.8rem; margin-bottom:12px;">🏪 <span id="modal-shop-name" style="font-weight:bold;"></span> වෙනුවෙන් නව අංකය:</p>
+            <p id="modal-shop-name" style="font-weight:bold; color:var(--primary-color);"></p>
             <input type="hidden" id="modal-shop-index">
-            <div class="form-group">
-                <input type="tel" id="modal-phone-input">
+            <div class="form-group" style="margin:15px 0;">
+                <label>නව දුරකථන අංකය:</label>
+                <input type="text" id="modal-phone-input" placeholder="07XXXXXXXX">
             </div>
-            <div class="form-group-row" style="margin-top:15px; justify-content:flex-end;">
-                <button class="btn" style="background:#ccc; padding:8px 15px;" onclick="closeShopPhoneModal()">අවලංගු කරන්න</button>
-                <button class="btn btn-success" style="width:auto; padding:8px 20px;" onclick="saveShopPhoneModal()">සුරකින්න</button>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" class="btn-secondary" onclick="closeShopPhoneModal()">අවලංගු කරන්න</button>
+                <button type="button" class="btn-primary" onclick="saveShopPhoneModal()">සුරකින්න 💾</button>
             </div>
         </div>
     </div>
 
+    <!-- ⚠️ වැදගත්: ෆයිල් එකේ නම 'script.js' ලෙසම (Simple s අකුරෙන්) GitHub එකේ වෙනස් කරන්න -->
     <script src="script.js"></script>
 </body>
 </html>
