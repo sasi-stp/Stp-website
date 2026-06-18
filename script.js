@@ -1,5 +1,4 @@
 // --- CONFIGURATION ---
-// ⚠️ වැදගත්: ඔබ Google Apps Script එකක් සාදා එහි "Deploy -> Web App" ගොස් ලැබෙන URL එක මෙතැනට ඇතුලත් කරන්න.
 const GOOGLE_SHEETS_WEBAPP_URL = ""; 
 
 // --- STATE MANAGEMENT ---
@@ -52,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
 if(loginForm) {
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        if (passwordInput.value.trim() === "1234") { // Default password 1234
+        if (passwordInput.value.trim() === "1234") { // Default password
             loginContainer.classList.add('hidden');
             appContainer.classList.remove('hidden');
             initApp();
@@ -444,16 +443,16 @@ function triggerBillNotification(r, mode) {
     let itemsDescriptionText = "";
     if(r.itemsList && Array.isArray(r.itemsList)) {
         r.itemsList.forEach(si => {
-            itemsDescriptionText += `📦 *භාණ්ඩය:* ${si.item}%0A🔹 *Qty:* ${si.qty} | 🎁 *Free:* ${si.free} | 🔺 *Ret:* ${si.ret}%0A%0A`;
+            itemsDescriptionText += "📦 *භාණ්ඩය:* " + si.item + "%0A🔹 *Qty:* " + si.qty + " | 🎁 *Free:* " + si.free + " | 🔺 *Ret:* " + si.ret + "%0A%0A";
         });
     }
     
-    const msg = `*🍮 WATALAPPAN ENTERPRISE DAILY BILL*%0A----------------------------------------%0A📅 *දිනය:* ${r.date}%0A🏪 *වෙළඳසැල:* ${r.shop}%0A----------------------------------------%0A${itemsDescriptionText}----------------------------------------%0A💵 *මුළු මුදල:* රු. ${r.total.toFixed(2)}%0A----------------------------------------%0A_Watalappan ERP v2.6_`;
+    const msg = "*🍮 WATALAPPAN ENTERPRISE DAILY BILL*%0A----------------------------------------%0A📅 *දිනය:* " + r.date + "%0A🏪 *වෙළඳසැල:* " + r.shop + "%0A----------------------------------------%0A" + itemsDescriptionText + "----------------------------------------%0A💵 *මුළු මුදල:* රු. " + r.total.toFixed(2) + "%0A----------------------------------------%0A_Watalappan ERP v2.6_";
     let formattedPhone = phone.startsWith('0') ? '94' + phone.substring(1) : phone;
     if(mode === "WhatsApp") {
-        window.open(`https://api.whatsapp.com/send?phone=${formattedPhone}&text=${msg}`, '_blank');
+        window.open("https://api.whatsapp.com/send?phone=" + formattedPhone + "&text=" + msg, '_blank');
     } else {
-        window.open(`sms:${phone}?body=${decodeURIComponent(msg)}`, '_blank');
+        window.open("sms:" + phone + "?body=" + decodeURIComponent(msg), '_blank');
     }
 }
 
@@ -521,7 +520,7 @@ function renderStockOverview() {
             }
         });
         const rem = total - sold;
-        tbody.innerHTML += `<tr><td><b>${item}</b></td><td>${total}</td><td>${sold}</td><td style="font-weight:bold; color:${rem < 20 ? 'red':'green'}">${rem}</td></tr>`;
+        tbody.innerHTML += "<tr><td><b>" + item + "</b></td><td>" + total + "</td><td>" + sold + "</td><td style='font-weight:bold; color:" + (rem < 20 ? 'red':'green') + "'>" + rem + "</td></tr>";
     });
 }
 
@@ -531,7 +530,7 @@ function renderStockHistoryTable() {
     tbody.innerHTML = '';
     stockHistory.slice().reverse().forEach(h => {
         const sum = (h.prevBal || 0) + (h.qty || 0);
-        tbody.innerHTML += `<tr><td>${h.date}</td><td><b>${h.item}</b></td><td>${h.prevBal || 0}</td><td>${h.qty || 0}</td><td><b>${sum}</b></td><td><span class="edit-btn-icon" onclick="editStockRecord(${h.id})">✏️</span><span class="delete-btn" onclick="deleteStockHistoryRecord(${h.id})">❌</span></td></tr>`;
+        tbody.innerHTML += "<tr><td>" + h.date + "</td><td><b>" + h.item + "</b></td><td>" + (h.prevBal || 0) + "</td><td>" + (h.qty || 0) + "</td><td><b>" + sum + "</b></td><td><span class='edit-btn-icon' onclick='editStockRecord(" + h.id + ")'>✏️</span><span class='delete-btn' onclick='deleteStockHistoryRecord(" + h.id + ")'>❌</span></td></tr>";
     });
 }
 
@@ -566,7 +565,7 @@ function renderExpenseTable() {
     if(!tbody) return;
     tbody.innerHTML = '';
     expenses.slice().reverse().forEach(e => {
-        tbody.innerHTML += `<tr><td>${e.date}</td><td>${e.category}</td><td>${e.desc}</td><td><b>රු. ${e.amount.toFixed(2)}</b></td><td><span class="delete-btn" onclick="deleteExpense(${e.id})">❌</span></td></tr>`;
+        tbody.innerHTML += "<tr><td>" + e.date + "</td><td>" + e.category + "</td><td>" + e.desc + "</td><td><b>රු. " + e.amount.toFixed(2) + "</b></td><td><span class='delete-btn' onclick='deleteExpense(" + e.id + ")'>❌</span></td></tr>";
     });
 }
 
@@ -590,7 +589,7 @@ if(document.getElementById('credit-payment-form')) {
             localStorage.setItem('watalappan_credit_payments', JSON.stringify(creditPayments));
             renderCreditTable(); updateFilteredAnalytics();
             document.getElementById('credit-paid-amount').value = '';
-            alert(`✅ ණය ලැබුණි සටහන් කළා!`);
+            alert("✅ ණය ලැබුණි සටහන් කළා!");
         }
     });
 }
@@ -603,7 +602,7 @@ function renderCreditTable() {
         const totalCreditIncurred = salesData.filter(x => x.shop === s.name && x.mode === 'Credit').reduce((a,c) => a + c.total, 0);
         const totalPaid = creditPayments.filter(x => x.shop === s.name).reduce((a,c) => a + c.amount, 0);
         const outstanding = totalCreditIncurred - totalPaid;
-        tbody.innerHTML += `<tr><td><b>${s.name}</b></td><td>රු. ${totalCreditIncurred.toFixed(2)}</td><td style="color:green;">රු. ${totalPaid.toFixed(2)}</td><td style="font-weight:bold; color:${outstanding > 0 ? 'red':'inherit'}">රු. ${outstanding.toFixed(2)}</td></tr>`;
+        tbody.innerHTML += "<tr><td><b>" + s.name + "</b></td><td>රු. " + totalCreditIncurred.toFixed(2) + "</td><td style='color:green;'>රු. " + totalPaid.toFixed(2) + "</td><td style='font-weight:bold; color:" + (outstanding > 0 ? 'red':'inherit') + "'>රු. " + outstanding.toFixed(2) + "</td></tr>";
     });
 }
 
@@ -656,14 +655,14 @@ function updateFilteredAnalytics() {
     let netProfit = totalIncome - totalProductionCost - totalReturnLoss - allocatedExpense;
 
     if(document.getElementById('f-sold-qty')) document.getElementById('f-sold-qty').textContent = totalSoldQty;
-    if(document.getElementById('f-total-income')) document.getElementById('f-total-income').textContent = `රු. ${totalIncome.toFixed(2)}`;
+    if(document.getElementById('f-total-income')) document.getElementById('f-total-income').textContent = "රු. " + totalIncome.toFixed(2);
     if(document.getElementById('f-return-qty')) document.getElementById('f-return-qty').textContent = totalRetQty;
-    if(document.getElementById('f-return-loss')) document.getElementById('f-return-loss').textContent = `අලාභය: රු. ${totalReturnLoss.toFixed(2)}`;
-    if(document.getElementById('f-total-outstanding')) document.getElementById('f-total-outstanding').textContent = `රු. ${outstandingIncurred.toFixed(2)}`;
+    if(document.getElementById('f-return-loss')) document.getElementById('f-return-loss').textContent = "අලාභය: රු. " + totalReturnLoss.toFixed(2);
+    if(document.getElementById('f-total-outstanding')) document.getElementById('f-total-outstanding').textContent = "රු. " + outstandingIncurred.toFixed(2);
     
     const profitEl = document.getElementById('f-net-profit');
     if(profitEl) {
-        profitEl.textContent = `රු. ${netProfit.toFixed(2)}`;
+        profitEl.textContent = "රු. " + netProfit.toFixed(2);
         profitEl.parentElement.style.background = netProfit >= 0 ? "linear-gradient(135deg, #43a047, #2e7d32)" : "linear-gradient(135deg, #d32f2f, #c62828)";
     }
 
@@ -693,7 +692,7 @@ function calculateSmartInsights() {
         alertsContainer.innerHTML = '';
         Object.keys(stock.remainingStock).forEach(item => {
             if(stock.remainingStock[item] <= 15) {
-                alertsContainer.innerHTML += `<div class="alert-banner danger-alert">⚠️ හිඟ තොග: '${item}' ඇතැත්තේ ${stock.remainingStock[item]} කි!</div>`;
+                alertsContainer.innerHTML += "<div class='alert-banner danger-alert'>⚠️ හිඟ තොග: '" + item + "' ඇතැත්තේ " + stock.remainingStock[item] + " කි!</div>";
             }
         });
     }
@@ -712,7 +711,7 @@ if(document.getElementById('add-product-form')) {
             productsMap[name] = [price, cost, freeTrigger, freeGive];
             localStorage.setItem('watalappan_products_map', JSON.stringify(productsMap));
             populateDropdowns(); renderProductsSettings(); renderStockOverview(); updateLiveTotal();
-            alert(`✅ භාණ්ඩය එක් කළා!`);
+            alert("✅ භාණ්ඩය එක් කළා!");
         }
     });
 }
@@ -723,12 +722,12 @@ function renderProductsSettings() {
     tbody.innerHTML = '';
     Object.keys(productsMap).forEach(name => {
         const trig = productsMap[name][2] || 0; const give = productsMap[name][3] || 0;
-        tbody.innerHTML += `<tr><td><b>${name}</b></td><td>${productsMap[name][0]}</td><td>${productsMap[name][1]}</td><td>${trig>0?trig+'ට '+give: 'නැත'}</td><td><span class="delete-btn" onclick="deleteProduct('${name}')">❌</span></td></tr>`;
+        tbody.innerHTML += "<tr><td><b>" + name + "</b></td><td>" + productsMap[name][0] + "</td><td>" + productsMap[name][1] + "</td><td>" + (trig>0?trig+'ට '+give: 'නැත') + "</td><td><span class='delete-btn' onclick='deleteProduct(\"" + name + "\")'>❌</span></td></tr>";
     });
 }
 
 window.deleteProduct = function(name) {
-    if(confirm(`"${name}" ඉවත් කිරීමට අවශ්‍යද?`)) {
+    if(confirm('"' + name + '" ඉවත් කිරීමට අවශ්‍යද?')) {
         delete productsMap[name]; localStorage.setItem('watalappan_products_map', JSON.stringify(productsMap));
         populateDropdowns(); renderProductsSettings(); renderStockOverview(); updateLiveTotal(); updateFilteredAnalytics(); renderMonthlyPnL();
     }
@@ -753,7 +752,7 @@ function renderShops() {
     if(!list) return;
     list.innerHTML = '';
     shopDirectory.forEach((s, idx) => {
-        list.innerHTML += `<li><span>🏪 <b>${s.name}</b> (${s.phone || 'නැත'})</span><div><span class="edit-btn-icon" onclick="openShopPhoneModal(${idx})">✏️</span><span class="delete-btn" onclick="deleteShop(${idx})">❌</span></div></li>`;
+        list.innerHTML += "<li><span>🏪 <b>" + s.name + "</b> (" + (s.phone || 'නැත') + ")</span><div><span class='edit-btn-icon' onclick='openShopPhoneModal(" + idx + ")'>✏️</span><span class='delete-btn' onclick='deleteShop(" + idx + ")'>❌</span></div></li>";
     });
 }
 
@@ -772,7 +771,7 @@ window.saveShopPhoneModal = function() {
     renderShops(); closeShopPhoneModal();
 };
 window.deleteShop = function(idx) {
-    if(confirm(`කඩය ඉවත් කිරීමට අවශ්‍යද?`)) {
+    if(confirm("කඩය ඉවත් කිරීමට අවශ්‍යද?")) {
         shopDirectory.splice(idx, 1); localStorage.setItem('watalappan_shop_directory', JSON.stringify(shopDirectory));
         populateDropdowns(); renderShops(); renderCreditTable(); updateFilteredAnalytics();
     }
@@ -801,12 +800,12 @@ function renderMonthlyPnL() {
     expenses.forEach(e => { const monthStr = e.date.substring(0, 7); monthlyExpenses[monthStr] = (monthlyExpenses[monthStr] || 0) + e.amount; });
 
     const sortedMonths = Object.keys(monthlyMatrix).sort().reverse();
-    if(sortedMonths.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">දත්ත නොමැත.</td></tr>`; return; }
+    if(sortedMonths.length === 0) { tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>දත්ත නොමැත.</td></tr>"; return; }
 
     sortedMonths.forEach(m => {
         const data = monthlyMatrix[m]; let expAllocated = monthlyExpenses[m] || 0;
         let netProfit = data.sales - data.prodCost - data.retLoss - expAllocated;
-        tbody.innerHTML += `<tr><td><b>${m}</b></td><td style="color:green;">රු. ${data.sales.toFixed(2)}</td><td>රු. ${data.prodCost.toFixed(2)}</td><td>රු. ${expAllocated.toFixed(2)}</td><td style="color:red;">රු. ${data.retLoss.toFixed(2)}</td><td style="font-weight:bold; background:${netProfit >= 0 ? '#e8f5e9':'#ffebee'}">රු. ${netProfit.toFixed(2)}</td></tr>`;
+        tbody.innerHTML += "<tr><td><b>" + m + "</b></td><td style='color:green;'>රු. " + data.sales.toFixed(2) + "</td><td>රු. " + data.prodCost.toFixed(2) + "</td><td>රු. " + expAllocated.toFixed(2) + "</td><td style='color:red;'>රු. " + data.retLoss.toFixed(2) + "</td><td style='font-weight:bold; background:" + (netProfit >= 0 ? '#e8f5e9':'#ffebee') + "'>රු. " + netProfit.toFixed(2) + "</td></tr>";
     });
 }
 
@@ -816,6 +815,6 @@ window.exportToGoogleSheets = function(type) {
     }
     let payload = type === 'sales' ? salesData : expenses;
     fetch(GOOGLE_SHEETS_WEBAPP_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: type, data: payload }) })
-    .then(() => alert(`☁️ දත්ත Cloud ජාලය වෙත Sync කරන ලදී!`))
+    .then(() => alert("☁️ දත්ත Cloud ජාලය වෙත Sync කරන ලදී!"))
     .catch(err => alert("❌ දෝෂයක්: " + err));
 };
