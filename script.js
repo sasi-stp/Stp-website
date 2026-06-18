@@ -1,6 +1,6 @@
 // --- CONFIGURATION ---
-const APP_PASSWORD = "1234"; 
-const GOOGLE_SHEETS_WEBAPP_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+// ⚠️ වැදගත්: ඔබ Google Apps Script එකක් සාදා එහි "Deploy -> Web App" ගොස් ලැබෙන URL එක මෙතැනට ඇතුලත් කරන්න.
+const GOOGLE_SHEETS_WEBAPP_URL = ""; 
 
 // --- STATE MANAGEMENT ---
 let shopDirectory = JSON.parse(localStorage.getItem('watalappan_shop_directory')) || [
@@ -45,39 +45,45 @@ const sharingOptionsWrapper = document.getElementById('sharing-options-wrapper')
 
 // --- APP LIFECYCLE ---
 document.addEventListener("DOMContentLoaded", () => {
-    loginContainer.classList.remove('hidden');
-    appContainer.classList.add('hidden');
+    if(loginContainer) loginContainer.classList.remove('hidden');
+    if(appContainer) appContainer.classList.add('hidden');
 });
 
-loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    if (passwordInput.value.trim() === APP_PASSWORD) {
-        loginContainer.classList.add('hidden');
-        appContainer.classList.remove('hidden');
-        initApp();
-    } else {
-        loginError.textContent = "❌ වැරදි මුරපදයක්!";
+if(loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (passwordInput.value.trim() === "1234") { // Default password 1234
+            loginContainer.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            initApp();
+        } else {
+            loginError.textContent = "❌ වැරදි මුරපදයක්!";
+            passwordInput.value = "";
+        }
+    });
+}
+
+if(document.getElementById('logout-btn')) {
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        appContainer.classList.add('hidden');
+        loginContainer.classList.remove('hidden');
         passwordInput.value = "";
-    }
-});
-
-document.getElementById('logout-btn').addEventListener('click', () => {
-    appContainer.classList.add('hidden');
-    loginContainer.classList.remove('hidden');
-    passwordInput.value = "";
-});
+    });
+}
 
 function initApp() {
-    salesDateInput.value = new Date().toISOString().split('T')[0];
-    document.getElementById('stock-date').value = new Date().toISOString().split('T')[0];
-    document.getElementById('expense-date').value = new Date().toISOString().split('T')[0];
+    if(salesDateInput) salesDateInput.value = new Date().toISOString().split('T')[0];
+    if(document.getElementById('stock-date')) document.getElementById('stock-date').value = new Date().toISOString().split('T')[0];
+    if(document.getElementById('expense-date')) document.getElementById('expense-date').value = new Date().toISOString().split('T')[0];
     
     populateDropdowns();
     renderShops();
     renderProductsSettings();
     
-    itemsContainer.innerHTML = '';
-    addItemRow();
+    if(itemsContainer) {
+        itemsContainer.innerHTML = '';
+        addItemRow();
+    }
     
     renderSalesTable();
     renderStockOverview();
@@ -87,24 +93,28 @@ function initApp() {
     renderMonthlyPnL();
     updateFilteredAnalytics();
     
-    [filterShopSelect, filterProductSelect, filterTimeSelect].forEach(el => {
-        el.addEventListener('change', updateFilteredAnalytics);
-    });
-    
-    pnlProductFilterSelect.addEventListener('change', renderMonthlyPnL);
+    if(filterShopSelect) filterShopSelect.addEventListener('change', updateFilteredAnalytics);
+    if(filterProductSelect) filterProductSelect.addEventListener('change', updateFilteredAnalytics);
+    if(filterTimeSelect) filterTimeSelect.addEventListener('change', updateFilteredAnalytics);
+    if(pnlProductFilterSelect) pnlProductFilterSelect.addEventListener('change', renderMonthlyPnL);
 
-    sendBillCheckbox.addEventListener('change', () => {
-        if(sendBillCheckbox.checked) {
-            sharingOptionsWrapper.classList.remove('hidden');
-        } else {
-            sharingOptionsWrapper.classList.add('hidden');
-        }
-    });
+    if(sendBillCheckbox) {
+        sendBillCheckbox.addEventListener('change', () => {
+            if(sendBillCheckbox.checked) {
+                sharingOptionsWrapper.classList.remove('hidden');
+            } else {
+                sharingOptionsWrapper.classList.add('hidden');
+            }
+        });
+    }
 
-    document.getElementById('stock-item-select').addEventListener('change', updateStockPrevBalPreview);
+    if(document.getElementById('stock-item-select')) {
+        document.getElementById('stock-item-select').addEventListener('change', updateStockPrevBalPreview);
+    }
 }
 
 function populateDropdowns() {
+    if(!shopSelect) return;
     shopSelect.innerHTML = '';
     filterShopSelect.innerHTML = '<option value="ALL">== සියලුම කඩවල් ==</option>';
     document.getElementById('credit-shop-select').innerHTML = '';
@@ -134,7 +144,6 @@ function populateDropdowns() {
     pnlProductFilterSelect.value = prevPnlFilterProduct;
 }
 
-// --- TAB NAVIGATION FUNCTION ---
 window.switchTab = function(tabId) {
     const contents = document.querySelectorAll('.tab-content');
     contents.forEach(content => content.classList.remove('active-content'));
@@ -165,8 +174,8 @@ window.switchTab = function(tabId) {
     }
 };
 
-// --- DYNAMIC MULTI-ITEM GRID STRUCTURE ---
 window.addItemRow = function() {
+    if(!itemsContainer) return;
     const rowId = 'row_' + Date.now() + '_' + Math.floor(Math.random() * 100);
     const rowCard = document.createElement('div');
     rowCard.className = 'item-row-card';
@@ -241,8 +250,6 @@ function calculateCurrentStock() {
                     remainingStock[si.item] -= si.qty;
                 }
             });
-        } else if(remainingStock[s.item] !== undefined) {
-            remainingStock[s.item] -= s.qty;
         }
     });
 
@@ -250,6 +257,7 @@ function calculateCurrentStock() {
 }
 
 function updateLiveTotal() {
+    if(!itemsContainer) return;
     const stock = calculateCurrentStock();
     let overallBillNetTotal = 0;
 
@@ -283,7 +291,7 @@ function updateLiveTotal() {
         overallBillNetTotal += (finalBillableQty * price);
     }
 
-    totalPriceDisplay.textContent = `රු. ${overallBillNetTotal.toFixed(2)}`;
+    if(totalPriceDisplay) totalPriceDisplay.textContent = `රු. ${overallBillNetTotal.toFixed(2)}`;
 }
 
 function updateStockPrevBalPreview() {
@@ -292,70 +300,74 @@ function updateStockPrevBalPreview() {
 
     const stock = calculateCurrentStock();
     const currentRemaining = stock.remainingStock[selectedItem] || 0;
-    document.getElementById('stock-prev-bal').value = currentRemaining;
+    if(document.getElementById('stock-prev-bal')) {
+        document.getElementById('stock-prev-bal').value = currentRemaining;
+    }
 }
 
 function getUnitPrice(type) { return productsMap[type] ? parseFloat(productsMap[type][0]) : 0; }
 function getUnitCost(type) { return productsMap[type] ? parseFloat(productsMap[type][1]) : 0; }
 
-// --- SALES PROCESSING ---
-salesForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const dt = salesDateInput.value;
-    const shop = shopSelect.value;
-    const payMethod = document.querySelector('input[name="payment-method"]:checked').value;
-    
-    let overallBillNetTotal = 0;
-    let itemsList = [];
-
-    const rows = itemsContainer.getElementsByClassName('item-row-card');
-    for(let row of rows) {
-        const item = row.querySelector('.row-item-select').value;
-        const qty = parseInt(row.querySelector('.row-qty-input').value) || 0;
-        const free = parseInt(row.querySelector('.row-free-input').value) || 0;
-        const ret = parseInt(row.querySelector('.row-ret-input').value) || 0;
+if(salesForm) {
+    salesForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const dt = salesDateInput.value;
+        const shop = shopSelect.value;
+        const payMethod = document.querySelector('input[name="payment-method"]:checked').value;
         
-        if(qty === 0 && free === 0 && ret === 0) continue;
+        let overallBillNetTotal = 0;
+        let itemsList = [];
 
-        const price = getUnitPrice(item);
-        const finalBillableQty = Math.max(0, qty - free - ret);
-        const lineTotal = finalBillableQty * price;
+        const rows = itemsContainer.getElementsByClassName('item-row-card');
+        for(let row of rows) {
+            const item = row.querySelector('.row-item-select').value;
+            const qty = parseInt(row.querySelector('.row-qty-input').value) || 0;
+            const free = parseInt(row.querySelector('.row-free-input').value) || 0;
+            const ret = parseInt(row.querySelector('.row-ret-input').value) || 0;
+            
+            if(qty === 0 && free === 0 && ret === 0) continue;
 
-        overallBillNetTotal += lineTotal;
-        itemsList.push({ item: item, qty: qty, free: free, ret: ret, total: lineTotal, rate: price });
-    }
+            const price = getUnitPrice(item);
+            const finalBillableQty = Math.max(0, qty - free - ret);
+            const lineTotal = finalBillableQty * price;
 
-    if(itemsList.length === 0) {
-        return alert("කරුණාකර අවම වශයෙන් එක භාණ්ඩයකටවත් ප්‍රමාණයන් ඇතුළත් කරන්න!");
-    }
-    
-    const record = {
-        id: Date.now(), date: dt, shop: shop, itemsList: itemsList, total: overallBillNetTotal, mode: payMethod
-    };
-    
-    salesData.push(record);
-    localStorage.setItem('watalappan_sales', JSON.stringify(salesData));
-    
-    renderSalesTable();
-    renderStockOverview();
-    renderCreditTable();
-    renderMonthlyPnL();
-    updateFilteredAnalytics();
-    renderLiveInvoicePreview(record);
-    
-    if(sendBillCheckbox.checked) {
-        const shareMode = document.querySelector('input[name="share-mode"]:checked').value;
-        triggerBillNotification(record, shareMode);
-    }
-    
-    itemsContainer.innerHTML = '';
-    addItemRow();
-    sendBillCheckbox.checked = false;
-    sharingOptionsWrapper.classList.add('hidden');
-    updateLiveTotal();
-});
+            overallBillNetTotal += lineTotal;
+            itemsList.push({ item: item, qty: qty, free: free, ret: ret, total: lineTotal, rate: price });
+        }
+
+        if(itemsList.length === 0) {
+            return alert("කරුණාකර අවම වශයෙන් එක භාණ්ඩයකටවත් ප්‍රමාණයන් ඇතුළත් කරන්න!");
+        }
+        
+        const record = {
+            id: Date.now(), date: dt, shop: shop, itemsList: itemsList, total: overallBillNetTotal, mode: payMethod
+        };
+        
+        salesData.push(record);
+        localStorage.setItem('watalappan_sales', JSON.stringify(salesData));
+        
+        renderSalesTable();
+        renderStockOverview();
+        renderCreditTable();
+        renderMonthlyPnL();
+        updateFilteredAnalytics();
+        renderLiveInvoicePreview(record);
+        
+        if(sendBillCheckbox && sendBillCheckbox.checked) {
+            const shareMode = document.querySelector('input[name="share-mode"]:checked').value;
+            triggerBillNotification(record, shareMode);
+        }
+        
+        itemsContainer.innerHTML = '';
+        addItemRow();
+        if(sendBillCheckbox) sendBillCheckbox.checked = false;
+        if(sharingOptionsWrapper) sharingOptionsWrapper.classList.add('hidden');
+        updateLiveTotal();
+    });
+}
 
 function renderLiveInvoicePreview(record) {
+    if(!billPreviewBox) return;
     let rowsHtml = '';
     record.itemsList.forEach(si => {
         let billableQty = Math.max(0, si.qty - si.free - si.ret);
@@ -394,6 +406,7 @@ function renderLiveInvoicePreview(record) {
 }
 
 function renderSalesTable() {
+    if(!salesTableBody) return;
     salesTableBody.innerHTML = '';
     salesData.slice().reverse().forEach(s => {
         let descHtml = '';
@@ -401,8 +414,6 @@ function renderSalesTable() {
             s.itemsList.forEach(si => {
                 descHtml += `• ${si.item} (${si.qty} Qty, ${si.free} Free, ${si.ret} Ret)<br>`;
             });
-        } else {
-            descHtml = `• ${s.item} (${s.qty} Qty, ${s.free || 0} Free, ${s.ret} Ret)`;
         }
 
         salesTableBody.innerHTML += `
@@ -437,7 +448,7 @@ function triggerBillNotification(r, mode) {
         });
     }
     
-    const msg = `*🍮 WATALAPPAN ENTERPRISE DAILY BILL*%0A----------------------------------------%0A📅 *දිනය:* ${r.date}%0A🏪 *වෙළඳසැල:* ${r.shop}%0A----------------------------------------%0A${itemsDescriptionText}----------------------------------------%0A💵 *මුළු මුදල:* ਰੁ. ${r.total.toFixed(2)}%0A----------------------------------------%0A_Watalappan ERP v2.6_`;
+    const msg = `*🍮 WATALAPPAN ENTERPRISE DAILY BILL*%0A----------------------------------------%0A📅 *දිනය:* ${r.date}%0A🏪 *වෙළඳසැල:* ${r.shop}%0A----------------------------------------%0A${itemsDescriptionText}----------------------------------------%0A💵 *මුළු මුදල:* රු. ${r.total.toFixed(2)}%0A----------------------------------------%0A_Watalappan ERP v2.6_`;
     let formattedPhone = phone.startsWith('0') ? '94' + phone.substring(1) : phone;
     if(mode === "WhatsApp") {
         window.open(`https://api.whatsapp.com/send?phone=${formattedPhone}&text=${msg}`, '_blank');
@@ -446,28 +457,29 @@ function triggerBillNotification(r, mode) {
     }
 }
 
-// --- PRODUCTION STOCK DATA HANDLERS ---
-document.getElementById('stock-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const editId = document.getElementById('stock-edit-id').value;
-    const dt = document.getElementById('stock-date').value;
-    const item = document.getElementById('stock-item-select').value;
-    const prevBal = parseInt(document.getElementById('stock-prev-bal').value) || 0;
-    const qty = parseInt(document.getElementById('stock-qty').value) || 0;
-    
-    if(!dt || !item) return;
+if(document.getElementById('stock-form')) {
+    document.getElementById('stock-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const editId = document.getElementById('stock-edit-id').value;
+        const dt = document.getElementById('stock-date').value;
+        const item = document.getElementById('stock-item-select').value;
+        const prevBal = parseInt(document.getElementById('stock-prev-bal').value) || 0;
+        const qty = parseInt(document.getElementById('stock-qty').value) || 0;
+        
+        if(!dt || !item) return;
 
-    if(editId) {
-        stockHistory = stockHistory.map(h => h.id == editId ? { ...h, date: dt, item: item, prevBal: prevBal, qty: qty } : h);
-        alert("📝 නිෂ්පාදන තොගය සාර්ථකව යාවත්කාලීන කරන ලදී!");
-    } else {
-        stockHistory.push({ id: Date.now(), date: dt, item: item, prevBal: prevBal, qty: qty });
-        alert("📦 නව නිෂ්පාදන තොගය සාර්ථකව එකතු කළා!");
-    }
-    
-    localStorage.setItem('watalappan_stock_history', JSON.stringify(stockHistory));
-    resetStockForm(); renderStockOverview(); renderStockHistoryTable(); updateLiveTotal(); renderMonthlyPnL();
-});
+        if(editId) {
+            stockHistory = stockHistory.map(h => h.id == editId ? { ...h, date: dt, item: item, prevBal: prevBal, qty: qty } : h);
+            alert("📝 නිෂ්පාදන තොගය සාර්ථකව යාවත්කාලීන කරන ලදී!");
+        } else {
+            stockHistory.push({ id: Date.now(), date: dt, item: item, prevBal: prevBal, qty: qty });
+            alert("📦 නව නිෂ්පාදන තොගය සාර්ථකව එකතු කළා!");
+        }
+        
+        localStorage.setItem('watalappan_stock_history', JSON.stringify(stockHistory));
+        resetStockForm(); renderStockOverview(); renderStockHistoryTable(); updateLiveTotal(); renderMonthlyPnL();
+    });
+}
 
 window.editStockRecord = function(id) {
     const rec = stockHistory.find(h => h.id == id);
@@ -483,6 +495,7 @@ window.editStockRecord = function(id) {
 };
 
 window.resetStockForm = function() {
+    if(!document.getElementById('stock-edit-id')) return;
     document.getElementById('stock-edit-id').value = "";
     document.getElementById('stock-date').value = new Date().toISOString().split('T')[0];
     document.getElementById('stock-prev-bal').value = "0";
@@ -495,6 +508,7 @@ window.resetStockForm = function() {
 
 function renderStockOverview() {
     const tbody = document.getElementById('stock-overview-body');
+    if(!tbody) return;
     tbody.innerHTML = '';
     const stock = calculateCurrentStock();
     
@@ -513,6 +527,7 @@ function renderStockOverview() {
 
 function renderStockHistoryTable() {
     const tbody = document.getElementById('stock-history-table-body');
+    if(!tbody) return;
     tbody.innerHTML = '';
     stockHistory.slice().reverse().forEach(h => {
         const sum = (h.prevBal || 0) + (h.qty || 0);
@@ -528,25 +543,27 @@ window.deleteStockHistoryRecord = function(id) {
     }
 };
 
-// --- EXPENSES ---
-document.getElementById('expense-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const dt = document.getElementById('expense-date').value;
-    const cat = document.getElementById('expense-category').value;
-    const desc = document.getElementById('expense-desc').value.trim();
-    const amt = parseFloat(document.getElementById('expense-amount').value) || 0;
-    
-    if(dt && cat && desc && amt > 0) {
-        expenses.push({ id: Date.now(), date: dt, category: cat, desc: desc, amount: amt });
-        localStorage.setItem('watalappan_expenses', JSON.stringify(expenses));
-        renderExpenseTable(); renderMonthlyPnL(); updateFilteredAnalytics();
-        document.getElementById('expense-desc').value = '';
-        document.getElementById('expense-amount').value = '';
-    }
-});
+if(document.getElementById('expense-form')) {
+    document.getElementById('expense-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const dt = document.getElementById('expense-date').value;
+        const cat = document.getElementById('expense-category').value;
+        const desc = document.getElementById('expense-desc').value.trim();
+        const amt = parseFloat(document.getElementById('expense-amount').value) || 0;
+        
+        if(dt && cat && desc && amt > 0) {
+            expenses.push({ id: Date.now(), date: dt, category: cat, desc: desc, amount: amt });
+            localStorage.setItem('watalappan_expenses', JSON.stringify(expenses));
+            renderExpenseTable(); renderMonthlyPnL(); updateFilteredAnalytics();
+            document.getElementById('expense-desc').value = '';
+            document.getElementById('expense-amount').value = '';
+        }
+    });
+}
 
 function renderExpenseTable() {
     const tbody = document.getElementById('expense-table-body');
+    if(!tbody) return;
     tbody.innerHTML = '';
     expenses.slice().reverse().forEach(e => {
         tbody.innerHTML += `<tr><td>${e.date}</td><td>${e.category}</td><td>${e.desc}</td><td><b>රු. ${e.amount.toFixed(2)}</b></td><td><span class="delete-btn" onclick="deleteExpense(${e.id})">❌</span></td></tr>`;
@@ -561,24 +578,26 @@ window.deleteExpense = function(id) {
     }
 };
 
-// --- CREDIT BALANCING ---
-document.getElementById('credit-payment-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const shop = document.getElementById('credit-shop-select').value;
-    const amt = parseFloat(document.getElementById('credit-paid-amount').value) || 0;
-    const dt = new Date().toISOString().split('T')[0];
-    
-    if(shop && amt > 0) {
-        creditPayments.push({ id: Date.now(), date: dt, shop: shop, amount: amt });
-        localStorage.setItem('watalappan_credit_payments', JSON.stringify(creditPayments));
-        renderCreditTable(); updateFilteredAnalytics();
-        document.getElementById('credit-paid-amount').value = '';
-        alert(`✅ ණය ලැබුණි සටහන් කළා!`);
-    }
-});
+if(document.getElementById('credit-payment-form')) {
+    document.getElementById('credit-payment-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const shop = document.getElementById('credit-shop-select').value;
+        const amt = parseFloat(document.getElementById('credit-paid-amount').value) || 0;
+        const dt = new Date().toISOString().split('T')[0];
+        
+        if(shop && amt > 0) {
+            creditPayments.push({ id: Date.now(), date: dt, shop: shop, amount: amt });
+            localStorage.setItem('watalappan_credit_payments', JSON.stringify(creditPayments));
+            renderCreditTable(); updateFilteredAnalytics();
+            document.getElementById('credit-paid-amount').value = '';
+            alert(`✅ ණය ලැබුණි සටහන් කළා!`);
+        }
+    });
+}
 
 function renderCreditTable() {
     const tbody = document.getElementById('credit-ledger-body');
+    if(!tbody) return;
     tbody.innerHTML = '';
     shopDirectory.forEach(s => {
         const totalCreditIncurred = salesData.filter(x => x.shop === s.name && x.mode === 'Credit').reduce((a,c) => a + c.total, 0);
@@ -588,8 +607,8 @@ function renderCreditTable() {
     });
 }
 
-// --- ANALYTICS ---
 function updateFilteredAnalytics() {
+    if(!filterShopSelect) return;
     const shop = filterShopSelect.value;
     const prod = filterProductSelect.value;
     const time = filterTimeSelect.value;
@@ -636,15 +655,17 @@ function updateFilteredAnalytics() {
     let allocatedExpense = filteredExpenses.reduce((a,c) => a + c.amount, 0);
     let netProfit = totalIncome - totalProductionCost - totalReturnLoss - allocatedExpense;
 
-    document.getElementById('f-sold-qty').textContent = totalSoldQty;
-    document.getElementById('f-total-income').textContent = `රු. ${totalIncome.toFixed(2)}`;
-    document.getElementById('f-return-qty').textContent = totalRetQty;
-    document.getElementById('f-return-loss').textContent = `අලාභය: රු. ${totalReturnLoss.toFixed(2)}`;
-    document.getElementById('f-total-outstanding').textContent = `රු. ${outstandingIncurred.toFixed(2)}`;
+    if(document.getElementById('f-sold-qty')) document.getElementById('f-sold-qty').textContent = totalSoldQty;
+    if(document.getElementById('f-total-income')) document.getElementById('f-total-income').textContent = `රු. ${totalIncome.toFixed(2)}`;
+    if(document.getElementById('f-return-qty')) document.getElementById('f-return-qty').textContent = totalRetQty;
+    if(document.getElementById('f-return-loss')) document.getElementById('f-return-loss').textContent = `අලාභය: රු. ${totalReturnLoss.toFixed(2)}`;
+    if(document.getElementById('f-total-outstanding')) document.getElementById('f-total-outstanding').textContent = `රු. ${outstandingIncurred.toFixed(2)}`;
     
     const profitEl = document.getElementById('f-net-profit');
-    profitEl.textContent = `රු. ${netProfit.toFixed(2)}`;
-    profitEl.parentElement.style.background = netProfit >= 0 ? "linear-gradient(135deg, #43a047, #2e7d32)" : "linear-gradient(135deg, #d32f2f, #c62828)";
+    if(profitEl) {
+        profitEl.textContent = `රු. ${netProfit.toFixed(2)}`;
+        profitEl.parentElement.style.background = netProfit >= 0 ? "linear-gradient(135deg, #43a047, #2e7d32)" : "linear-gradient(135deg, #d32f2f, #c62828)";
+    }
 
     calculateSmartInsights();
 }
@@ -655,44 +676,50 @@ function calculateSmartInsights() {
     
     salesData.forEach(s => {
         shopVolume[s.shop] = (shopVolume[s.shop] || 0) + s.total;
-        s.itemsList.forEach(si => { productVolume[si.item] = (productVolume[si.item] || 0) + (si.qty - si.ret); });
+        if(s.itemsList && Array.isArray(s.itemsList)) {
+            s.itemsList.forEach(si => { productVolume[si.item] = (productVolume[si.item] || 0) + (si.qty - si.ret); });
+        }
     });
     
-    let topShop = Object.keys(shopVolume).reduce((a, b) => shopVolume[a] > shopVolume[b] ? a : b, "--");
-    let topProduct = Object.keys(productVolume).reduce((a, b) => productVolume[a] > productVolume[b] ? a : b, "--");
+    let topShop = Object.keys(shopVolume).length ? Object.keys(shopVolume).reduce((a, b) => shopVolume[a] > shopVolume[b] ? a : b) : "--";
+    let topProduct = Object.keys(productVolume).length ? Object.keys(productVolume).reduce((a, b) => productVolume[a] > productVolume[b] ? a : b) : "--";
     
-    document.getElementById('insight-top-shop').textContent = topShop;
-    document.getElementById('insight-top-product').textContent = topProduct;
+    if(document.getElementById('insight-top-shop')) document.getElementById('insight-top-shop').textContent = topShop;
+    if(document.getElementById('insight-top-product')) document.getElementById('insight-top-product').textContent = topProduct;
 
     const stock = calculateCurrentStock();
     const alertsContainer = document.getElementById('smart-alerts-container');
-    alertsContainer.innerHTML = '';
-    Object.keys(stock.remainingStock).forEach(item => {
-        if(stock.remainingStock[item] <= 15) {
-            alertsContainer.innerHTML += `<div class="alert-banner danger-alert">⚠️ හිඟ තොග: '${item}' ඇතැත්තේ ${stock.remainingStock[item]} කි!</div>`;
+    if(alertsContainer) {
+        alertsContainer.innerHTML = '';
+        Object.keys(stock.remainingStock).forEach(item => {
+            if(stock.remainingStock[item] <= 15) {
+                alertsContainer.innerHTML += `<div class="alert-banner danger-alert">⚠️ හිඟ තොග: '${item}' ඇතැත්තේ ${stock.remainingStock[item]} කි!</div>`;
+            }
+        });
+    }
+}
+
+if(document.getElementById('add-product-form')) {
+    document.getElementById('add-product-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('new-prod-name').value.trim();
+        const price = parseFloat(document.getElementById('new-prod-price').value);
+        const cost = parseFloat(document.getElementById('new-prod-cost').value);
+        const freeTrigger = parseInt(document.getElementById('new-prod-free-trigger').value) || 0;
+        const freeGive = parseInt(document.getElementById('new-prod-free-give').value) || 0;
+        
+        if(name && !isNaN(price) && !isNaN(cost)) {
+            productsMap[name] = [price, cost, freeTrigger, freeGive];
+            localStorage.setItem('watalappan_products_map', JSON.stringify(productsMap));
+            populateDropdowns(); renderProductsSettings(); renderStockOverview(); updateLiveTotal();
+            alert(`✅ භාණ්ඩය එක් කළා!`);
         }
     });
 }
 
-// --- PRODUCT REGISTRATION ---
-document.getElementById('add-product-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = document.getElementById('new-prod-name').value.trim();
-    const price = parseFloat(document.getElementById('new-prod-price').value);
-    const cost = parseFloat(document.getElementById('new-prod-cost').value);
-    const freeTrigger = parseInt(document.getElementById('new-prod-free-trigger').value) || 0;
-    const freeGive = parseInt(document.getElementById('new-prod-free-give').value) || 0;
-    
-    if(name && !isNaN(price) && !isNaN(cost)) {
-        productsMap[name] = [price, cost, freeTrigger, freeGive];
-        localStorage.setItem('watalappan_products_map', JSON.stringify(productsMap));
-        populateDropdowns(); renderProductsSettings(); renderStockOverview(); updateLiveTotal();
-        alert(`✅ භාණ්ඩය එක් කළා!`);
-    }
-});
-
 function renderProductsSettings() {
     const tbody = document.getElementById('products-settings-body');
+    if(!tbody) return;
     tbody.innerHTML = '';
     Object.keys(productsMap).forEach(name => {
         const trig = productsMap[name][2] || 0; const give = productsMap[name][3] || 0;
@@ -707,21 +734,24 @@ window.deleteProduct = function(name) {
     }
 };
 
-// --- SHOP DIRECTORY ---
-document.getElementById('add-shop-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    let nameVal = document.getElementById('new-shop-name').value.trim();
-    let phoneVal = document.getElementById('new-shop-phone').value.trim();
-    if(!nameVal) return;
-    
-    shopDirectory.push({ name: nameVal, phone: phoneVal || "" });
-    localStorage.setItem('watalappan_shop_directory', JSON.stringify(shopDirectory));
-    populateDropdowns(); renderShops(); renderCreditTable();
-    document.getElementById('new-shop-name').value = ''; document.getElementById('new-shop-phone').value = '';
-});
+if(document.getElementById('add-shop-form')) {
+    document.getElementById('add-shop-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        let nameVal = document.getElementById('new-shop-name').value.trim();
+        let phoneVal = document.getElementById('new-shop-phone').value.trim();
+        if(!nameVal) return;
+        
+        shopDirectory.push({ name: nameVal, phone: phoneVal || "" });
+        localStorage.setItem('watalappan_shop_directory', JSON.stringify(shopDirectory));
+        populateDropdowns(); renderShops(); renderCreditTable();
+        document.getElementById('new-shop-name').value = ''; document.getElementById('new-shop-phone').value = '';
+    });
+}
 
 function renderShops() {
-    const list = document.getElementById('shop-list'); list.innerHTML = '';
+    const list = document.getElementById('shop-list'); 
+    if(!list) return;
+    list.innerHTML = '';
     shopDirectory.forEach((s, idx) => {
         list.innerHTML += `<li><span>🏪 <b>${s.name}</b> (${s.phone || 'නැත'})</span><div><span class="edit-btn-icon" onclick="openShopPhoneModal(${idx})">✏️</span><span class="delete-btn" onclick="deleteShop(${idx})">❌</span></div></li>`;
     });
@@ -748,9 +778,11 @@ window.deleteShop = function(idx) {
     }
 };
 
-// --- MONTHLY MATRIX ---
 function renderMonthlyPnL() {
-    const tbody = document.getElementById('pnl-table-body'); tbody.innerHTML = '';
+    const tbody = document.getElementById('pnl-table-body'); 
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    if(!pnlProductFilterSelect) return;
     const targetProd = pnlProductFilterSelect.value;
     let monthlyMatrix = {};
     
@@ -778,9 +810,10 @@ function renderMonthlyPnL() {
     });
 }
 
-// --- CLOUD SYNC ---
 window.exportToGoogleSheets = function(type) {
-    if(GOOGLE_SHEETS_WEBAPP_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") { return alert("ℹ️ Apps Script URL එක ඇතුලත් කරන්න."); }
+    if(!GOOGLE_SHEETS_WEBAPP_URL) { 
+        return alert("ℹ️ Cloud එකට දත්ත යැවීමට නම්, ප්‍රථමයෙන් script.js හි මුදුනත ඇති GOOGLE_SHEETS_WEBAPP_URL එකට ඔබගේ සබැඳිය ඇතුලත් කරන්න."); 
+    }
     let payload = type === 'sales' ? salesData : expenses;
     fetch(GOOGLE_SHEETS_WEBAPP_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: type, data: payload }) })
     .then(() => alert(`☁️ දත්ත Cloud ජාලය වෙත Sync කරන ලදී!`))
