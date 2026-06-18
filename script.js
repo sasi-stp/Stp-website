@@ -38,6 +38,7 @@ const itemsContainer = document.getElementById('items-container');
 const totalPriceDisplay = document.getElementById('total-price-display');
 const salesForm = document.getElementById('sales-form');
 const salesTableBody = document.getElementById('sales-table-body');
+const billPreviewBox = document.getElementById('bill-preview-box');
 
 const sendBillCheckbox = document.getElementById('send-bill-checkbox');
 const sharingOptionsWrapper = document.getElementById('sharing-options-wrapper');
@@ -133,7 +134,7 @@ function populateDropdowns() {
     pnlProductFilterSelect.value = prevPnlFilterProduct;
 }
 
-// --- TAB NAVIGATION FUNCTION (FIXED) ---
+// --- TAB NAVIGATION FUNCTION ---
 window.switchTab = function(tabId) {
     const contents = document.querySelectorAll('.tab-content');
     contents.forEach(content => content.classList.remove('active-content'));
@@ -219,7 +220,6 @@ window.removeItemRow = function(rowId) {
     }
 };
 
-// --- DYNAMIC STOCK CALCULATION MECHANICS ---
 function calculateCurrentStock() {
     let totalBuilt = {};
     let remainingStock = {};
@@ -275,7 +275,7 @@ function updateLiveTotal() {
 
         const scheme = productsMap[item];
         if(scheme && scheme[2] > 0 && scheme[3] > 0) {
-            schemeLbl.textContent = `💡 Free ක්‍රමය: ඒකක ${scheme[2]} කට ${scheme[3]} ක් නොමිලේ හිමිවේ.`;
+            schemeLbl.textContent = `💡 Free ක්‍රමය: ඒකක ${scheme[2]} කට ${scheme[3]} ක් නොමිලේ.`;
         } else {
             schemeLbl.textContent = '';
         }
@@ -304,147 +304,7 @@ function getUnitCost(type) {
     return productsMap[type] ? parseFloat(productsMap[type][1]) : 0;
 }
 
-// --- PRODUCT REGSITRATION MANAGEMENT ---
-document.getElementById('add-product-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const nameInput = document.getElementById('new-prod-name');
-    const priceInput = document.getElementById('new-prod-price');
-    const costInput = document.getElementById('new-prod-cost');
-    const freeTriggerInput = document.getElementById('new-prod-free-trigger');
-    const freeGiveInput = document.getElementById('new-prod-free-give');
-    
-    const name = nameInput.value.trim();
-    const price = parseFloat(priceInput.value);
-    const cost = parseFloat(costInput.value);
-    const freeTrigger = parseInt(freeTriggerInput.value) || 0;
-    const freeGive = parseInt(freeGiveInput.value) || 0;
-    
-    if(name && !isNaN(price) && !isNaN(cost)) {
-        productsMap[name] = [price, cost, freeTrigger, freeGive];
-        localStorage.setItem('watalappan_products_map', JSON.stringify(productsMap));
-        
-        populateDropdowns();
-        renderProductsSettings();
-        renderStockOverview();
-        updateLiveTotal();
-        
-        nameInput.value = ''; priceInput.value = ''; costInput.value = '';
-        freeTriggerInput.value = ''; freeGiveInput.value = '';
-        alert(`✅ '${name}' සාර්ථකව ඇතුළත් කරගත්තා!`);
-    }
-});
-
-function renderProductsSettings() {
-    const tbody = document.getElementById('products-settings-body');
-    tbody.innerHTML = '';
-    Object.keys(productsMap).forEach(name => {
-        const trigger = productsMap[name][2] || 0;
-        const give = productsMap[name][3] || 0;
-        const schemeTxt = (trigger > 0 && give > 0) ? `${trigger} කට ${give} ක් නොමිලේ` : "නැත (No scheme)";
-        
-        tbody.innerHTML += `
-            <tr>
-                <td><b>${name}</b></td>
-                <td>රු. ${productsMap[name][0]}</td>
-                <td style="color:#795548;">රු. ${productsMap[name][1]}</td>
-                <td style="color:#e65100; font-weight:600;">${schemeTxt}</td>
-                <td><span class="delete-btn" onclick="deleteProduct('${name}')">❌</span></td>
-            </tr>`;
-    });
-}
-
-window.deleteProduct = function(name) {
-    if(confirm(`"${name}" පද්ධතියෙන් ඉවත් කිරීමට අවශ්‍යද?`)) {
-        delete productsMap[name];
-        localStorage.setItem('watalappan_products_map', JSON.stringify(productsMap));
-        populateDropdowns(); renderProductsSettings(); renderStockOverview(); updateLiveTotal();
-        updateFilteredAnalytics(); renderMonthlyPnL();
-    }
-};
-
-// --- SHOP DIRECTORY FLOWS ---
-document.getElementById('add-shop-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    let nameVal = document.getElementById('new-shop-name').value.trim();
-    let phoneVal = document.getElementById('new-shop-phone').value.trim();
-    
-    if(!nameVal) return;
-    
-    if(phoneVal) {
-        const isDuplicate = shopDirectory.some(s => s.phone && s.phone.replace(/\s+/g, '') === phoneVal.replace(/\s+/g, ''));
-        if(isDuplicate) {
-            alert(`⚠️ දුරකථන අංකය වැරදියි! "${phoneVal}" අංකය දැනටමත් වෙනත් කඩයක් සඳහා ඇතුළත් කර ඇත.`);
-            return;
-        }
-    }
-    
-    shopDirectory.push({ name: nameVal, phone: phoneVal || "" });
-    localStorage.setItem('watalappan_shop_directory', JSON.stringify(shopDirectory));
-    populateDropdowns();
-    renderShops();
-    renderCreditTable();
-    document.getElementById('new-shop-name').value = '';
-    document.getElementById('new-shop-phone').value = '';
-});
-
-function renderShops() {
-    const list = document.getElementById('shop-list');
-    list.innerHTML = '';
-    shopDirectory.forEach((s, idx) => {
-        const hasPhone = s.phone && s.phone.trim() !== "";
-        const phoneDisplayTxt = hasPhone ? s.phone : `<span style="color:gray; font-style:italic;">ඇතුළත් කර නැත</span>`;
-        
-        list.innerHTML += `
-            <li>
-                <span>🏪 <b>${s.name}</b> (${phoneDisplayTxt})</span> 
-                <div>
-                    <span class="edit-btn-icon" title="දුරකථන අංකය සංස්කරණය" onclick="openShopPhoneModal(${idx})">✏️</span>
-                    <span class="delete-btn" onclick="deleteShop(${idx})">❌</span>
-                </div>
-            </li>`;
-    });
-}
-
-window.openShopPhoneModal = function(idx) {
-    const shop = shopDirectory[idx];
-    document.getElementById('modal-shop-name').textContent = shop.name;
-    document.getElementById('modal-shop-index').value = idx;
-    document.getElementById('modal-phone-input').value = shop.phone || "";
-    document.getElementById('edit-phone-modal').classList.remove('hidden');
-};
-
-window.closeShopPhoneModal = function() {
-    document.getElementById('edit-phone-modal').classList.add('hidden');
-};
-
-window.saveShopPhoneModal = function() {
-    const idx = parseInt(document.getElementById('modal-shop-index').value);
-    const newPhone = document.getElementById('modal-phone-input').value.trim();
-    
-    if(newPhone !== "") {
-        const isDuplicate = shopDirectory.some((s, i) => i !== idx && s.phone && s.phone.replace(/\s+/g, '') === newPhone.replace(/\s+/g, ''));
-        if(isDuplicate) {
-            alert(`⚠️ දෝෂයකි! මෙම දුරකථන අංකය වෙනත් කඩයක් සඳහා දැනටමත් භාවිතයේ පවතී.`);
-            return;
-        }
-    }
-    
-    shopDirectory[idx].phone = newPhone;
-    localStorage.setItem('watalappan_shop_directory', JSON.stringify(shopDirectory));
-    renderShops();
-    closeShopPhoneModal();
-    alert("✅ දුරකථන අංකය සාර්ථකව යාවත්කාලීන කරන ලදී!");
-};
-
-window.deleteShop = function(idx) {
-    if(confirm(`මෙම කඩය පද්ධතියෙන් ඉවත් කිරීමට අවශ්‍යද?`)) {
-        shopDirectory.splice(idx, 1);
-        localStorage.setItem('watalappan_shop_directory', JSON.stringify(shopDirectory));
-        populateDropdowns(); renderShops(); renderCreditTable(); updateFilteredAnalytics();
-    }
-};
-
-// --- SALES PROCESSING MECHANICS ---
+// --- SALES PROCESSING WITH INVOICE PREVIEW ---
 salesForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const dt = salesDateInput.value;
@@ -468,7 +328,7 @@ salesForm.addEventListener('submit', (e) => {
         const lineTotal = finalBillableQty * price;
 
         overallBillNetTotal += lineTotal;
-        itemsList.push({ item: item, qty: qty, free: free, ret: ret, total: lineTotal });
+        itemsList.push({ item: item, qty: qty, free: free, ret: ret, total: lineTotal, rate: price });
     }
 
     if(itemsList.length === 0) {
@@ -488,6 +348,9 @@ salesForm.addEventListener('submit', (e) => {
     renderMonthlyPnL();
     updateFilteredAnalytics();
     
+    // RENDER NEW LIVE INVOICE PREVIEW
+    renderLiveInvoicePreview(record);
+    
     if(sendBillCheckbox.checked) {
         const shareMode = document.querySelector('input[name="share-mode"]:checked').value;
         triggerBillNotification(record, shareMode);
@@ -499,6 +362,47 @@ salesForm.addEventListener('submit', (e) => {
     sharingOptionsWrapper.classList.add('hidden');
     updateLiveTotal();
 });
+
+// NEW FUNCTION: GENERATE BILL INVOICE DESIGN ON THE SCREEN
+function renderLiveInvoicePreview(record) {
+    let rowsHtml = '';
+    record.itemsList.forEach(si => {
+        let billableQty = Math.max(0, si.qty - si.free - si.ret);
+        rowsHtml += `
+            <tr>
+                <td><b>${si.item}</b><br><small style="color:gray;">Qty:${si.qty} F:${si.free} R:${si.ret}</small></td>
+                <td>${billableQty}</td>
+                <td>රු. ${si.rate.toFixed(2)}</td>
+                <td style="text-align:right; font-weight:bold;">රු. ${si.total.toFixed(2)}</td>
+            </tr>`;
+    });
+
+    billPreviewBox.innerHTML = `
+        <div class="bill-invoice-container">
+            <div class="invoice-title">WATALAPPAN ENTERPRISE</div>
+            <div style="text-align:center; font-size:0.75rem; color:gray;">Smart ERP Invoice System</div>
+            <div class="invoice-divider"></div>
+            <div class="invoice-meta-row"><span><b>දිනය (Date):</b> ${record.date}</span> <span><b>ID:</b> #${record.id.toString().slice(-6)}</span></div>
+            <div class="invoice-meta-row"><span><b>වෙළඳසැල (Shop):</b> ${record.shop}</span></div>
+            <div class="invoice-meta-row"><span><b>ගෙවීම් ක්‍රමය (Mode):</b> <span style="color:${record.mode === 'Cash'?'green':'purple'}; font-weight:bold;">${record.mode.toUpperCase()}</span></span></div>
+            <div class="invoice-divider"></div>
+            <table class="invoice-table">
+                <thead>
+                    <tr><th>විස්තරය</th><th>අයකල Qty</th><th>මිල</th><th style="text-align:right;">මුදල</th></tr>
+                </thead>
+                <tbody>
+                    ${rowsHtml}
+                </tbody>
+            </table>
+            <div class="invoice-total-row">
+                <span>ශුද්ධ එකතුව (NET TOTAL):</span>
+                <span>රු. ${record.total.toFixed(2)}</span>
+            </div>
+            <div class="invoice-divider" style="margin-top:15px;"></div>
+            <div style="text-align:center; font-size:0.75rem; font-weight:bold; color:var(--primary-color);">ස්තූතියි! නැවත පැමිණෙන්න. 🙏</div>
+        </div>
+    `;
+}
 
 function renderSalesTable() {
     salesTableBody.innerHTML = '';
@@ -547,7 +451,7 @@ function triggerBillNotification(r, mode) {
         itemsDescriptionText = `📦 *භාණ්ඩය:* ${r.item}%0A🔹 *Qty:* ${r.qty} | 🎁 *Free:* ${r.free || 0} | 🔺 *Ret:* ${r.ret}%0A%0A`;
     }
     
-    const msg = `*🍮 WATALAPPAN ENTERPRISE DAILY BILL*%0A----------------------------------------%0A📅 *දිනය (Date):* ${r.date}%0A🏪 *වෙළඳසැල:* ${r.shop}%0A----------------------------------------%0A${itemsDescriptionText}----------------------------------------%0A💵 *ගෙවිය යුතු ශුද්ධ මුළු මුදල:* රු. ${r.total.toFixed(2)}%0A----------------------------------------%0A... *ගනුදෙනු ක්‍රමය:* ${r.mode === 'Cash' ? '🤝 CASH (මුදල් ලැබුණි)' : '💳 CREDIT (ණය පොතට)'}%0A----------------------------------------%0A_Watalappan ERP Smart Messaging v2.0_`;
+    const msg = `*🍮 WATALAPPAN ENTERPRISE DAILY BILL*%0A----------------------------------------%0A📅 *දිනය (Date):* ${r.date}%0A🏪 *වෙළඳසැල:* ${r.shop}%0A----------------------------------------%0A${itemsDescriptionText}----------------------------------------%0A💵 *ගෙවිය යුතු ශුද්ධ මුළු මුදල:* ਰੁ. ${r.total.toFixed(2)}%0A----------------------------------------%0A... *ගනුදෙනු ක්‍රමය:* ${r.mode === 'Cash' ? '🤝 CASH (මුදල් ලැබුණි)' : '💳 CREDIT (ණය පොටට)'}%0A----------------------------------------%0A_Watalappan ERP Smart Messaging v2.5_`;
 
     let formattedPhone = phone.startsWith('0') ? '94' + phone.substring(1) : phone;
     if(mode === "WhatsApp") {
@@ -610,7 +514,7 @@ window.resetStockForm = function() {
     document.getElementById('stock-prev-bal').value = "0";
     document.getElementById('stock-qty').value = "0";
     
-    document.getElementById('stock-form-title').textContent = "📦 නිෂ්පාදන තොග ඇතුළත් කිරීම (Daily Stock Intake)";
+    document.getElementById('stock-form-title').textContent = "📦 නිෂ්පාදන තොග ඇතුළත් කිරීම";
     document.getElementById('stock-submit-btn').textContent = "තොගය ඇතුළත් කරන්න";
     document.getElementById('stock-cancel-btn').classList.add('hidden');
     updateStockPrevBalPreview();
@@ -876,10 +780,149 @@ function calculateSmartInsights() {
     
     Object.keys(stock.remainingStock).forEach(item => {
         if(stock.remainingStock[item] <= 15) {
-            alertsContainer.innerHTML += `<div class="alert-banner danger-alert">⚠️ හිඟ තොග අනතුරු ඇඟවීම: '${item}' තොගයේ ඇත්තේ ඒකක ${stock.remainingStock[item]} ක් පමණි! කරුණාකර නිෂ්පාදනය වැඩි කරන්න.</div>`;
+            alertsContainer.innerHTML += `<div class="alert-banner danger-alert">⚠️ හිඟ තොග අනතුරු ඇඟවීම: '${item}' තොගයේ ඇත්තේ ඒකක ${stock.remainingStock[item]} ක් පමණි!</div>`;
         }
     });
 }
+
+// --- PRODUCT REGISTRATION MANAGEMENT ---
+document.getElementById('add-product-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nameInput = document.getElementById('new-prod-name');
+    const priceInput = document.getElementById('new-prod-price');
+    const costInput = document.getElementById('new-prod-cost');
+    const freeTriggerInput = document.getElementById('new-prod-free-trigger');
+    const freeGiveInput = document.getElementById('new-prod-free-give');
+    
+    const name = nameInput.value.trim();
+    const price = parseFloat(priceInput.value);
+    const cost = parseFloat(costInput.value);
+    const freeTrigger = parseInt(freeTriggerInput.value) || 0;
+    const freeGive = parseInt(freeGiveInput.value) || 0;
+    
+    if(name && !isNaN(price) && !isNaN(cost)) {
+        productsMap[name] = [price, cost, freeTrigger, freeGive];
+        localStorage.setItem('watalappan_products_map', JSON.stringify(productsMap));
+        
+        populateDropdowns();
+        renderProductsSettings();
+        renderStockOverview();
+        updateLiveTotal();
+        
+        nameInput.value = ''; priceInput.value = ''; costInput.value = '';
+        freeTriggerInput.value = ''; freeGiveInput.value = '';
+        alert(`✅ '${name}' සාර්ථකව ඇතුළත් කරගත්තා!`);
+    }
+});
+
+function renderProductsSettings() {
+    const tbody = document.getElementById('products-settings-body');
+    tbody.innerHTML = '';
+    Object.keys(productsMap).forEach(name => {
+        const trigger = productsMap[name][2] || 0;
+        const give = productsMap[name][3] || 0;
+        const schemeTxt = (trigger > 0 && give > 0) ? `${trigger} කට ${give} ක් නොමිලේ` : "නැත";
+        
+        tbody.innerHTML += `
+            <tr>
+                <td><b>${name}</b></td>
+                <td>රු. ${productsMap[name][0]}</td>
+                <td style="color:#795548;">රු. ${productsMap[name][1]}</td>
+                <td style="color:#e65100; font-weight:600;">${schemeTxt}</td>
+                <td><span class="delete-btn" onclick="deleteProduct('${name}')">❌</span></td>
+            </tr>`;
+    });
+}
+
+window.deleteProduct = function(name) {
+    if(confirm(`"${name}" පද්ධතියෙන් ඉවත් කිරීමට අවශ්‍යද?`)) {
+        delete productsMap[name];
+        localStorage.setItem('watalappan_products_map', JSON.stringify(productsMap));
+        populateDropdowns(); renderProductsSettings(); renderStockOverview(); updateLiveTotal();
+        updateFilteredAnalytics(); renderMonthlyPnL();
+    }
+};
+
+// --- SHOP DIRECTORY FLOWS ---
+document.getElementById('add-shop-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    let nameVal = document.getElementById('new-shop-name').value.trim();
+    let phoneVal = document.getElementById('new-shop-phone').value.trim();
+    
+    if(!nameVal) return;
+    
+    if(phoneVal) {
+        const isDuplicate = shopDirectory.some(s => s.phone && s.phone.replace(/\s+/g, '') === phoneVal.replace(/\s+/g, ''));
+        if(isDuplicate) {
+            alert(`⚠️ දුරකථන අංකය වැරදියි! "${phoneVal}" අංකය දැනටමත් පවතී.`);
+            return;
+        }
+    }
+    
+    shopDirectory.push({ name: nameVal, phone: phoneVal || "" });
+    localStorage.setItem('watalappan_shop_directory', JSON.stringify(shopDirectory));
+    populateDropdowns();
+    renderShops();
+    renderCreditTable();
+    document.getElementById('new-shop-name').value = '';
+    document.getElementById('new-shop-phone').value = '';
+});
+
+function renderShops() {
+    const list = document.getElementById('shop-list');
+    list.innerHTML = '';
+    shopDirectory.forEach((s, idx) => {
+        const hasPhone = s.phone && s.phone.trim() !== "";
+        const phoneDisplayTxt = hasPhone ? s.phone : `<span style="color:gray; font-style:italic;">ඇතුළත් කර නැත</span>`;
+        
+        list.innerHTML += `
+            <li>
+                <span>🏪 <b>${s.name}</b> (${phoneDisplayTxt})</span> 
+                <div>
+                    <span class="edit-btn-icon" title="සංස්කරණය" onclick="openShopPhoneModal(${idx})">✏️</span>
+                    <span class="delete-btn" onclick="deleteShop(${idx})">❌</span>
+                </div>
+            </li>`;
+    });
+}
+
+window.openShopPhoneModal = function(idx) {
+    const shop = shopDirectory[idx];
+    document.getElementById('modal-shop-name').textContent = shop.name;
+    document.getElementById('modal-shop-index').value = idx;
+    document.getElementById('modal-phone-input').value = shop.phone || "";
+    document.getElementById('edit-phone-modal').classList.remove('hidden');
+};
+
+window.closeShopPhoneModal = function() {
+    document.getElementById('edit-phone-modal').classList.add('hidden');
+};
+
+window.saveShopPhoneModal = function() {
+    const idx = parseInt(document.getElementById('modal-shop-index').value);
+    const newPhone = document.getElementById('modal-phone-input').value.trim();
+    
+    if(newPhone !== "") {
+        const isDuplicate = shopDirectory.some((s, i) => i !== idx && s.phone && s.phone.replace(/\s+/g, '') === newPhone.replace(/\s+/g, ''));
+        if(isDuplicate) {
+            alert(`⚠️ මෙම අංකය වෙනත් කඩයක් සඳහා භාවිතයේ පවතී.`);
+            return;
+        }
+    }
+    
+    shopDirectory[idx].phone = newPhone;
+    localStorage.setItem('watalappan_shop_directory', JSON.stringify(shopDirectory));
+    renderShops();
+    closeShopPhoneModal();
+};
+
+window.deleteShop = function(idx) {
+    if(confirm(`මෙම කඩය පද්ධතියෙන් ඉවත් කිරීමට අවශ්‍යද?`)) {
+        shopDirectory.splice(idx, 1);
+        localStorage.setItem('watalappan_shop_directory', JSON.stringify(shopDirectory));
+        populateDropdowns(); renderShops(); renderCreditTable(); updateFilteredAnalytics();
+    }
+};
 
 // --- MONTHLY DATA MATRIX STRUCTS ---
 function renderMonthlyPnL() {
@@ -891,7 +934,6 @@ function renderMonthlyPnL() {
     
     salesData.forEach(s => {
         const monthStr = s.date.substring(0, 7);
-        
         if(!monthlyMatrix[monthStr]) monthlyMatrix[monthStr] = { sales: 0, prodCost: 0, retLoss: 0 };
         
         if(s.itemsList && Array.isArray(s.itemsList)) {
@@ -916,7 +958,6 @@ function renderMonthlyPnL() {
     });
 
     const sortedMonths = Object.keys(monthlyMatrix).sort().reverse();
-    
     if(sortedMonths.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">ප්‍රමාණවත් දත්ත නොමැත.</td></tr>`;
         return;
@@ -962,6 +1003,6 @@ window.exportToGoogleSheets = function(type) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: type, data: payload })
     })
-    .then(() => alert(`☁️ ${type === 'sales' ? 'විකුණුම් දත්ත':'වියදම් දත්ත'} සාර්ථකව Cloud ජාලය වෙත සමගාමී (Sync) කරන ලදී!`))
+    .then(() => alert(`☁️ දත්ත සාර්ථකව Cloud ජාලය වෙත Sync කරන ලදී!`))
     .catch(err => alert("❌ සන්නිවේදන දෝෂයක්: " + err));
 };
