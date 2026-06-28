@@ -1006,3 +1006,86 @@ window.exportToGoogleSheets = function(type) {
     .then(() => alert(`☁️ දත්ත සාර්ථකව Cloud ජාලය වෙත Sync කරන ලදී!`))
     .catch(err => alert("❌ සන්නිවේදන දෝෂයක්: " + err));
 };
+// ========================================================================
+// NEW JAVASCRIPT EXTENSIONS (APPEND ONLY)
+// ========================================================================
+
+/**
+ * 1. වෙළඳසැල් ලැයිස්තුව Edit කිරීමේ පහසුකම (Edit Icon Fix)
+ * ඔබේ edit-btn-icon එකට click event එකක් සම්බන්ධ නොවී තිබීම නිසා මෙය සිදුවේ.
+ */
+function editShopName(shopId, currentName) {
+    const newName = prompt("වෙළඳසැලේ අලුත් නම ඇතුළත් කරන්න:", currentName);
+    if (newName && newName.trim() !== "") {
+        // මෙතැනදී ඔබේ Apps Script Web App එකට දත්ත යැවීම සිදු කරයි
+        // (ඔබේ script.js හි ඇති global variable එක google.script.run හෝ fetch එකක් විය හැක)
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+            google.script.run.withSuccessHandler(function(response) {
+                alert("වෙළඳසැල් නම සාර්ථකව යාවත්කාලීන කරන ලදී!");
+                if (typeof loadShops === 'function') loadShops(); // ලැයිස්තුව refresh කිරීම
+            }).updateShopNameInSheets(shopId, newName.trim()); 
+        } else {
+            alert("Server සම්බන්ධතාවය හමු නොවීය. නම: " + newName);
+        }
+    }
+}
+
+/**
+ * 2. වෙළඳසැල් ණය ලෙජරයේ ණයක් (Outstanding) ඇති වෙළඳසැල් පමණක් ලැයිස්තුවේ උඩින්ම පෙන්වීම
+ * දැනට පවතින array එක sort කිරීමට මෙම ශ්‍රිතය (Function) භාවිතා කරන්න.
+ */
+function sortShopsByOutstanding(shopsArray) {
+    // shopsArray යනු [{id: 1, name: 'Shop A', outstanding: 500}, ...] වැනි ව්‍යුහයකි
+    return shopsArray.sort((a, b) => {
+        const debtA = parseFloat(a.outstanding) || 0;
+        const debtB = parseFloat(b.outstanding) || 0;
+        
+        if (debtA > 0 && debtB <= 0) return -1; // ණය ඇති ඒවා උඩට
+        if (debtA <= 0 && debtB > 0) return 1;  // ණය නැති ඒවා පහළට
+        return debtB - debtA; // ණය වැඩිම ඒවා පිළිවෙලින් උඩටම
+    });
+}
+
+/**
+ * 3. නිෂ්පාදන තොග ඇතුළත් කිරීමේදී "පෙර ඉතිරිය (Auto)" දෙපාරක් එකතු වීම වැළැක්වීම
+ * ගණනය කිරීමේදී පැරණි අගය string එකක් ලෙස එකතු වී (Concatenate) හෝ double loop වීම වැළැක්වීමට නිවැරදි ක්‍රමය:
+ */
+function calculateCorrectStock(previousStock, newStockAdded) {
+    // parseFloat මඟින් අගයන් අනිවාර්යයෙන්ම සංඛ්‍යා (Numbers) බවට පත් කරයි
+    const prev = parseFloat(previousStock) || 0;
+    const added = parseFloat(newStockAdded) || 0;
+    
+    // දෙපාරක් එකතු වීම වැළැක්වීම සඳහා සෘජුවම අගයන් දෙක පමණක් එකතු කර රිටන් කරයි
+    return prev + added;
+}
+
+/**
+ * 4. පෙර ඉතිරිය කොටුව තුල Edit Icon එක ක්‍රියා කරවීම
+ * Icon එක click කළ විට readonly ඉවත් වී edit කිරීමට ඉඩ සලසයි. Enter එබූ විට නැවත සේව් වේ.
+ */
+document.addEventListener("DOMContentLoaded", function() {
+    const prevStockInput = document.getElementById("previous-stock-input-id"); // ඔබේ input එකේ සැබෑ ID එක මෙතැනට දාන්න
+    const editIcon = document.getElementById("prev-stock-edit-icon-id"); // ඔබේ icon එකේ ID එක
+    
+    if (editIcon && prevStockInput) {
+        editIcon.addEventListener("click", function() {
+            if (prevStockInput.hasAttribute("readonly")) {
+                prevStockInput.removeAttribute("readonly");
+                prevStockInput.focus();
+                editIcon.style.color = "#2e7d32"; // Edit කරන විට කොළ පාට වීම
+            } else {
+                prevStockInput.setAttribute("readonly", true);
+                editIcon.style.color = "var(--primary-color)";
+            }
+        });
+
+        // Enter එබූ විට ස්වයංක්‍රීයව නැවත Lock වීම
+        prevStockInput.addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                prevStockInput.setAttribute("readonly", true);
+                editIcon.style.color = "var(--primary-color)";
+                alert("පෙර ඉතිරිය තාවකාලිකව වෙනස් කරන ලදී.");
+            }
+        });
+    }
+});
