@@ -438,3 +438,38 @@ th {
 .modal { 
     display: none; 
 }
+/* ========================================================================
+   NEW EXTENSIONS - DO NOT TOUCH OLD STYLES (APPEND ONLY)
+======================================================================== */
+
+/* පෙර ඉතිරිය input එක සහ icon එක එක පෙළට තැබීමට wrapper එකක් */
+.editable-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.editable-input-wrapper input {
+    padding-right: 35px !important; /* Icon එක සඳහා දකුණු පසින් ඉඩ තැබීම */
+}
+
+/* Edit Icon එක input එක ඇතුලතින් තැබීම */
+.input-edit-icon {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    color: var(--primary-color, #6d4c41);
+    font-size: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.input-edit-icon:hover {
+    transform: scale(1.15);
+}
+
+/* Input එක readonly ඇති විට background එක වෙනස් කිරීම */
+input[readonly] {
+    background-color: #f1f3f5 !important;
+    cursor: not-allowed;
+}
