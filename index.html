@@ -1,162 +1,283 @@
 <!DOCTYPE html>
-<html lang="si">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watalappan Smart Enterprise ERP</title>
+    <title>Advanced ERP System</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div id="login-container" class="card">
-        <h2>Watalappan Smart ERP</h2>
-        <p style="font-size:0.85rem; color:gray; margin-bottom: 15px;">වීමට මුරපදය ලබා දෙන්න</p>
-        <form id="login-form">
-            <div class="form-group">
-                <input type="password" id="password" placeholder="Password (මුරපදය)" required>
+
+    <div class="login-container" id="loginPage">
+        <div class="login-card">
+            <div class="logo-area">
+                <i class="fa-solid fa-layer-group"></i>
+                <h2>ERP SYSTEM</h2>
+                <p>Welcome back! Please login to your account.</p>
             </div>
-            <button type="submit" class="btn btn-success" style="margin-top: 5px;">Log In</button>
-        </form>
-        <div id="login-error" class="error-msg"></div>
+            <form id="loginForm">
+                <div class="input-group">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="username" required placeholder="Username (admin)">
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" required placeholder="Password (admin)">
+                </div>
+                <button type="submit" class="btn-login">Login <i class="fa-solid fa-arrow-right"></i></button>
+            </form>
+            <div id="errorMsg" class="error-msg">වැරදි පරිශීලක නාමයක් හෝ මුරපදයක්!</div>
+        </div>
     </div>
 
-    <div id="app-container" class="hidden">
-        <div class="card app-header">
-            <div>
-                <h1>Watalappan Smart Enterprise ERP <span style="font-size:0.8rem; color:var(--accent-color);">v2.5</span></h1>
-                <p style="font-size:0.75rem; color:gray;">(Control Panel)</p>
+    <div class="dashboard-container hidden" id="dashboardPage">
+        
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-chart-line"></i>
+                <h3>ERP Dashboard</h3>
             </div>
-            <button class="btn btn-danger" id="logout-btn">Log Out</button>
-        </div>
+            <nav class="nav-tabs">
+                <button class="tab-btn active" data-tab="sales"><i class="fa-solid fa-cart-shopping"></i> Sales Mgmt</button>
+                <button class="tab-btn" data-tab="inventory"><i class="fa-solid fa-warehouse"></i> Inventory Mgmt</button>
+                <button class="tab-btn" data-tab="purchase"><i class="fa-solid fa-bag-shopping"></i> Purchase Mgmt</button>
+                <button class="tab-btn" data-tab="customer"><i class="fa-solid fa-users"></i> Customer Mgmt</button>
+                <button class="tab-btn" data-tab="finance"><i class="fa-solid fa-coins"></i> Finance & Accounts</button>
+                <button class="tab-btn" data-tab="production"><i class="fa-solid fa-industry"></i> Production Mgmt</button>
+                <button class="tab-btn" data-tab="employee"><i class="fa-solid fa-user-tie"></i> Employee Mgmt</button>
+                <button class="tab-btn" data-tab="delivery"><i class="fa-solid fa-truck"></i> Delivery Mgmt</button>
+                <button class="tab-btn" data-tab="reports"><i class="fa-solid fa-square-poll-vertical"></i> Reports & Dashboard</button>
+                <button class="tab-btn" data-tab="system"><i class="fa-solid fa-gear"></i> System Admin</button>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            </div>
+        </aside>
 
-        <div class="tabs-nav">
-            <button class="tab-btn active" onclick="switchTab('tab-entry')">දත්ත ඇතුළත් කිරීම</button>
-            <button class="tab-btn" onclick="switchTab('tab-stock')">තොග කළමනාකරණය</button>
-            <button class="tab-btn" onclick="switchTab('tab-credit')">ණය ලෙජරය</button>
-            <button class="tab-btn" onclick="switchTab('tab-expenses')">වියදම් කළමනාකරණය</button>
-            <button class="tab-btn" onclick="switchTab('tab-analytics')">විශ්ලේෂණ සහ වාර්තා</button>
-        </div>
-
-        <div id="tab-entry" class="tab-content active-content">
-            <div class="grid-container">
-                <div class="card">
-                    <h3>නව විකුණුම් සටහන</h3>
-                    <hr style="margin:8px 0; opacity:0.2;">
-                    <form id="sales-form">
-                        <div class="form-group-row">
-                            <div class="form-group" style="flex:1;">
-                                <label>දිනය:</label>
-                                <input type="date" id="sales-date" required>
-                            </div>
-                            <div class="form-group" style="flex:1;">
-                                <label>වෙළඳසැල (Shop):</label>
-                                <select id="shop-select" required></select>
-                            </div>
-                        </div>
-                        <div id="items-container"></div>
-                        <button type="button" class="btn-add-item" onclick="addItemRow()">+ භාණ්ඩයක් එක් කරන්න</button>
-
-                        <div class="form-group" style="margin-top:15px;">
-                            <label>ගෙවීම් ක්‍රමය (Payment):</label>
-                            <div class="radio-group">
-                                <label class="radio-label"><input type="radio" name="payment-method" value="Cash" checked> Cash (මුදල්)</label>
-                                <label class="radio-label"><input type="radio" name="payment-method" value="Credit"> Credit (ණය)</label>
-                            </div>
-                        </div>
-
-                        <div class="form-group" style="margin-top:12px;">
-                            <label class="radio-label">
-                                <input type="checkbox" id="send-bill-checkbox"> පාරිභෝගිකයාට බිල යවන්න (WhatsApp/SMS)
-                            </label>
-                        </div>
-
-                        <div id="sharing-options-wrapper" class="form-group hidden" style="background:#fff3e0; padding: 8px; border-radius: 6px;">
-                            <label>යවන ක්‍රමය තෝරන්න:</label>
-                            <div class="radio-group">
-                                <label class="radio-label"><input type="radio" name="share-mode" value="WhatsApp" checked> WhatsApp</label>
-                                <label class="radio-label"><input type="radio" name="share-mode" value="SMS"> SMS Message</label>
-                            </div>
-                        </div>
-
-                        <div class="total-highlight" style="margin: 15px 0;">
-                            මුළු මුදල: <span id="total-price-display">රු. 0.00</span>
-                        </div>
-                        <button type="submit" class="btn btn-success">බිල ඇතුළත් කරන්න (Submit Bill)</button>
-                    </form>
+        <main class="main-content">
+            <header class="content-header">
+                <h2 id="currentTabTitle">Sales Management (විකුණුම්)</h2>
+                <div class="user-profile">
+                    <i class="fa-solid fa-circle-user"></i> <span>Admin (Owner)</span>
                 </div>
+            </header>
 
-                <div class="card">
-                    <h3>සජීවී බිල්පත් පෙරදසුන (Live Bill Preview)</h3>
-                    <p style="font-size:0.75rem; color:gray; margin-bottom: 10px;">විකුණුම් සටහන ඇතුළත් කළ පසු අවසන් බිල මෙතැනින් බලාගත හැක.</p>
-                    <div id="bill-preview-box">
-                        <div style="text-align:center; color:gray; padding: 40px 10px; font-style: italic;">
-                            තවමත් බිලක් සාදා නැත. වම්පසින් දත්ත ඇතුළත් කර බිල සාදන්න.
+            <div class="content-body">
+                
+                <div class="tab-content active" id="sales">
+                    <div class="grid-container">
+                        <div class="card">
+                            <h3><i class="fa-solid fa-list-check"></i> Orders</h3>
+                            <ul>
+                                <li>Customer Order Booking <span class="badge new">නව පහසුකම</span></li>
+                                <li>Walk-in Orders</li>
+                                <li>Phone Orders</li>
+                                <li>WhatsApp Orders</li>
+                                <li>Online Orders</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h3><i class="fa-solid fa-file-invoice"></i> Invoice</h3>
+                            <ul>
+                                <li>Invoice Print</li>
+                                <li>PDF Invoice</li>
+                                <li>WhatsApp Invoice Sending <span class="badge new">නව පහසුකම</span></li>
+                                <li>Email Invoice</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h3><i class="fa-solid fa-chart-pie"></i> Sales Analysis</h3>
+                            <ul>
+                                <li>Daily Sales</li>
+                                <li>Monthly Sales</li>
+                                <li>Product-wise Sales</li>
+                                <li>Customer-wise Sales</li>
+                                <li>AI Sales Forecast <span class="badge new">නව පහසුකම</span></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div id="tab-stock" class="tab-content">
-            <div class="grid-container">
-                <div class="card">
-                    <h3 id="stock-form-title">නිෂ්පාදන තොග ඇතුළත් කිරීම</h3>
-                    <hr style="margin:8px 0; opacity:0.2;">
-                    <form id="stock-form">
-                        <input type="hidden" id="stock-edit-id">
-                        <div class="form-group">
-                            <label>දිනය:</label>
-                            <input type="date" id="stock-date" required>
+                <div class="tab-content" id="inventory">
+                    <div class="grid-container">
+                        <div class="card">
+                            <h3><i class="fa-solid fa-box"></i> Packaging Stock <span class="badge new">නව</span></h3>
+                            <ul>
+                                <li>Packaging Material Stock</li>
+                                <li>Cup Stock</li>
+                                <li>Lid Stock</li>
+                                <li>Spoon Stock</li>
+                                <li>Label Stock</li>
+                                <li>Box Stock</li>
+                            </ul>
                         </div>
-                        <div class="form-group">
-                            <label>භාණ්ඩ වර්ගය:</label>
-                            <select id="stock-item-select" required></select>
+                        <div class="card">
+                            <h3><i class="fa-solid fa-boxes-stacked"></i> Stock Tracking</h3>
+                            <ul>
+                                <li>Cup & Lid Stock Tracking <span class="badge new">නව පහසුකම</span></li>
+                                <li>Raw Material Stock</li>
+                                <li>Finished Goods Stock</li>
+                            </ul>
                         </div>
-                        <div class="form-group-row">
-                            <div class="form-group" style="flex:1;">
-                                <label>පෙර ඉතිරිය (Auto):</label>
-                                <input type="number" id="stock-prev-bal" readonly value="0" style="background:#e9ecef;">
-                            </div>
-                            <div class="form-group" style="flex:1;">
-                                <label>අලුතින් එකතු වූ Qty:</label>
-                                <input type="number" id="stock-qty" min="0" value="0" required>
-                            </div>
+                        <div class="card">
+                            <h3><i class="fa-solid fa-hourglass-half"></i> Batch Management</h3>
+                            <ul>
+                                <li>Batch Number</li>
+                                <li>Batch History</li>
+                                <li>Batch-wise Expiry Tracking <span class="badge new">නව පහසුකම</span></li>
+                                <li>Food Safety Batch Recall <span class="badge new">නව පහසුකම</span></li>
+                            </ul>
                         </div>
-                        <button type="submit" id="stock-submit-btn" class="btn btn-success" style="margin-top: 5px;">තොග යාවත්කාලීන කරන්න</button>
-                    </form>
-                </div>
-                <div class="card">
-                    <h3>වත්මන් තොගය (Current Stock Inventory)</h3>
-                    <div class="table-responsive" style="margin-top:10px;">
-                        <table>
-                            <thead>
-                                <tr><th>භාණ්ඩය</th><th>මුළු නිෂ්පාදනය</th><th>විකිණූ ප්‍රමාණය</th><th>ඉතිරි තොගය</th></tr>
-                            </thead>
-                            <tbody id="stock-overview-body"></tbody>
-                        </table>
+                        <div class="card">
+                            <h3><i class="fa-solid fa-barcode"></i> Barcode & QR</h3>
+                            <ul>
+                                <li>Barcode Printing</li>
+                                <li>QR Label Printing <span class="badge new">නව පහසුකම</span></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div id="tab-credit" class="tab-content">
-            <div class="card">
-                <h3>ණය මුදල් එකතු කිරීම් සටහන් කිරීම</h3>
-                <hr style="margin:8px 0; opacity:0.2;">
-                <form id="credit-payment-form">
-                    <div class="form-group">
-                        <label>වෙළඳසැල තෝරන්න:</label>
-                        <select id="credit-shop-select" required></select>
+                <div class="tab-content" id="purchase">
+                    <div class="grid-container">
+                        <div class="card wide">
+                            <h3><i class="fa-solid fa-calculator"></i> Planning</h3>
+                            <ul>
+                                <li><strong>Raw Material Forecast <span class="badge new">නව පහසුකම</span></strong></li>
+                                <p class="note">ඉදිරි නිෂ්පාදනය සඳහා අවශ්‍ය ද්‍රව්‍ය ස්වයංක්‍රීයව ගණනය කිරීම.</p>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>ලැබුණු මුදල:</label>
-                        <input type="number" id="credit-paid-amount" placeholder="රු. 0.00" min="1" step="0.01" required>
+                </div>
+
+                <div class="tab-content" id="customer">
+                    <div class="grid-container">
+                        <div class="card">
+                            <h3><i class="fa-solid fa-address-book"></i> Orders & History</h3>
+                            <ul>
+                                <li>Customer Order Booking (Order History සමඟ) <span class="badge new">නව පහසුකම</span></li>
+                            </ul>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-success">ණය සටහන් කරන්න</button>
-                </form>
+                </div>
+
+                <div class="tab-content" id="finance">
+                    <div class="grid-container">
+                        <div class="card wide">
+                            <h3><i class="fa-solid fa-money-bill-trend-up"></i> Profit Analysis <span class="badge new">නව පහසුකම</span></h3>
+                            <p class="note">එක් නිෂ්පාදනයකට ලැබෙන ලාභය ගණනය කිරීම:</p>
+                            <ul>
+                                <li><i class="fa-solid fa-circle-dot"></i> වටලප්පන් කප් එකක ලාභය</li>
+                                <li><i class="fa-solid fa-circle-dot"></i> යෝගට් කප් එකක ලාභය</li>
+                                <li><i class="fa-solid fa-circle-dot"></i> Milk Ice එකක ලාභය</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="production">
+                    <div class="grid-container">
+                        <div class="card">
+                            <h3><i class="fa-solid fa-kitchen-set"></i> Recipe Cost Calculator <span class="badge new">නව</span></h3>
+                            <ul>
+                                <li>එක් Recipe එකක සම්පූර්ණ පිරිවැය</li>
+                                <li>එක් Cup එකකට යන පිරිවැය</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h3><i class="fa-solid fa-calendar-days"></i> Production Scheduler <span class="badge new">නව</span></h3>
+                            <ul>
+                                <li>අද / හෙට සැලැස්ම</li>
+                                <li>සතියේ / මාසයේ නිෂ්පාදන සැලැස්ම</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h3><i class="fa-solid fa-chart-gantt"></i> Reports Comparison <span class="badge new">නව</span></h3>
+                            <p class="note">Daily Production vs Sales Comparison:</p>
+                            <div class="mini-report">
+                                <span>අද නිෂ්පාදනය: <b>500</b></span>
+                                <span>අද විකුණුම්: <b>420</b></span>
+                                <span>ඉතිරි Stock: <b style="color:var(--accent-color)">80</b></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="employee">
+                    <div class="grid-container">
+                        <div class="card wide">
+                            <h3><i class="fa-solid fa-shield-halved"></i> Security Roles & Permissions <span class="badge new">නව පහසුකම</span></h3>
+                            <p class="note">එක් එක් පරිශීලකයාට වෙනස් Permissions ලබාදිය හැකිය:</p>
+                            <div class="roles-chips">
+                                <span class="chip">Owner</span>
+                                <span class="chip">Manager</span>
+                                <span class="chip">Cashier</span>
+                                <span class="chip">Production Staff</span>
+                                <span class="chip">Store Keeper</span>
+                                <span class="chip">Delivery Person</span>
+                                <span class="chip">Accountant</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="delivery">
+                    <div class="grid-container">
+                        <div class="card">
+                            <h3><i class="fa-solid fa-map-location-dot"></i> Route Planner <span class="badge new">නව පහසුකම</span></h3>
+                            <ul>
+                                <li><i class="fa-solid fa-route"></i> Negombo Route</li>
+                                <li><i class="fa-solid fa-route"></i> Colombo Route</li>
+                                <li><i class="fa-solid fa-route"></i> Gampaha Route</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="reports">
+                    <div class="grid-container">
+                        <div class="card wide stats-grid">
+                            <div class="stat-box"><h4>AI Sales Forecast</h4><i class="fa-solid fa-brain"></i></div>
+                            <div class="stat-box"><h4>Prod vs Sales</h4><i class="fa-solid fa-code-compare"></i></div>
+                            <div class="stat-box"><h4>Product Profit</h4><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                            <div class="stat-box"><h4>Stock Forecast</h4><i class="fa-solid fa-arrow-trend-up"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="system">
+                    <div class="grid-container">
+                        <div class="card">
+                            <h3><i class="fa-solid fa-network-wired"></i> Branch Management <span class="badge new">නව</span></h3>
+                            <ul>
+                                <li>Head Office</li>
+                                <li>Factory</li>
+                                <li>Shop 1 & Shop 2</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h3><i class="fa-solid fa-cloud-arrow-up"></i> Backup & Restore <span class="badge new">නව</span></h3>
+                            <ul>
+                                <li>Automatic Backup</li>
+                                <li>Manual Backup & Restore</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h3><i class="fa-solid fa-rotate"></i> Offline + Online Sync <span class="badge new">නව</span></h3>
+                            <p class="note">Internet නැති විටත් වැඩ කළ හැකි අතර, Internet ලැබුණු පසු ස්වයංක්‍රීයව Sync වේ.</p>
+                        </div>
+                        <div class="card">
+                            <h3><i class="fa-solid fa-user-ninja"></i> Audit Log <span class="badge new">නව</span></h3>
+                            <p class="note">Login වූ අය, Invoice/Stock/Price වෙනස් කළ හෝ Delete කළ අයගේ සියලු විස්තර පටිගත වේ.</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-        </div>
-        <div id="tab-expenses" class="tab-content"><h3>වියදම් කළමනාකරණය</h3></div>
-        <div id="tab-analytics" class="tab-content"><h3>විශ්ලේෂණ සහ වාර්තා</h3></div>
+        </main>
     </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
