@@ -1,153 +1,114 @@
-/*=========================================================
- Smart ERP Pro v1.0
- File : assets/js/login.js
-=========================================================*/
+/*=========================================
+  Smart ERP Pro
+  Login JavaScript v1.0
+=========================================*/
 
 document.addEventListener("DOMContentLoaded", () => {
 
     const form = document.getElementById("loginForm");
-
     const username = document.getElementById("username");
-
     const password = document.getElementById("password");
 
-    const remember = document.getElementById("rememberMe");
-
+    const rememberMe = document.getElementById("rememberMe");
     const showPassword = document.getElementById("showPassword");
 
     const loginBtn = document.getElementById("loginBtn");
-
     const loginText = document.getElementById("loginText");
-
     const loader = document.getElementById("loader");
 
+    // =========================================
+    // Remember Username
+    // =========================================
 
+    if (localStorage.getItem("rememberMe") === "true") {
 
-    /*==============================
-        Remember Login
-    ==============================*/
-
-    if(localStorage.getItem("remember") === "true"){
-
-        username.value = localStorage.getItem("username");
-
-        remember.checked = true;
+        username.value = localStorage.getItem("savedUsername") || "";
+        rememberMe.checked = true;
 
     }
 
+    // =========================================
+    // Show Password
+    // =========================================
 
+    showPassword.addEventListener("change", () => {
 
-    /*==============================
-        Show Password
-    ==============================*/
-
-    showPassword.addEventListener("change", ()=>{
-
-        if(showPassword.checked){
-
-            password.type = "text";
-
-        }else{
-
-            password.type = "password";
-
-        }
+        password.type = showPassword.checked ? "text" : "password";
 
     });
 
+    // =========================================
+    // Login
+    // =========================================
 
-
-    /*==============================
-        Login
-    ==============================*/
-
-    form.addEventListener("submit",(e)=>{
+    form.addEventListener("submit", function (e) {
 
         e.preventDefault();
 
+        const user = username.value.trim();
+        const pass = password.value.trim();
 
+        if (user === "") {
 
-        let user = username.value.trim();
-
-        let pass = password.value.trim();
-
-
-
-        if(user===""){
-
-            alert("Please enter username");
-
+            alert("Please enter username.");
             username.focus();
-
             return;
 
         }
 
+        if (pass === "") {
 
-
-        if(pass===""){
-
-            alert("Please enter password");
-
+            alert("Please enter password.");
             password.focus();
-
             return;
 
         }
 
+        loginBtn.disabled = true;
 
+        loginText.style.display = "none";
+        loader.style.display = "inline";
 
-        loginBtn.disabled=true;
+        // Demo Login
+        // Later Database එකට connect කරනවා
 
-        loginText.innerHTML="Signing In...";
+        setTimeout(() => {
 
-        loader.style.display="inline-block";
+            if (user === "admin" && pass === "admin123") {
 
+                // Remember Me
 
+                if (rememberMe.checked) {
 
-        setTimeout(()=>{
+                    localStorage.setItem("rememberMe", "true");
+                    localStorage.setItem("savedUsername", user);
 
-            if(user==="admin" && pass==="admin123"){
+                } else {
 
-                if(remember.checked){
-
-                    localStorage.setItem("remember","true");
-
-                    localStorage.setItem("username",user);
-
-                }else{
-
-                    localStorage.removeItem("remember");
-
-                    localStorage.removeItem("username");
+                    localStorage.removeItem("rememberMe");
+                    localStorage.removeItem("savedUsername");
 
                 }
 
+                // Login Session
 
+                localStorage.setItem("loggedIn", "true");
+                localStorage.setItem("currentUser", user);
 
-                localStorage.setItem("loggedIn","true");
+                window.location.href = "dashboard.html";
 
-
-
-                window.location.href="dashboard.html";
-
-            }
-
-            else{
+            } else {
 
                 alert("Invalid Username or Password");
 
+                loginBtn.disabled = false;
 
-
-                loginBtn.disabled=false;
-
-                loginText.innerHTML="Login";
-
-                loader.style.display="none";
+                loginText.style.display = "inline";
+                loader.style.display = "none";
 
             }
 
-        },1500);
+        }, 1500);
 
     });
 
