@@ -1,8 +1,3 @@
-/*=========================================
-  Smart ERP Pro
-  Login JavaScript v1.0
-=========================================*/
-
 document.addEventListener("DOMContentLoaded", () => {
 
     const form = document.getElementById("loginForm");
