@@ -1,0 +1,395 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+:root{
+
+    --primary:#2563EB;
+    --secondary:#14B8A6;
+
+    --success:#22C55E;
+    --warning:#F59E0B;
+    --danger:#EF4444;
+
+    --dark:#0F172A;
+    --light:#F8FAFC;
+
+    --white:#ffffff;
+
+    --glass:rgba(255,255,255,.12);
+
+    --shadow:0 15px 40px rgba(0,0,0,.25);
+
+    --radius:18px;
+
+}
+
+/* Reset */
+
+*{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+
+}
+
+body{
+
+    font-family:'Poppins',sans-serif;
+
+    height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    overflow:hidden;
+
+    background:linear-gradient(
+        -45deg,
+        #2563EB,
+        #14B8A6,
+        #3B82F6,
+        #0F172A
+    );
+
+    background-size:400% 400%;
+
+    animation:gradientMove 12s ease infinite;
+
+}
+
+
+/* Background Glow */
+
+body::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:500px;
+
+    height:500px;
+
+    background:#ffffff20;
+
+    border-radius:50%;
+
+    top:-150px;
+
+    left:-150px;
+
+    filter:blur(100px);
+
+}
+
+body::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:500px;
+
+    height:500px;
+
+    background:#14B8A650;
+
+    border-radius:50%;
+
+    bottom:-150px;
+
+    right:-150px;
+
+    filter:blur(120px);
+
+}
+
+
+/* Login Page */
+
+.login-page{
+
+    width:100%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:20px;
+
+}
+
+/* Glass Card */
+
+.login-card{
+
+    width:420px;
+
+    padding:40px;
+
+    background:var(--glass);
+
+    border:1px solid rgba(255,255,255,.2);
+
+    backdrop-filter:blur(18px);
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+
+    color:white;
+
+    animation:fadeUp .8s ease;
+
+}
+
+/* Logo */
+
+.logo{
+
+    text-align:center;
+
+    margin-bottom:25px;
+
+}
+
+.logo i{
+
+    font-size:60px;
+
+    color:#fff;
+
+}
+
+.logo h1{
+
+    font-size:30px;
+
+    font-weight:700;
+
+    margin-top:10px;
+
+}
+
+.logo p{
+
+    opacity:.8;
+
+    font-size:14px;
+
+}
+
+/* Form */
+
+.form-group{
+
+    margin-bottom:18px;
+
+}
+
+.form-group label{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    font-size:14px;
+
+}
+
+.form-group input{
+
+    width:100%;
+
+    padding:14px;
+
+    border:none;
+
+    outline:none;
+
+    border-radius:12px;
+
+    background:#ffffffee;
+
+    font-size:15px;
+
+    transition:.3s;
+
+}
+
+.form-group input:focus{
+
+    box-shadow:0 0 0 3px rgba(37,99,235,.3);
+
+}
+
+/* Remember */
+
+.form-options{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+    font-size:14px;
+
+}
+
+.form-options a{
+
+    color:white;
+
+    text-decoration:none;
+
+}
+
+.form-options a:hover{
+
+    text-decoration:underline;
+
+}
+
+/* Login Button */
+
+.login-btn{
+
+    width:100%;
+
+    padding:15px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:var(--primary);
+
+    color:white;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.35s;
+
+}
+
+.login-btn:hover{
+
+    transform:translateY(-3px);
+
+    background:#1D4ED8;
+
+    box-shadow:0 12px 25px rgba(37,99,235,.4);
+
+}
+
+/* Footer */
+
+.footer{
+
+    text-align:center;
+
+    margin-top:25px;
+
+    font-size:13px;
+
+    opacity:.7;
+
+}
+
+/* Animation */
+
+@keyframes gradientMove{
+
+0%{
+
+background-position:0% 50%;
+
+}
+
+50%{
+
+background-position:100% 50%;
+
+}
+
+100%{
+
+background-position:0% 50%;
+
+}
+
+}
+
+@keyframes fadeUp{
+
+0%{
+
+opacity:0;
+
+transform:translateY(40px);
+
+}
+
+100%{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
+
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+.login-card{
+
+width:100%;
+
+padding:30px;
+
+}
+
+.logo h1{
+
+font-size:24px;
+
+}
+
+}
+
+@media(max-width:480px){
+
+.login-card{
+
+padding:25px;
+
+}
+
+.form-group input{
+
+padding:12px;
+
+}
+
+.login-btn{
+
+padding:13px;
+
+}
+
+}
