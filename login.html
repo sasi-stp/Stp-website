@@ -4,184 +4,150 @@
 <head>
 
     <meta charset="UTF-8">
-
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Smart ERP Pro | Login</title>
+    <title>Smart ERP Pro - Login</title>
 
     <!-- Google Font -->
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Font Awesome -->
-
     <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
-
-    <!-- Login CSS -->
-
+    <!-- CSS -->
     <link rel="stylesheet" href="assets/css/login.css">
 
 </head>
 
 <body>
 
-<div class="login-page">
+    <!-- Animated Background -->
+    <div class="background">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
 
-<div class="login-card">
+    <!-- Login Container -->
+    <div class="container">
 
-<!-- Logo -->
+        <div class="login-card">
 
-<div class="logo">
+            <!-- Logo -->
+            <div class="logo">
 
-<i class="fa-solid fa-cubes"></i>
+                <i class="fa-solid fa-cubes"></i>
 
-<h1>Smart ERP Pro</h1>
+                <h1>Smart ERP Pro</h1>
 
-<p>Business Management System</p>
+                <p>Business Management System</p>
 
-</div>
+            </div>
 
-<!-- Login Form -->
+            <!-- Login Form -->
+            <form id="loginForm">
 
-<form id="loginForm">
+                <!-- Username -->
+                <div class="input-box">
 
-<div class="form-group">
+                    <i class="fa-solid fa-user"></i>
 
-<label for="username">Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        placeholder="Username"
+                        autocomplete="username"
+                        required>
 
-<input
+                </div>
 
-type="text"
+                <!-- Password -->
+                <div class="input-box">
 
-id="username"
+                    <i class="fa-solid fa-lock"></i>
 
-placeholder="Enter your username"
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Password"
+                        autocomplete="current-password"
+                        required>
 
-autocomplete="username"
+                </div>
 
-required>
+                <!-- Options -->
+                <div class="options">
 
-</div>
+                    <label>
 
-<div class="form-group">
+                        <input
+                            type="checkbox"
+                            id="rememberMe">
 
-<label for="password">Password</label>
+                        Remember Me
 
-<input
+                    </label>
 
-type="password"
+                    <a href="#">Forgot Password?</a>
 
-id="password"
+                </div>
 
-placeholder="Enter your password"
+                <!-- Show Password -->
+                <div class="show-password">
 
-autocomplete="current-password"
+                    <label>
 
-required>
+                        <input
+                            type="checkbox"
+                            id="showPassword">
 
-</div>
+                        Show Password
 
-<!-- Options -->
+                    </label>
 
-<div class="form-options">
+                </div>
 
-<label>
+                <!-- Login Button -->
+                <button
+                    type="submit"
+                    id="loginBtn"
+                    class="login-btn">
 
-<input
+                    <span id="loginText">
 
-type="checkbox"
+                        Login
 
-id="rememberMe">
+                    </span>
 
-Remember Me
+                    <span
+                        id="loader"
+                        style="display:none;">
 
-</label>
+                        <i class="fa-solid fa-spinner fa-spin"></i>
 
-<a href="#">Forgot Password?</a>
+                    </span>
 
-</div>
+                </button>
 
-<!-- Show Password -->
+            </form>
 
-<div class="form-options">
+            <!-- Footer -->
 
-<label>
+            <div class="footer">
 
-<input
+                © 2026 Smart ERP Pro
 
-type="checkbox"
+            </div>
 
-id="showPassword">
+        </div>
 
-Show Password
+    </div>
 
-</label>
+    <!-- JavaScript -->
 
-</div>
-
-<!-- Login Button -->
-
-<button
-
-type="submit"
-
-class="login-btn"
-
-id="loginBtn">
-
-<span id="loginText">
-
-Login
-
-</span>
-
-<span
-
-id="loader"
-
-style="display:none;">
-
-&nbsp;
-
-<i class="fa-solid fa-spinner fa-spin"></i>
-
-</span>
-
-</button>
-
-</form>
-
-<!-- Footer -->
-
-<div class="footer">
-
-<p>
-
-© 2026 Smart ERP Pro
-
-<br>
-
-All Rights Reserved
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- Login JS -->
-
-<script src="assets/js/login.js"></script>
+    <script src="assets/js/login.js"></script>
 
 </body>
 
